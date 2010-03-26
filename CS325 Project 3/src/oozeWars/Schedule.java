@@ -32,70 +32,91 @@ import java.util.*;
 
 @SuppressWarnings({"unchecked"})		// Java's generics handling of arrays is absolutely abysmal.  I chose to ignore it entirely.
 public class Schedule
-	{
+{
 	/** The first tick of the game. */
 	public static final long EPOCH = 0;
 	
 	// private members
-	long ticks = EPOCH - 1;						// the current time in the game.  Initially "before the game starts" (EPOCH - 1)
-	PriorityQueue[] priorityQueues;				// an array of PriorityQueues, one per priority level.  Each heap stores Agents keyed with timesteps to fire them.
+	private long ticks = EPOCH - 1;				// the current time in the game.  Initially "before the game starts" (EPOCH - 1)
+	private PriorityQueue[] priorityQueues;		// an array of PriorityQueues, one per priority level.  Each heap stores Agents keyed with timesteps to fire them.
 	
-	/** Creates an Schedule from the given Game and priority level.  Typicaly this method is called from the Game constructor itself,
+	/** Creates a Schedule from the given Game and priority level.  Typicaly this method is called from the Game constructor itself,
 		and you'd not call it. */
-	public Schedule(int priorityLevels)
-		{
-		// IMPLEMENT ME
-		}
+	public Schedule(int priorityLevels, Game game)
+	{
+		priorityQueues = new PriorityQueue[priorityLevels];
+		for(PriorityQueue q: priorityQueues)
+			q = new PriorityQueue();
+	}
 	
 	/** Returns the current time in the game. */
-	public long getTicks() { return ticks; }
+	public long getTicks() 
+	{ 
+		return ticks;
+	}
 
 	/** Steps the schedule.  This causes the schedule to increment the ticks, then check to see if any
 		agents are registered to be called at this new time.  If so, they're called in priority order as
 		discussed. */
     public void step(final Game game)
-        {
-		// IMPLEMENT ME
+    {
 		
 		// Here's what you want to do.
 		// 1. Increment the ticks.
+    	ticks++;
 		// 2. For each priority queue...
-		// 3.     For each Agent in the queue whose timestamp is NOW,
-		// 4.         remove the Agent from the queue and call go() on the Agent
+    	for(int i = 0; i < priorityQueues.length; i++)
+    	{
+    		// 3. For each Agent in the queue whose timestamp is NOW,
+    		while(priorityQueues[i].peek() != null && ((QueueElement) (priorityQueues[i].peek())).getTimestamp() == ticks)
+    		{
+    			// 4. Remove the Agent from the queue and call go() on the Agent
+    			((QueueElement) priorityQueues[i].poll()).getAgent().go(game, ticks, i);
+    		}
 
-		// Be sure to stop hunting as soon as you find an Agent whose timestamp is later than NOW.
-		// It's a priority queue remember!
-		}
+    		// Be sure to stop hunting as soon as you find an Agent whose timestamp is later than NOW.
+    		// It's a priority queue remember!
+    	}
+	}
 		
 	/** Clears out the entire Schedule, removing all Agents registered with it. */
 	public void clear()
-		{
-		// IMPLEMENT ME
-		}
+	{
+		for(PriorityQueue q: priorityQueues)
+			q.clear();
+	}
 
 	/** Schedules an Agent to be fired at the very next timestep, with the given priority level. */
 	public void schedule(int priorityLevel, Agent agent) throws RuntimeException
-		{
+	{
 		scheduleIn(1L, priorityLevel, agent);
-		}
+	}
 
 	/** Schedules an Agent to be fired in <i>interval</i> ticks from now, with the given priority level. */
 	public void scheduleIn(long interval, int priorityLevel, Agent agent) throws RuntimeException
-		{
+	{
 		schedule(ticks+interval, priorityLevel, agent);
-		}
+	}
 				
 	/** Schedules an Agent to be fired at the specified timestep, with the given priority level.  The
 		provided timestep must be greater than the current ticks.  */
 	public void schedule(long timestep, int priorityLevel, Agent agent) throws RuntimeException
-		{
-		// IMPLEMENT ME
+	{
 		// Create a QueueElement for the given timestep and agent and schedule it in the appropriate
 		// PriorityQueue.  There are several things you need to check for and throw an error for:
 		// - is the priority level valid?
+		if( priorityLevel < 0 || priorityLevel >= priorityQueues.length)
+			throw new RuntimeException("Invalid priorityLevel");
 		// - is the timestep greater than the current ticks?
+		if(timestep <= ticks)
+			throw new RuntimeException("Invalid timeStep");
 		// - is the agent non-null?
-		}
+		if(agent == null)
+			throw new RuntimeException("Invalid agent");
+		
+		QueueElement qe = new QueueElement(agent, timestep);
+		priorityQueues[priorityLevel].add(qe);
+	}
 
 
 
@@ -104,28 +125,36 @@ public class Schedule
 		lowest timestamp first. */
 		
 	protected static class QueueElement implements Comparable
-		{
+	{
 		long timestamp;
 		Agent agent;
 		
-		public long getTimestamp() { return timestamp; }
-		public Agent getAgent() { return agent; }
-		public String toString() { return "QE[" + timestamp + ", " + agent + "]"; }
+		public long getTimestamp() 
+		{
+			return timestamp;
+		}
+		public Agent getAgent() 
+		{ 
+			return agent; 
+		}
+		public String toString() 
+		{ 
+			return "QE[" + timestamp + ", " + agent + "]"; 
+		}
 
 		public QueueElement(Agent agent, long timestamp)
-			{
+		{
 			this.timestamp = timestamp;
 			this.agent = agent;
-			}
+		}
 		
 		public int compareTo(Object other)
-			{
+		{
 			QueueElement qe = (QueueElement) other;
 			return (qe.timestamp == timestamp ? 0 : (qe.timestamp < timestamp ? 1 : -1));
-			}
 		}
-	
 	}
+}
 
 
 
