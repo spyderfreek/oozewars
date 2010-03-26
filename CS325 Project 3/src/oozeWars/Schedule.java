@@ -42,7 +42,7 @@ public class Schedule
 	
 	/** Creates a Schedule from the given Game and priority level.  Typicaly this method is called from the Game constructor itself,
 		and you'd not call it. */
-	public Schedule(int priorityLevels, Game game)
+	public Schedule(int priorityLevels)
 	{
 		priorityQueues = new PriorityQueue[priorityLevels];
 		for(PriorityQueue q: priorityQueues)
