@@ -20,6 +20,6 @@
 package oozeWars;
 
 public interface Agent
-	{
+{
 	public void go(Game game, long timestep, int priorityLevel);
-	}
+}

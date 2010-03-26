@@ -9,6 +9,6 @@ package oozeWars;
 import java.awt.*;
 
 public interface Sprite
-	{
+{
 	public void draw(Graphics2D graphics, Game game);
-	}
+}

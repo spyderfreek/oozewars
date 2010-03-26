@@ -30,7 +30,7 @@ import java.awt.event.*;
 
 @SuppressWarnings({"unchecked"})		// Java's generics handling of arrays is absolutely abysmal.  I chose to ignore it entirely.
 public class View extends JPanel
-	{
+{
 	// internal variables
 	Game game;					// backpointer to the game
 	int preferredWidth;			// preferred view width
@@ -41,7 +41,7 @@ public class View extends JPanel
 		Obviously the game must have already been constructed.  Sets the game's 'view' variable to this
 		View. Also calls game.registerListeners(this).  */
 	public View(Game game, int layers, int preferredWidth, int preferredHeight)
-		{
+	{
 		this.game = game;
 		this.preferredWidth = preferredWidth;
 		this.preferredHeight = preferredHeight;
@@ -51,70 +51,70 @@ public class View extends JPanel
 		setOpaque(false);  // I will redraw everything
 		game.setView(this);
 		game.registerListeners(this);
-		}
+	}
 		
 	/** Sets up the JFrame and this View so that the View receives all the keystroke requests.  The JFrame must
 		have already been set as owning this View.  */
 	public void setKeystrokeFocus(JFrame frame)
-		{
+	{
 		setFocusable(true);
 		requestFocusInWindow();
 		frame.addWindowListener(new WindowAdapter()
-			{
+		{
 			public void windowActivated(WindowEvent e)
-				{
+			{
 				requestFocusInWindow();
-				}
-			});
-		}
+			}
+		});
+	}
 		
 	/** Returns the preferred width and height.  */
 	public Dimension getPreferredSize()	
-		{
+	{
 		return new Dimension(preferredWidth, preferredHeight);
-		}
+	}
 	
 	/** Adds a sprite for the given layer if it doesn't already exist for that layer. */
 	public void addSprite(Sprite sprite, int layer)
-		{
+	{
 		sprites[layer].add(sprite);
-		}
+	}
 
 	/** Removes a sprite from the given layer. */
 	public void removeSprite(Sprite sprite, int layer)
-		{
+	{
 		sprites[layer].remove(sprite);
-		}
+	}
 
 	/** Removes all sprites. */
 	public void clear()
-		{
+	{
 		for(int i = 0; i < sprites.length; i++)
 			sprites[i] = new LinkedHashSet();
-		}
+	}
 		
 	/** Paints the View by drawing all the sprites in order.  Painting is done antialiased. */
 	public void paintComponent(Graphics g)
-		{
+	{
 		Graphics2D graphics = (Graphics2D) g;
 		graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		for(int i = 0; i < sprites.length; i++)
-			{
+		{
 			Iterator iterator = sprites[i].iterator();
 			while(iterator.hasNext())
-				{
+			{
 				Sprite sprite = (Sprite)(iterator.next());
 				sprite.draw(graphics, game);
-				}
 			}
 		}
+	}
 	
 	/** A convenience method for creating a JFrame appropriate for this View, placing the View in it,
 		setting the keystroke focus of the View, and displaying the JFrame on-screen. 
 	*/
 	
 	public JFrame createFrame(String title)
-		{
+	{
 		final JFrame frame = new JFrame(title);
 		frame.getContentPane().setLayout(new BorderLayout());
 		frame.getContentPane().add(this);
@@ -125,14 +125,14 @@ public class View extends JPanel
 		frame.setResizable(false);
 		
 		frame.addWindowListener(new WindowAdapter()
-			{
+		{
 			public void windowClosing(WindowEvent e)
-				{
+			{
 				if (game.quit())
 					frame.dispose();
-				}
-			});
+			}
+		});
 		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		return frame;
-		}
 	}
+}
