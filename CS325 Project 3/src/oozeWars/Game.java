@@ -132,6 +132,8 @@
 package oozeWars;
 import java.awt.*;
 import java.util.*;
+import java.util.Timer;
+
 import javax.swing.*;
 import java.lang.reflect.*;
 
@@ -178,8 +180,9 @@ public class Game
 	protected void stop()
 		{
 		// IMPLEMENT ME
-
+		pace.cancel();
 		// in addition to your preview code, make sure that you have cleared out the Schedule
+		queue.clear();
 		}
 		
 	/** Called by reset() to start the game.  Override this to initialize or reinitialize things, but be sure
@@ -191,24 +194,59 @@ public class Game
 		// Your TimerTask's run() method should create a Runnable which steps the Schedule and repaints the view.
 		// The Runnable should only do these things if the Game is NOT paused.  The TimerTask then
 		// submits the Runnable with invokeAndWait.  You'll need to catch some spurious exceptions.
+
+		// need to do this access game instance from inner anonymous class
+		final Game thisGame = this;
+		
+		TimerTask painter = new TimerTask( ) 
+		{
+			public void run ( ) 
+			{
+				try 
+				{
+					SwingUtilities.invokeAndWait(new Runnable( ) 
+					{
+						public void run( ) 
+						{
+							if(!paused)
+							{
+								queue.step( thisGame ); // advance my model
+								view.repaint( ); // draw the model
+							}
+						}
+					} );
+				}
+				catch (InterruptedException e) { } // do nothing
+				catch (InvocationTargetException e) { } // do nothing
+			} 
+		};
+        
+		if(pace == null)
+			pace = new Timer();
+		
+		pace.scheduleAtFixedRate(painter, 0, (long)(1000 / frameRate) );
+        
 		}
 		
 	/** Pauses or unpauses the Game */
 	public void setPaused(boolean val)
 		{
 		// IMPLEMENT ME
+			paused = val;
 		}
 
 	/** Returns the paused state of the Game */
 	public boolean getPaused()
 		{
 		// IMPLEMENT ME
+			return paused;
 		}
 
 	/** Toggles the paused state of the Game */
 	public void togglePaused()
 		{
 		// IMPLEMENT ME
+			paused = !paused;
 		}
 	
 	/** Called to determine whether or not to quit the program.  If quit() returns false, then the game has
@@ -217,8 +255,15 @@ public class Game
 		the program (perhaps by calling up a "Should we quit?" dialog box).  If the answer is YES, then
 		call super.quit() and return the result; else simply return false.*/
 	public boolean quit()
-		{
-		stop();
-		return true;  // for now
+	{
+		int choice = JOptionPane.showConfirmDialog(null, "Are you sure you want to quit?", "Quit?", JOptionPane.YES_NO_OPTION);
+
+        // make sure closing wasn't an accident
+        if(choice == JOptionPane.YES_OPTION)
+        {
+            stop();
+            return true;
+        }
+        return false;
 		}
 	}
