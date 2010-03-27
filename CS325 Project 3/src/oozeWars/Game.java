@@ -138,7 +138,7 @@ import javax.swing.*;
 import java.lang.reflect.*;
 
 public class Game
-	{
+{
 	/** Random number generator. */
 	public final Random random = new Random();
 
@@ -156,39 +156,45 @@ public class Game
 	/** Constructs a Game with an Schedule of the provided number of priority levels, and a desired
 		maximum frame rate.  The View is initially set to null.  */
 	public Game(int numQueuePriorityLevels, double maximumFrameRate)
-		{
+	{
 		queue = new Schedule(numQueuePriorityLevels);
 		frameRate = maximumFrameRate;
-		}
+	}
 	
 	/** Sets the View.  You typically don't call this -- it's called by the View itself during initialization. */
-	void setView(View view) { this.view = view; }
+	void setView(View view) 
+	{
+		this.view = view;
+	}
 	
 	/** Override this method to add listeners of all kinds to the provided View.
 		You typically don't call this -- it's called by the View itself during initialization. */
-	protected void registerListeners(View view) {  }
+	protected void registerListeners(View view) 
+	{  
+		// TODO Register Listeners....
+	}
 
 	/** Starts or resets the game. */
 	public void reset()
-		{
+	{
 		if (pace != null) stop();
 		start();
-		}
+	}
 		
 	/** Called by reset() and by quit() to stop the game.  Override this to clean things up but be sure
 		to call super.stop(); */
 	protected void stop()
-		{
+	{
 		// IMPLEMENT ME
 		pace.cancel();
 		// in addition to your preview code, make sure that you have cleared out the Schedule
 		queue.clear();
-		}
+	}
 		
 	/** Called by reset() to start the game.  Override this to initialize or reinitialize things, but be sure
 		to call super.start(); */
 	protected void start()
-		{
+	{
 		// IMPLEMENT ME
 
 		// Your TimerTask's run() method should create a Runnable which steps the Schedule and repaints the view.
@@ -230,24 +236,24 @@ public class Game
 		
 	/** Pauses or unpauses the Game */
 	public void setPaused(boolean val)
-		{
+	{
 		// IMPLEMENT ME
 			paused = val;
-		}
+	}
 
 	/** Returns the paused state of the Game */
 	public boolean getPaused()
-		{
+	{
 		// IMPLEMENT ME
 			return paused;
-		}
+	}
 
 	/** Toggles the paused state of the Game */
 	public void togglePaused()
-		{
+	{
 		// IMPLEMENT ME
 			paused = !paused;
-		}
+	}
 	
 	/** Called to determine whether or not to quit the program.  If quit() returns false, then the game has
 		indicated that it doesn't want to quit.  By default the game always is fine with quitting, and
@@ -265,5 +271,5 @@ public class Game
             return true;
         }
         return false;
-		}
 	}
+}
