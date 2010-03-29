@@ -60,8 +60,6 @@ public class Schedule
 		discussed. */
     public void step(final Game game)
     {
-		
-		// Here's what you want to do.
 		// 1. Increment the ticks.
     	ticks++;
 		// 2. For each priority queue...
@@ -73,9 +71,6 @@ public class Schedule
     			// 4. Remove the Agent from the queue and call go() on the Agent
     			((QueueElement) priorityQueues[i].poll()).getAgent().go(game, ticks, i);
     		}
-
-    		// Be sure to stop hunting as soon as you find an Agent whose timestamp is later than NOW.
-    		// It's a priority queue remember!
     	}
 	}
 		
@@ -114,8 +109,7 @@ public class Schedule
 		if(agent == null)
 			throw new RuntimeException("Invalid agent");
 		
-		QueueElement qe = new QueueElement(agent, timestep);
-		priorityQueues[priorityLevel].add(qe);
+		priorityQueues[priorityLevel].add( new QueueElement(agent, timestep) );
 	}
 
 

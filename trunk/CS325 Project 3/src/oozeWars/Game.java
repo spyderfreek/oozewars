@@ -133,7 +133,6 @@ package oozeWars;
 import java.awt.*;
 import java.util.*;
 import java.util.Timer;
-
 import javax.swing.*;
 import java.lang.reflect.*;
 
@@ -151,7 +150,7 @@ public class Game
 	// internal variables
 	java.util.Timer pace;
 	double frameRate;			// the target rate
-	boolean paused = false;
+	boolean paused = false;     // used to know whether the game is paused or not
 
 	/** Constructs a Game with an Schedule of the provided number of priority levels, and a desired
 		maximum frame rate.  The View is initially set to null.  */
@@ -185,9 +184,7 @@ public class Game
 		to call super.stop(); */
 	protected void stop()
 	{
-		// IMPLEMENT ME
 		pace.cancel();
-		// in addition to your preview code, make sure that you have cleared out the Schedule
 		queue.clear();
 	}
 		
@@ -195,8 +192,6 @@ public class Game
 		to call super.start(); */
 	protected void start()
 	{
-		// IMPLEMENT ME
-
 		// Your TimerTask's run() method should create a Runnable which steps the Schedule and repaints the view.
 		// The Runnable should only do these things if the Game is NOT paused.  The TimerTask then
 		// submits the Runnable with invokeAndWait.  You'll need to catch some spurious exceptions.
@@ -237,22 +232,19 @@ public class Game
 	/** Pauses or unpauses the Game */
 	public void setPaused(boolean val)
 	{
-		// IMPLEMENT ME
-			paused = val;
+		paused = val;
 	}
 
 	/** Returns the paused state of the Game */
 	public boolean getPaused()
 	{
-		// IMPLEMENT ME
-			return paused;
+		return paused;
 	}
 
 	/** Toggles the paused state of the Game */
 	public void togglePaused()
 	{
-		// IMPLEMENT ME
-			paused = !paused;
+		paused = !paused;
 	}
 	
 	/** Called to determine whether or not to quit the program.  If quit() returns false, then the game has
