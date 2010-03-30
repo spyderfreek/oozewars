@@ -1,5 +1,7 @@
 package oozeWars;
 
+import java.awt.Color;
+
 public class Bullet extends Particle 
 {
 	private double damage;
@@ -18,9 +20,9 @@ public class Bullet extends Particle
 	 * :  The orientation of the bullet (in Degrees) relative to the orientation of
 	 * the Head when it was fired.
 	 */
-	public Bullet(double x, double y, double radius, double orientation) 
+	public Bullet(double x, double y, double radius, Color color, double orientation) 
 	{
-		super(x, y, radius);
+		super(x, y, radius, color);
 		this.orientation = orientation;
 	}
 	

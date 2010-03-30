@@ -34,12 +34,12 @@ public class Blob extends Entity
 		this.color = color;
 		this.orientation = orientation;
 		particles = new LinkedList<Particle>();
-		head = new Head(x, y, 10, orientation);
+		head = new Head(x, y, 10, color, orientation);
 		particles.add(head);
 		
 		while(numParticles-- >= 0)
 		{
-			particles.add(new Particle(x, y, 8));
+			particles.add(new Particle(x, y, 8, color));
 		}
 	}
 	
@@ -58,9 +58,8 @@ public class Blob extends Entity
 	 */
 	public void draw(Graphics2D graphics, Game game) 
 	{
-		Iterator<Particle> it = particles.iterator();
-		while(it.hasNext())
-			((Particle)it.next()).draw(graphics, game);
+		for( Particle p : particles )
+			p.draw(graphics, game, color);
 	}
 
 	@Override
@@ -88,7 +87,7 @@ public class Blob extends Entity
 	 */
 	public Bullet shoot()
 	{
-		return new Bullet(0,0,3,0);
+		return new Bullet(0,0,3, color, 0);
 	}
 	
 	/**
