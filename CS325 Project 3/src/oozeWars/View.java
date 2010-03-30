@@ -50,7 +50,7 @@ public class View extends JPanel
 			sprites[i] = new LinkedHashSet();
 		setOpaque(false);  // I will redraw everything
 		game.setView(this);
-		game.registerListeners(this);
+		//game.registerListeners(this);
 	}
 		
 	/** Sets up the JFrame and this View so that the View receives all the keystroke requests.  The JFrame must
@@ -107,6 +107,7 @@ public class View extends JPanel
 				sprite.draw(graphics, game);
 			}
 		}
+		graphics.dispose();
 	}
 	
 	/** A convenience method for creating a JFrame appropriate for this View, placing the View in it,

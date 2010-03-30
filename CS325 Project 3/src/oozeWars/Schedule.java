@@ -45,8 +45,9 @@ public class Schedule
 	public Schedule(int priorityLevels)
 	{
 		priorityQueues = new PriorityQueue[priorityLevels];
-		for(PriorityQueue q: priorityQueues)
-			q = new PriorityQueue();
+
+		for(int i = 0; i < priorityLevels; i++)
+			priorityQueues[i] = new PriorityQueue();
 	}
 	
 	/** Returns the current time in the game. */

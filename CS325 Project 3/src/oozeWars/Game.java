@@ -199,6 +199,8 @@ public class Game
 		// need to do this access game instance from inner anonymous class
 		final Game thisGame = this;
 		
+		registerListeners(view);
+		
 		TimerTask painter = new TimerTask( ) 
 		{
 			public void run ( ) 

@@ -11,7 +11,8 @@ public class Blob extends Entity
 	private LinkedList<Particle> particles;
 	private Head head;
 	private Color color;
-	private double orientation, minSpeed = 0, maxSpeed = 2, friction = .9;
+	private double orientation, minSpeed, maxSpeed, friction = .9, accel;
+	private byte blobID;
 	
 	/**
 	 * Used to create a new Blob at a given spot, in a specified orientation, with
@@ -33,6 +34,21 @@ public class Blob extends Entity
 		this.color = color;
 		this.orientation = orientation;
 		particles = new LinkedList<Particle>();
+		head = new Head(x, y, 10, orientation);
+		particles.add(head);
+		
+		while(numParticles-- >= 0)
+		{
+			particles.add(new Particle(x, y, 8));
+		}
+	}
+	
+	public byte getBlobID() {
+		return blobID;
+	}
+
+	public void setBlobID(byte blobID) {
+		this.blobID = blobID;
 	}
 
 	@Override
@@ -44,13 +60,22 @@ public class Blob extends Entity
 	{
 		Iterator<Particle> it = particles.iterator();
 		while(it.hasNext())
-			it.next().draw(graphics, game);
+			((Particle)it.next()).draw(graphics, game);
 	}
 
 	@Override
 	public void go(Game game, long timestep, int priorityLevel) 
 	{
 		
+		if(particles.size() == 0 || head.isDead() )
+			setDead(true);
+		else
+		{
+			for(Particle p : particles)
+			{
+				p.go(game, timestep, priorityLevel);
+			}
+		}
 
 	}
 	
@@ -170,8 +195,7 @@ public class Blob extends Entity
 		while(it.hasNext())
 		{
 			Particle aParticle = it.next();
-			if(aParticle.isTouched())
-				aParticle.setTouched(false);
+			aParticle.setTouched(false);
 		}
 	}
 }
