@@ -1,5 +1,7 @@
 package oozeWars;
 
+import oozeWars.OozeWars.PlayerControls;
+
 public class Head extends Particle 
 {
 
@@ -22,6 +24,7 @@ public class Head extends Particle
 	{
 		super(x, y, radius);
 		this.orientation = orientation;
+		setBlobID((byte) 0);
 	}
 	
 	/**
@@ -33,5 +36,41 @@ public class Head extends Particle
 	{
 		
 	}
+
+	/* (non-Javadoc)
+	 * @see oozeWars.Particle#go(oozeWars.Game, long, int)
+	 */
+	@Override
+	public void go(Game game, long timestep, int priorityLevel) {
+		PlayerControls pc = ((OozeWars)game).getControls()[blobID];
+		
+		
+		if(pc.isDown())
+		{
+			vy += 5;
+		}
+		if(pc.isUp())
+		{
+			vy -= 5;
+		}
+		if(pc.isLeft())
+		{
+			vx -= 5;
+		}
+		if(pc.isRight())
+		{
+			vx += 5;
+		}
+		if(pc.isFire())
+		{
+			
+		}
+		
+		applyFriction(1, 8, .95);
+		
+		super.go(game, timestep, priorityLevel);
+	}
+	
+	
 
 }

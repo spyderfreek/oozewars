@@ -2,7 +2,12 @@ package oozeWars;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Paint;
+import java.awt.color.ColorSpace;
+import java.awt.image.BufferedImage;
 import java.util.LinkedList;
+
+import com.jhlabs.image.BoxBlurFilter;
 
 public class Particle extends Entity 
 {
@@ -12,7 +17,10 @@ public class Particle extends Entity
 	private double radius;
 	private LinkedList<Particle> neighbors;
 	Color color;
+	protected byte blobID;
 	// TODO get graphics here
+	protected BufferedImage image;
+	protected static int BLUR_WIDTH = 20;
 
 	/**
 	 * Used to create a new Particle at a given location with a defined radius.
@@ -28,6 +36,15 @@ public class Particle extends Entity
 		super(x, y);
 		neighbors = new LinkedList<Particle>();
 		this.radius = radius;
+		image = createImage();
+	}
+	
+	public byte getBlobID() {
+		return blobID;
+	}
+
+	public void setBlobID(byte blobID) {
+		this.blobID = blobID;
 	}
 
 	/**
@@ -39,18 +56,34 @@ public class Particle extends Entity
 	 * @param color
 	 * :  The color that the Particle will be.
 	 */
-	public void draw(Graphics2D graphics, Game game, Color color) 
+	public void draw(Graphics2D graphics, Game game) 
 	{
-		this.color = color;
-		graphics.setPaint(this.color);
-		super.draw(graphics, game);
+		graphics.drawImage(image, (int)x, (int)y, null);
+		
+		//graphics.drawImage(image, (int)x, (int)y, color, null);
+	}
+	
+	protected BufferedImage createImage()
+	{
+		int size = (int)((radius + BLUR_WIDTH) * 2);
+		//BufferedImage img = new BufferedImage( size, size, BufferedImage.TYPE_BYTE_GRAY );
+		BufferedImage img = new BufferedImage( size, size, BufferedImage.TYPE_INT_ARGB );
+		Graphics2D g = img.createGraphics();
+
+		BoxBlurFilter blur = new BoxBlurFilter(BLUR_WIDTH/3f, BLUR_WIDTH/3f, 3);
+		g.setColor(Color.BLACK);
+		g.fillOval(BLUR_WIDTH, BLUR_WIDTH, (int)radius * 2, (int)radius * 2);
+		g.dispose();
+		
+		return blur.filter(img, null);
 	}
 
 	@Override
 	public void go(Game game, long timestep, int priorityLevel) 
 	{
-		
-
+		x += vx;
+		y += vy;
+		super.go(game, timestep, priorityLevel);
 	}
 	
 	/**
