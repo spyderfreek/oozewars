@@ -1,5 +1,7 @@
 package oozeWars;
 
+import java.awt.Color;
+
 import oozeWars.OozeWars.PlayerControls;
 
 public class Head extends Particle 
@@ -20,9 +22,9 @@ public class Head extends Particle
 	 * @param orientation
 	 * :  The angle at which the head will be facing when it first appears (in Degrees).
 	 */
-	public Head(double x, double y, double radius, double orientation) 
+	public Head(double x, double y, double radius, Color color, double orientation) 
 	{
-		super(x, y, radius);
+		super(x, y, radius, color);
 		this.orientation = orientation;
 		setBlobID((byte) 0);
 	}

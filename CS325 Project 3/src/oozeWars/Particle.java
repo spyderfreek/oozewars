@@ -8,6 +8,8 @@ import java.awt.image.BufferedImage;
 import java.util.LinkedList;
 
 import com.jhlabs.image.BoxBlurFilter;
+import com.jhlabs.image.ImageMath;
+import com.jhlabs.image.ImageUtils;
 
 public class Particle extends Entity 
 {
@@ -31,11 +33,12 @@ public class Particle extends Entity
 	 * @param radius
 	 * :  The radius of the Particle
 	 */
-	public Particle(double x, double y, double radius) 
+	public Particle(double x, double y, double radius, Color color) 
 	{
 		super(x, y);
 		neighbors = new LinkedList<Particle>();
 		this.radius = radius;
+		this.color = color;
 		image = createImage();
 	}
 	
@@ -56,8 +59,11 @@ public class Particle extends Entity
 	 * @param color
 	 * :  The color that the Particle will be.
 	 */
-	public void draw(Graphics2D graphics, Game game) 
+	public void draw(Graphics2D graphics, Game game, Color color) 
 	{
+		int newColor = color.getRGB();
+		int oldColor = this.color.getRGB();
+		this.color = new Color(ImageMath.mixColors(.3f, oldColor, newColor));
 		graphics.drawImage(image, (int)x, (int)y, null);
 		
 		//graphics.drawImage(image, (int)x, (int)y, color, null);
