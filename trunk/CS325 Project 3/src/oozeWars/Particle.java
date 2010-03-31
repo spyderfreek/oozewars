@@ -5,6 +5,7 @@ import java.awt.Graphics2D;
 import java.awt.Paint;
 import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 import com.jhlabs.image.BoxBlurFilter;
@@ -17,7 +18,7 @@ public class Particle extends Entity
 	// (a) applying forces to neighbor particles, or (b) doing a connectivity search on blobs
 	private boolean touched = false;
 	private double radius;
-	private LinkedList<Particle> neighbors;
+	private ArrayList<Particle> neighbors;
 	Color color;
 	protected byte blobID;
 	// TODO get graphics here
@@ -36,7 +37,7 @@ public class Particle extends Entity
 	public Particle(double x, double y, double radius, Color color) 
 	{
 		super(x, y);
-		neighbors = new LinkedList<Particle>();
+		neighbors = new ArrayList<Particle>();
 		this.radius = radius;
 		this.color = color;
 		image = createImage();
@@ -104,12 +105,20 @@ public class Particle extends Entity
 	
 	/**
 	 * Updates the Particle's list of neighboring Particles.
+	 * @param range The maximum distance from this Particle to a neighbor
 	 */
-	public void getNeighbors()
+	public void updateNeighbors( double range )
 	{
 		
 	}
 	
+	/**
+	 * @return the neighbors
+	 */
+	public ArrayList<Particle> getNeighbors() {
+		return neighbors;
+	}
+
 	/**
 	 * Sets the Particle's touched variable to the given value.
 	 * @param val
@@ -128,5 +137,18 @@ public class Particle extends Entity
 	public boolean isTouched()
 	{
 		return touched;
+	}
+	
+	/**
+	 * Tells whether another particle will be repelled by this one,
+	 * assuming it is close enough to have a force applied to it
+	 * @param other The particle in question
+	 * @return Returns <code>true</code> if the particle will be repelled, and
+	 * <code>false</code> if it will be attracted
+	 */
+	public boolean isEnemy(Particle other)
+	{
+		byte id = other.getBlobID();
+		return ( id != blobID && id != 0 );
 	}
 }
