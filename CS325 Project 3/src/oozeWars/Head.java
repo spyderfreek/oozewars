@@ -12,7 +12,7 @@ public class Head extends Particle
 	
 	/**
 	 * Creates a Head for a blob with a specified location, radius, and orientation.
-	 * Uses Particle's constructor as a Head is a special type of Particle.
+	 * Uses Particle's constructor as Head is a special type of Particle.
 	 * @param x
 	 * :  The x location of the center of the Head.
 	 * @param y
@@ -38,7 +38,15 @@ public class Head extends Particle
 	{
 		
 	}
-
+	
+	/**
+	 * @return
+	 * The current orientation (in Degrees) of the Head
+	 */
+	public double getOrientation()
+	{
+		return orientation;
+	}
 	/* (non-Javadoc)
 	 * @see oozeWars.Particle#go(oozeWars.Game, long, int)
 	 */

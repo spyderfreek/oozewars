@@ -64,4 +64,22 @@ public abstract class Entity implements Sprite, Agent
 	public void setDead(boolean dead) {
 		this.dead = dead;
 	}
+	
+	/**
+	 * @return
+	 * The x value of where the Entity is in space.
+	 */
+	public double getX()
+	{
+		return x;
+	}
+	
+	/**
+	 * @return
+	 * The y value of where the Entity is in space.
+	 */
+	public double getY()
+	{
+		return y;
+	}
 }

@@ -3,7 +3,6 @@ package oozeWars;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.*;
-
 import javax.swing.JOptionPane;
 
 public class Blob extends Entity 
@@ -41,6 +40,8 @@ public class Blob extends Entity
 		{
 			particles.add(new Particle(x, y, 8, color));
 		}
+		//TODO:  Figure out the default size for the Head
+		head = new Head(x, y, orientation, 90);
 	}
 	
 	/**
@@ -67,8 +68,9 @@ public class Blob extends Entity
 	@Override
 	/**
 	 * A method used to draw the specified Blob.  Uses Particle's draw() method for each of
-	 * the Particles. 
+	 * the Particles in the Blob.
 	 */
+	@Override
 	public void draw(Graphics2D graphics, Game game) 
 	{
 		for( Particle p : particles )
@@ -104,15 +106,41 @@ public class Blob extends Entity
 	}
 	
 	/**
-	 * Picks a particle in the Blob, removes it,
+	 * Picks the largest particle in the Blob, removes it, places it in front of the head,
 	 * and shoots it in the direction the Head is facing.
 	 * 
 	 * @return
-	 * The particle that was chosen to be shot.
+	 * The new Bullet with the attributes of the Particle that was chosen to be shot.
 	 */
 	public Bullet shoot()
 	{
-		return new Bullet(0,0,3, color, 0);
+		Iterator<Particle> it = particles.iterator();
+		if(!it.hasNext())
+			return null;
+		Particle biggest = it.next();
+		
+		while(it.hasNext())
+		{
+			Particle theOther = it.next();
+			if( biggest.compareTo(theOther) == -1 )
+				biggest = theOther;
+		}
+		//We must remove a Particle with the same sized radius as the biggest.. doesn't necessarily
+		//have to be the particle that we found as the biggest.
+		it = particles.iterator();
+		while(it.hasNext())
+		{
+			Particle theOther = it.next();
+			if(biggest.compareTo(theOther) == 0)
+			{
+				it.remove();
+				break;
+			}
+		}
+		
+		
+		double bigRad = biggest.getRadius();
+		return new Bullet(head.getX()+bigRad, head.getY()+bigRad, bigRad, head.getOrientation());
 	}
 	
 	/**
@@ -150,7 +178,7 @@ public class Blob extends Entity
 	 * any negative values will be set to positive values.  The maximum speed must be 
 	 * greater than zero and at least equal to the minimum speed.
 	 * @param ms
-	 * The maximum speed the Blob can go.
+	 * :  The maximum speed the Blob can go.
 	 */
 	public void setMaxSpeed(double ms)
 	{
