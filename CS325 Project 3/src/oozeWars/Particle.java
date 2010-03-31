@@ -104,7 +104,7 @@ public class Particle extends Entity implements Comparable<Particle>
 	}
 	
 	/**
-	 * Updates the Particle's list of neighboring Particles.
+	 * Updates the Particle's list of neighboring Particles and applies a force to them.
 	 * @param range The maximum distance from this Particle to a neighbor
 	 */
 	public void updateNeighbors( double range )
