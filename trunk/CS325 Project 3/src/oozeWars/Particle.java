@@ -90,7 +90,8 @@ public class Particle extends Entity
 	{
 		x += vx;
 		y += vy;
-		super.go(game, timestep, priorityLevel);
+		// don't reschedule because parent blob is already being scheduled
+		//super.go(game, timestep, priorityLevel);
 	}
 	
 	/**
@@ -142,6 +143,7 @@ public class Particle extends Entity
 	/**
 	 * Tells whether another particle will be repelled by this one,
 	 * assuming it is close enough to have a force applied to it
+	 * 
 	 * @param other The particle in question
 	 * @return Returns <code>true</code> if the particle will be repelled, and
 	 * <code>false</code> if it will be attracted

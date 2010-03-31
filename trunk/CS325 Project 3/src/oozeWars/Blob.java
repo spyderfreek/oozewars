@@ -79,8 +79,16 @@ public class Blob extends Entity
 	public void go(Game game, long timestep, int priorityLevel) 
 	{
 		checkConnectivity();
+		OozeWars g = (OozeWars)game;
 		
-		if(particles.isEmpty() || head.isDead() )
+		// add any blobs which have been disconnected from this one
+		// to the master list
+		g.getBlobs().addAll( findStragglers() );
+		
+		// ignore head for AI-less blobs
+		boolean headDead = ( head == null ) ? false : head.isDead();
+		
+		if(particles.isEmpty() || headDead )
 			setDead(true);
 		else
 		{
@@ -89,6 +97,9 @@ public class Blob extends Entity
 				p.go(game, timestep, priorityLevel);
 			}
 		}
+		
+		// blobs are rescheduled, but not particles for performance
+		super.go(game, timestep, priorityLevel);
 
 	}
 	
@@ -169,7 +180,8 @@ public class Blob extends Entity
 	public void checkConnectivity()
 	{
 		wipeClean();
-		particles = getConnectivity( head );
+		// should seed head for Agent-controlled blobs, and first particle otherwise
+		particles = getConnectivity( particles.get(0) );
 	}
 	
 	/**
@@ -183,6 +195,13 @@ public class Blob extends Entity
 	 */
 	public ArrayList<Particle> getConnectivity( Particle seed )
 	{
+		// need to check headless blobs in case they have been absorbed,
+		// so they won't just persist forever
+		if( seed.getBlobID() != getBlobID() )
+		{
+			return new ArrayList<Particle>();
+		}
+		
 		LinkedList<Particle> queue = new LinkedList<Particle>();
 		ArrayList<Particle> neighbors;
 		ArrayList<Particle> connected = new ArrayList<Particle>();
@@ -198,6 +217,8 @@ public class Blob extends Entity
 			
 			for( Particle p : neighbors )
 			{
+				// only looking for particles which can be absorbed
+				// into the current blob.
 				if( p.isTouched() || currParticle.isEnemy(p) )
 					continue;
 				

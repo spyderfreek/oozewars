@@ -3,21 +3,21 @@ package oozeWars;
 import java.awt.Color;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.util.LinkedList;
+import java.util.ArrayList;
 
 import javax.swing.JFrame;
 
 public class OozeWars extends Game {
 	private int numPlayers;
 	private PlayerControls[] controls;
-	private LinkedList<Blob> blobs;
+	private ArrayList<Blob> blobs;
 	
 	public OozeWars(double maximumFrameRate, int numPlayers) {
 		// only need 2 schedule priority levels for now (?)
 		super(2, maximumFrameRate);
 		this.numPlayers = numPlayers;
 		controls = new PlayerControls[numPlayers];
-		blobs = new LinkedList<Blob>();
+		blobs = new ArrayList<Blob>();
 		
 		for(int i = 0; i < numPlayers; i++)
 			controls[i] = setPlayerControls(i);
@@ -77,6 +77,20 @@ public class OozeWars extends Game {
 	 */
 	public PlayerControls[] getControls() {
 		return controls;
+	}
+
+	/**
+	 * @return the blobs
+	 */
+	public ArrayList<Blob> getBlobs() {
+		return blobs;
+	}
+
+	/**
+	 * @param blobs the blobs to set
+	 */
+	public void setBlobs(ArrayList<Blob> blobs) {
+		this.blobs = blobs;
 	}
 
 	@Override
