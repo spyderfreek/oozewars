@@ -47,6 +47,8 @@ public abstract class Entity implements Sprite, Agent
 		// TODO Auto-generated method stub
 		if(!isDead())
 			game.queue.schedule(priorityLevel, this);
+		else
+			game.view.removeSprite(this, 0);
 	}
 
 	/**
