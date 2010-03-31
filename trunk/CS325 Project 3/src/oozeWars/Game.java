@@ -126,9 +126,6 @@
 	
 */
 
-
-
-
 package oozeWars;
 import java.awt.*;
 import java.util.*;
@@ -153,21 +150,32 @@ public class Game
 	boolean paused = false;     // used to know whether the game is paused or not
 
 	/** Constructs a Game with an Schedule of the provided number of priority levels, and a desired
-		maximum frame rate.  The View is initially set to null.  */
+		maximum frame rate.  The View is initially set to null.
+	*	@param numQueuePriorityLevels
+	*	:  The number of priority levels that the queue should have.
+	*	@param maximumFrameRate
+	*	:  The maximum number of frames per second that the game should run at.
+	*/
 	public Game(int numQueuePriorityLevels, double maximumFrameRate)
 	{
 		queue = new Schedule(numQueuePriorityLevels);
 		frameRate = maximumFrameRate;
 	}
 	
-	/** Sets the View.  You typically don't call this -- it's called by the View itself during initialization. */
+	/** Sets the View.  You typically don't call this -- it's called by the View itself during initialization. 
+	 * @param view
+	 * :  The view that the game will be set to have. 
+	 */
 	void setView(View view) 
 	{
 		this.view = view;
 	}
 	
 	/** Override this method to add listeners of all kinds to the provided View.
-		You typically don't call this -- it's called by the View itself during initialization. */
+		You typically don't call this -- it's called by the View itself during initialization.
+	*	@param view
+	*	:  The view that the Listeners are going to be added to.
+	*/
 	protected void registerListeners(View view) 
 	{  
 		// TODO Register Listeners....
@@ -228,16 +236,18 @@ public class Game
 			pace = new Timer();
 		
 		pace.scheduleAtFixedRate(painter, 0, (long)(1000 / frameRate) );
-        
-		}
+	}
 		
-	/** Pauses or unpauses the Game */
+	/** Pauses or unpauses the Game 
+	 *  @param val
+	 *  :  The boolean value that paused will be set to.
+	 */
 	public void setPaused(boolean val)
 	{
 		paused = val;
 	}
 
-	/** Returns the paused state of the Game */
+	/** @return The paused state of the Game */
 	public boolean getPaused()
 	{
 		return paused;

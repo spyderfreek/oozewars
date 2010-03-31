@@ -7,12 +7,11 @@ import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.LinkedList;
-
 import com.jhlabs.image.BoxBlurFilter;
 import com.jhlabs.image.ImageMath;
 import com.jhlabs.image.ImageUtils;
 
-public class Particle extends Entity 
+public class Particle extends Entity implements Comparable<Particle>
 {
 	// Indicates whether or not this particle has been touched while either
 	// (a) applying forces to neighbor particles, or (b) doing a connectivity search on blobs
@@ -152,5 +151,26 @@ public class Particle extends Entity
 	{
 		byte id = other.getBlobID();
 		return ( id != blobID && id != 0 );
+	}
+	
+	/**
+	 * @return
+	 * The radius of the Particle
+	 */
+	public double getRadius()
+	{
+		return radius;
+	}
+	
+	/**
+	 * Compares this Particle's radius to the other Particle's radius.
+	 * @return
+	 * 1 if this Particle's radius > the other Particle's radius.
+	 * <p>0 if this Particle's radius == the other Particle's radius.</p>
+	 * <p>-1 if this Particle's radius < the other Particle's radius.</p>
+	 */
+	public int compareTo(Particle theOther)
+	{
+		return (this.radius == theOther.getRadius() ? 0: (this.radius < theOther.getRadius()? -1: 1));
 	}
 }
