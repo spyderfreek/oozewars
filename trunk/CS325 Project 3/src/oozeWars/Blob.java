@@ -41,7 +41,7 @@ public class Blob extends Entity
 			particles.add(new Particle(x, y, 8, color));
 		}
 		//TODO:  Figure out the default size for the Head
-		head = new Head(x, y, orientation, 90);
+		head = new Head(x, y, orientation, this.color, 90);
 	}
 	
 	/**
@@ -65,7 +65,6 @@ public class Blob extends Entity
 		this.blobID = blobID;
 	}
 
-	@Override
 	/**
 	 * A method used to draw the specified Blob.  Uses Particle's draw() method for each of
 	 * the Particles in the Blob.
@@ -140,7 +139,7 @@ public class Blob extends Entity
 		
 		
 		double bigRad = biggest.getRadius();
-		return new Bullet(head.getX()+bigRad, head.getY()+bigRad, bigRad, head.getOrientation());
+		return new Bullet(head.getX()+bigRad, head.getY()+bigRad, bigRad, color, head.getOrientation());
 	}
 	
 	/**
