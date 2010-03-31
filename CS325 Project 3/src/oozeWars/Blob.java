@@ -8,7 +8,7 @@ import javax.swing.JOptionPane;
 
 public class Blob extends Entity 
 {
-	private LinkedList<Particle> particles;
+	private ArrayList<Particle> particles;
 	private Head head;
 	private Color color;
 	private double orientation, minSpeed, maxSpeed, friction = .9, accel;
@@ -33,7 +33,7 @@ public class Blob extends Entity
 		super(x, y);
 		this.color = color;
 		this.orientation = orientation;
-		particles = new LinkedList<Particle>();
+		particles = new ArrayList<Particle>();
 		head = new Head(x, y, 10, color, orientation);
 		particles.add(head);
 		
@@ -41,6 +41,19 @@ public class Blob extends Entity
 		{
 			particles.add(new Particle(x, y, 8, color));
 		}
+	}
+	
+	/**
+	 * Constructor for uncontrolled blobs from existing detached particles
+	 * @param particles An initialization list of particles
+	 */
+	public Blob( ArrayList<Particle> particles )
+	{
+		super(0,0);
+		color = Color.WHITE;
+		orientation = 0;
+		this.particles = particles;
+		head = null;
 	}
 	
 	public byte getBlobID() {
@@ -65,8 +78,9 @@ public class Blob extends Entity
 	@Override
 	public void go(Game game, long timestep, int priorityLevel) 
 	{
+		checkConnectivity();
 		
-		if(particles.size() == 0 || head.isDead() )
+		if(particles.isEmpty() || head.isDead() )
 			setDead(true);
 		else
 		{
@@ -150,16 +164,50 @@ public class Blob extends Entity
 	}
 	
 	/**
-	 * Does a BFS (starting at head particle)
+	 * Updates the blob's particle list to include only connected neighbors
+	 */
+	public void checkConnectivity()
+	{
+		wipeClean();
+		particles = getConnectivity( head );
+	}
+	
+	/**
+	 * Does a BFS (starting at seed particle)
 	 * through all neighbors to decide which ones are still
 	 * part of the blob.
 	 * 
+	 * @param seed The particle from which to start the search
 	 * @return
 	 * The Linked List of Particles that are still part of the Blob.
 	 */
-	public LinkedList<Blob> checkConnectivity()
+	public ArrayList<Particle> getConnectivity( Particle seed )
 	{
-		return new LinkedList<Blob>();
+		LinkedList<Particle> queue = new LinkedList<Particle>();
+		ArrayList<Particle> neighbors;
+		ArrayList<Particle> connected = new ArrayList<Particle>();
+		
+		queue.add(seed);
+		seed.setTouched(true);
+		Particle currParticle;
+		
+		while( ! queue.isEmpty() )
+		{
+			connected.add( currParticle = queue.pop() );
+			neighbors = currParticle.getNeighbors();
+			
+			for( Particle p : neighbors )
+			{
+				if( p.isTouched() || currParticle.isEnemy(p) )
+					continue;
+				
+				p.setBlobID(getBlobID());
+				p.setTouched(true);
+				queue.add(p);
+			}
+		}
+		
+		return connected;
 	}
 	
 	/**
@@ -170,9 +218,19 @@ public class Blob extends Entity
 	 * @return
 	 * The list of new Blobs (if any) created.
 	 */
-	public LinkedList<Blob> findStragglers()
+	public ArrayList<Blob> findStragglers()
 	{
-		return new LinkedList<Blob>();
+		ArrayList<Blob> newBlobs = new ArrayList<Blob>();
+		
+		for( Particle p : particles )
+		{
+			if( p.isTouched() )
+				continue;
+			//TODO: create default settings for neutral blobs
+			newBlobs.add( new Blob( getConnectivity( p ) ) );
+		}
+
+		return newBlobs;
 	}
 	
 	/**
@@ -190,10 +248,8 @@ public class Blob extends Entity
 	 */
 	public void wipeClean()
 	{
-		Iterator<Particle> it = particles.iterator();
-		while(it.hasNext())
+		for( Particle aParticle : particles )
 		{
-			Particle aParticle = it.next();
 			aParticle.setTouched(false);
 		}
 	}
