@@ -7,12 +7,14 @@ import java.util.ArrayList;
 
 import javax.swing.JFrame;
 
-public class OozeWars extends Game {
+public class OozeWars extends Game 
+{
 	private int numPlayers;
 	private PlayerControls[] controls;
 	private ArrayList<Blob> blobs;
 	
-	public OozeWars(double maximumFrameRate, int numPlayers) {
+	public OozeWars(double maximumFrameRate, int numPlayers) 
+	{
 		// only need 2 schedule priority levels for now (?)
 		super(2, maximumFrameRate);
 		this.numPlayers = numPlayers;
@@ -32,7 +34,8 @@ public class OozeWars extends Game {
 	 * @see oozeWars.Game#start()
 	 */
 	@Override
-	protected void start() {
+	protected void start() 
+	{
 		for(Blob b : blobs)
 		{
 			queue.schedule(0, b);
@@ -68,33 +71,38 @@ public class OozeWars extends Game {
 	/**
 	 * @return the numPlayers
 	 */
-	public int getNumPlayers() {
+	public int getNumPlayers() 
+	{
 		return numPlayers;
 	}
 
 	/**
 	 * @return the controls
 	 */
-	public PlayerControls[] getControls() {
+	public PlayerControls[] getControls() 
+	{
 		return controls;
 	}
 
 	/**
 	 * @return the blobs
 	 */
-	public ArrayList<Blob> getBlobs() {
+	public ArrayList<Blob> getBlobs() 
+	{
 		return blobs;
 	}
 
 	/**
 	 * @param blobs the blobs to set
 	 */
-	public void setBlobs(ArrayList<Blob> blobs) {
+	public void setBlobs(ArrayList<Blob> blobs) 
+	{
 		this.blobs = blobs;
 	}
 
 	@Override
-	protected void registerListeners(View view) {
+	protected void registerListeners(View view) 
+	{
 
 		view.addKeyListener( new KeyAdapter()
 		{
@@ -171,7 +179,8 @@ public class OozeWars extends Game {
 	/**
 	 * @param args
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) 
+	{
 		// TODO Auto-generated method stub
 		OozeWars game = new OozeWars(30, 1);
 		View view = new View(game, 1, 800, 600);
@@ -195,11 +204,13 @@ public class OozeWars extends Game {
 			up = down = left = right = fire = false;
 		}
 
-		public boolean isUp() {
+		public boolean isUp() 
+		{
 			return up;
 		}
 
-		public void setUp(boolean up) {
+		public void setUp(boolean up) 
+		{
 			this.up = up;
 		}
 
@@ -207,75 +218,90 @@ public class OozeWars extends Game {
 			return down;
 		}
 
-		public void setDown(boolean down) {
+		public void setDown(boolean down) 
+		{
 			this.down = down;
 		}
 
-		public boolean isLeft() {
+		public boolean isLeft() 
+		{
 			return left;
 		}
 
-		public void setLeft(boolean left) {
+		public void setLeft(boolean left) 
+		{
 			this.left = left;
 		}
 
-		public boolean isRight() {
+		public boolean isRight() 
+		{
 			return right;
 		}
 
-		public void setRight(boolean right) {
+		public void setRight(boolean right) 
+		{
 			this.right = right;
 		}
 
-		public boolean isFire() {
+		public boolean isFire() 
+		{
 			return fire;
 		}
 
-		public void setFire(boolean fire) {
+		public void setFire(boolean fire) 
+		{
 			this.fire = fire;
 		}
 
-		public int getUpKey() {
+		public int getUpKey() 
+		{
 			return upKey;
 		}
 
-		public void setUpKey(int upKey) {
+		public void setUpKey(int upKey) 
+		{
 			this.upKey = upKey;
 		}
 
-		public int getDownKey() {
+		public int getDownKey() 
+		{
 			return downKey;
 		}
 
-		public void setDownKey(int downKey) {
+		public void setDownKey(int downKey) 
+		{
 			this.downKey = downKey;
 		}
 
-		public int getLeftKey() {
+		public int getLeftKey() 
+		{
 			return leftKey;
 		}
 
-		public void setLeftKey(int leftKey) {
+		public void setLeftKey(int leftKey) 
+		{
 			this.leftKey = leftKey;
 		}
 
-		public int getRightKey() {
+		public int getRightKey() 
+		{
 			return rightKey;
 		}
 
-		public void setRightKey(int rightKey) {
+		public void setRightKey(int rightKey) 
+		{
 			this.rightKey = rightKey;
 		}
 
-		public int getFireKey() {
+		public int getFireKey() 
+		{
 			return fireKey;
 		}
 
-		public void setFireKey(int fireKey) {
+		public void setFireKey(int fireKey) 
+		{
 			this.fireKey = fireKey;
 		}
-		
-		
 	}
 	
 	protected static class Location
