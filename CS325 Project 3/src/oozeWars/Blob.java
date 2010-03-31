@@ -268,6 +268,8 @@ public class Blob extends Entity
 	 */
 	public ArrayList<Blob> findStragglers()
 	{
+		//TODO: need to put this function outside of blob;
+		// otherwise stragglers won't be found
 		ArrayList<Blob> newBlobs = new ArrayList<Blob>();
 		
 		for( Particle p : particles )
