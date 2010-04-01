@@ -5,7 +5,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
-
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
@@ -42,10 +41,10 @@ public class OozeWars extends Game
 		for(int i = 0; i < numPlayers; i++)
 			controls[i] = setPlayerControls(i);
 		
-		while(numPlayers-- >= 0)
+		while(numPlayers-- > 0)
 		{
-			byte ID = 0x01;
-			blobs.add(new Blob(100, 100, 0, 4, ID++, Color.BLACK));
+			byte ID = (byte)(numPlayers+1);
+			blobs.add(new Blob(100, 100, 0, 4, ID, Color.BLACK));
 		}
 	}
 
@@ -97,6 +96,11 @@ public class OozeWars extends Game
 	public void removePlayer(int player)
 	{
 		controls[player-1] = null;
+		for(Blob b : blobs)
+		{
+			if(b.getBlobID() == (byte)player)
+				b = new Blob(b.getParticles());
+		}
 		// TODO: remove event listeners for dead player, check for win / loss conditions.
 		int playerLeft = 0;
 		if(--numPlayers == 1)

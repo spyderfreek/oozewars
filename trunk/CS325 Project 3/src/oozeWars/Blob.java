@@ -5,6 +5,8 @@ import java.awt.Graphics2D;
 import java.util.*;
 import javax.swing.JOptionPane;
 
+import oozeWars.OozeWars.Location;
+
 public class Blob extends Entity 
 {
 	private ArrayList<Particle> particles;
@@ -34,20 +36,17 @@ public class Blob extends Entity
 		this.color = color;
 		this.orientation = orientation;
 		this.blobID = blobID;
-		
 		particles = new ArrayList<Particle>();
-		while(numParticles-- >= 0)
-		{
-			double radius = 3;
-			health += radius;
-			particles.add(new Particle(x, y, radius, color));
-		}
 		
 		//TODO:  Figure out default size for head
 		head = new Head(x, y, 5, color, orientation);
+		head.setBlobID(blobID);
 		particles.add(head);
-		health += head.getRadius();
-
+		
+		while(numParticles-- >= 0)
+			particles.add(new Particle(x, y, 3, color));
+		
+		updateHealth();
 	}
 	
 	/**
@@ -67,6 +66,15 @@ public class Blob extends Entity
 		
 		for(Particle p: this.particles)
 			health += p.getRadius();
+	}
+	
+	public boolean equals(Object theOther)
+	{
+		if (theOther == null || !(theOther instanceof Blob)) 
+			return false;
+		Blob other = (Blob) theOther;
+		
+		return (blobID == other.getBlobID());
 	}
 	
 	/**
@@ -347,4 +355,10 @@ public class Blob extends Entity
 		for(Particle p:  particles)
 			health += p.getRadius();
 	}
+	
+	public ArrayList<Particle> getParticles()
+	{
+		return particles;
+	}
+	
 }
