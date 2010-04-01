@@ -10,12 +10,13 @@ public class Blob extends Entity
 	private ArrayList<Particle> particles;
 	private Head head;
 	private Color color;
-	private double orientation, minSpeed, maxSpeed, friction = .9, accel;
+	private double orientation, minSpeed, maxSpeed, friction = .9, accel, health = 0;
 	private byte blobID;
 	
 	/**
 	 * Used to create a new Blob at a given spot, in a specified orientation, with
-	 * a specified number of particles, and with a particular color.
+	 * a specified number of particles, and with a particular color.  Also initializes
+	 * the Blob's health and ID.
 	 * @param x
 	 * :  The x location that the Head of the Blob will be placed
 	 * @param y
@@ -27,25 +28,33 @@ public class Blob extends Entity
 	 * @param color
 	 * :  The color the Blob will be
 	 */
-	public Blob(double x, double y, double orientation, int numParticles, Color color) 
+	public Blob(double x, double y, double orientation, int numParticles, byte blobID, Color color) 
 	{
 		super(x, y);
 		this.color = color;
 		this.orientation = orientation;
+		this.blobID = blobID;
+		
 		particles = new ArrayList<Particle>();
+		while(numParticles-- >= 0)
+		{
+			double radius = 3;
+			health += radius;
+			particles.add(new Particle(x, y, radius, color));
+		}
+		
 		//TODO:  Figure out default size for head
 		head = new Head(x, y, 5, color, orientation);
 		particles.add(head);
-		
-		while(numParticles-- >= 0)
-		{
-			particles.add(new Particle(x, y, 3, color));
-		}
+		health += head.getRadius();
+
 	}
 	
 	/**
-	 * Constructor for uncontrolled blobs from existing detached particles
-	 * @param particles An initialization list of particles
+	 * Constructor for uncontrolled blobs from existing detached particles.  
+	 * This Blob will be flagged as neutral and will have an ID = 0;
+	 * @param particles 
+	 * : An initialization list of particles that this Blob will contain.
 	 */
 	public Blob( ArrayList<Particle> particles )
 	{
@@ -54,13 +63,29 @@ public class Blob extends Entity
 		orientation = 0;
 		this.particles = particles;
 		head = null;
+		blobID = 0x00;
+		
+		for(Particle p: this.particles)
+			health += p.getRadius();
 	}
 	
-	public byte getBlobID() {
+	/**
+	 * Returns the Blob's current ID number.
+	 * @return
+	 * The Blob's current ID number.
+	 */
+	public byte getBlobID() 
+	{
 		return blobID;
 	}
-
-	public void setBlobID(byte blobID) {
+	
+	/**
+	 * Sets the Blob's ID number to the value given for blobID
+	 * @param blobID
+	 * The Blob's new ID number
+	 */
+	public void setBlobID(byte blobID) 
+	{
 		this.blobID = blobID;
 	}
 
@@ -139,6 +164,16 @@ public class Blob extends Entity
 		
 		double bigRad = biggest.getRadius();
 		return new Bullet(head.getX()+bigRad, head.getY()+bigRad, bigRad, color, head.getOrientation());
+	}
+	
+	/**
+	 * Method to retrieve the Blob's current health.
+	 * @return
+	 * The Blob's current health.
+	 */
+	public double getHealth()
+	{
+		return health;
 	}
 	
 	/**
@@ -301,5 +336,15 @@ public class Blob extends Entity
 		{
 			aParticle.setTouched(false);
 		}
+	}
+	
+	/**
+	 * Uses the collection of particles in this blob to find its new health.
+	 */
+	public void updateHealth()
+	{
+		health = head.getRadius();
+		for(Particle p:  particles)
+			health += p.getRadius();
 	}
 }

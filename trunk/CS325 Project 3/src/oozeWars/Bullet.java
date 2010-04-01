@@ -9,7 +9,8 @@ public class Bullet extends Particle
 	// TODO get graphics here
 	
 	/**
-	 * Creates a new bullet at a given location with a specific radius and orientation.
+	 * Creates a new bullet at a given location with a specific radius and orientation.  Initializes the damage
+	 * that this bullet does.
 	 * @param x
 	 * :  The x location of the center of the Bullet
 	 * @param y
@@ -24,6 +25,7 @@ public class Bullet extends Particle
 	{
 		super(x, y, radius, color);
 		this.orientation = orientation;
+		damage = radius*1.5;
 	}
 	
 	public void explode()
