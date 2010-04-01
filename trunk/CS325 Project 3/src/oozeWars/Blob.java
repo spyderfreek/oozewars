@@ -41,7 +41,7 @@ public class Blob extends Entity
 			particles.add(new Particle(x, y, 8, color));
 		}
 		//TODO:  Figure out the default size for the Head
-		head = new Head(x, y, orientation, this.color, 90);
+		head = new Head(x, y, 10, this.color, orientation);
 	}
 	
 	/**
