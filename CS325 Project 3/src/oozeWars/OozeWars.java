@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.swing.JFrame;
 
@@ -12,6 +13,10 @@ public class OozeWars extends Game
 	private int numPlayers;
 	private PlayerControls[] controls;
 	private ArrayList<Blob> blobs;
+	private ArrayList<Particle> allParticles;
+	private HashMap<Particle, Location> locations;
+	private HashMap<Location, ArrayList<Particle>> particles;
+	private final double CELL_WIDTH = 40;
 	
 	public OozeWars(double maximumFrameRate, int numPlayers) 
 	{
@@ -20,6 +25,9 @@ public class OozeWars extends Game
 		this.numPlayers = numPlayers;
 		controls = new PlayerControls[numPlayers];
 		blobs = new ArrayList<Blob>();
+		allParticles = new ArrayList<Particle>();
+		locations = new HashMap<Particle, Location>();
+		particles = new HashMap<Location, ArrayList<Particle>>();
 		
 		for(int i = 0; i < numPlayers; i++)
 			controls[i] = setPlayerControls(i);
@@ -99,11 +107,49 @@ public class OozeWars extends Game
 	{
 		this.blobs = blobs;
 	}
+	
+	public Location getLocation(Particle aParticle)
+	{
+		int x = (int)Math.floor(aParticle.getX()/CELL_WIDTH);
+		int y = (int)Math.floor(aParticle.getY()/CELL_WIDTH);
+		return new Location(x, y, allParticles.size());
+	}
+	
+	public void removeParticle(Particle aParticle)
+	{
+		if(locations.containsKey(aParticle))
+		{
+			Location theLocation = locations.remove(aParticle);
+			ArrayList<Particle> theParticles = particles.get(theLocation);
+			theParticles.remove(aParticle);
+			
+			Particle anotherParticle = allParticles.remove(allParticles.size()-1);
+			allParticles.set(theLocation.index, anotherParticle);
+			locations.get(anotherParticle).index = theLocation.index;
+		}
+	}
+	
+	public void addParticle(Particle aParticle)
+	{
+		if(locations.containsKey(aParticle))
+			removeParticle(aParticle);
+		
+		Location theLocation = getLocation(aParticle);
+		
+		allParticles.add(aParticle);
+		locations.put(aParticle, theLocation);
+		
+		if( ! particles.containsKey(theLocation) )
+		{
+			particles.put(theLocation, new ArrayList<Particle>());
+		}
+		
+		particles.get(theLocation).add(aParticle);
+	}
 
 	@Override
 	protected void registerListeners(View view) 
 	{
-
 		view.addKeyListener( new KeyAdapter()
 		{
 			public void keyPressed(KeyEvent e)
@@ -181,7 +227,6 @@ public class OozeWars extends Game
 	 */
 	public static void main(String[] args) 
 	{
-		// TODO Auto-generated method stub
 		OozeWars game = new OozeWars(30, 1);
 		View view = new View(game, 1, 800, 600);
 		JFrame frame = view.createFrame("Ooze Wars");
@@ -307,12 +352,35 @@ public class OozeWars extends Game
 	protected static class Location
 	{
 		public final int x, y;
+		public int index;
 		
-		public Location(int x, int y)
+		public Location(int x, int y, int index)
 		{
 			this.x = x;
 			this.y = y;
+			this.index = index;
 		}
+
+		/* (non-Javadoc)
+		 * @see java.lang.Object#hashCode()
+		 */
+		@Override
+		public int hashCode() {
+			return (x << 16) | (y & 0xFFFF);
+		}
+
+		/* (non-Javadoc)
+		 * @see java.lang.Object#equals(java.lang.Object)
+		 */
+		@Override
+		public boolean equals(Object obj) 
+		{
+			if (obj == null || !(obj instanceof Location)) return false;
+			Location l = (Location) obj;
+			return l.x == x && l.y == y;
+		}
+		
+		
 	}
 
 }
