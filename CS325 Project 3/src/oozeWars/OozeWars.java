@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 public class OozeWars extends Game 
 {
@@ -18,6 +19,15 @@ public class OozeWars extends Game
 	private HashMap<Location, ArrayList<Particle>> particles;
 	private final double CELL_WIDTH = 40;
 	
+	/**
+	 * The constructor for the game OozeWars.  Calls the constructor for Game.java.  
+	 * Initializes the number of players, sets up the controls for each player, initializes 
+	 * the number of blobs needed, and sets up the Sparse Grid.
+	 * @param maximumFrameRate
+	 * :  The number of frames per second that the game will run at.
+	 * @param numPlayers
+	 * :  The number of players that this game will contain.
+	 */
 	public OozeWars(double maximumFrameRate, int numPlayers) 
 	{
 		// only need 2 schedule priority levels for now (?)
@@ -34,7 +44,8 @@ public class OozeWars extends Game
 		
 		while(numPlayers-- >= 0)
 		{
-			blobs.add(new Blob(100, 100, 0, 4, Color.BLACK));
+			byte ID = 0x01;
+			blobs.add(new Blob(100, 100, 0, 4, ID++, Color.BLACK));
 		}
 	}
 
@@ -53,31 +64,59 @@ public class OozeWars extends Game
 		super.start();
 	}
 
+	/*
+	 * (non Java-doc)
+	 * Sets the keys that the players will be using to control their Blobs.
+	 * As of now, this is only set up for two players.
+	 * 
+	 * @param player
+	 * :  The player number that the controls will be set up for.
+	 */
 	private PlayerControls setPlayerControls(int player)
 	{
 		switch( player )
 		{
-		case 0:
-			return new PlayerControls(KeyEvent.VK_W, KeyEvent.VK_S, KeyEvent.VK_A,
-					KeyEvent.VK_D, KeyEvent.VK_SPACE);
-		case 1:
-			return new PlayerControls(KeyEvent.VK_NUMPAD8, KeyEvent.VK_NUMPAD5, 
-					KeyEvent.VK_NUMPAD4,KeyEvent.VK_NUMPAD6, KeyEvent.VK_NUMPAD0);
-		default:
-			throw new IllegalArgumentException("Invalid Player Count");
+			case 0:
+				return new PlayerControls(KeyEvent.VK_W, KeyEvent.VK_S, KeyEvent.VK_A,
+						KeyEvent.VK_D, KeyEvent.VK_SPACE);
+			case 1:
+				return new PlayerControls(KeyEvent.VK_NUMPAD8, KeyEvent.VK_NUMPAD5, 
+						KeyEvent.VK_NUMPAD4,KeyEvent.VK_NUMPAD6, KeyEvent.VK_NUMPAD0);
+			default:
+				throw new IllegalArgumentException("Invalid Player Count");
 		}
 		
 
 	}
 	
+	/**
+	 * Removes the indicated player from the game and checks for win/loss/draw conditions.
+	 * @param player
+	 * :  The player number that will be removed from the game.
+	 */
 	public void removePlayer(int player)
 	{
+		controls[player-1] = null;
 		// TODO: remove event listeners for dead player, check for win / loss conditions.
-		numPlayers--;
+		int playerLeft = 0;
+		if(--numPlayers == 1)
+		{
+			for(int i = 0; i < controls.length; i++)
+			{
+				if(controls[i] != null)
+					playerLeft = i+1;
+			}
+			JOptionPane.showMessageDialog(null, "Congratulations player " + playerLeft + ", you won!");
+		}
+		else if(numPlayers == 0) //There was a draw
+		{
+			JOptionPane.showMessageDialog(null, "DRAW!");
+		}
 	}
 	
 	/**
-	 * @return the numPlayers
+	 * @return 
+	 * The current number of players.
 	 */
 	public int getNumPlayers() 
 	{
@@ -85,7 +124,8 @@ public class OozeWars extends Game
 	}
 
 	/**
-	 * @return the controls
+	 * @return 
+	 * The controls
 	 */
 	public PlayerControls[] getControls() 
 	{
@@ -93,7 +133,8 @@ public class OozeWars extends Game
 	}
 
 	/**
-	 * @return the blobs
+	 * @return 
+	 * The Blobs currently in the game.
 	 */
 	public ArrayList<Blob> getBlobs() 
 	{
@@ -101,13 +142,22 @@ public class OozeWars extends Game
 	}
 
 	/**
-	 * @param blobs the blobs to set
+	 * @param blobs 
+	 * :  The new list of blobs in the game.
 	 */
 	public void setBlobs(ArrayList<Blob> blobs) 
 	{
 		this.blobs = blobs;
 	}
 	
+	/**
+	 * Method to create a Location for the Particle in question.  This is for use in the
+	 * implementation of a Sparse Grid.
+	 * @param aParticle
+	 * :  The Particle for which we wish to find the location.
+	 * @return
+	 * A Location of the Particle in question.
+	 */
 	public Location getLocation(Particle aParticle)
 	{
 		int x = (int)Math.floor(aParticle.getX()/CELL_WIDTH);
@@ -115,6 +165,11 @@ public class OozeWars extends Game
 		return new Location(x, y, allParticles.size());
 	}
 	
+	/**
+	 * A method used to remove a Particle from the Sparse Grid.
+	 * @param aParticle
+	 * :  The particle that will be removed from the Sparse Grid.
+	 */
 	public void removeParticle(Particle aParticle)
 	{
 		if(locations.containsKey(aParticle))
@@ -129,6 +184,12 @@ public class OozeWars extends Game
 		}
 	}
 	
+	/**
+	 * A method to add a Particle to the Sparse Grid.  Can be used to add the same particle to
+	 * a different Location on the Sparse Grid.
+	 * @param aParticle
+	 * :  The Particle that will be added to (or moved in) the Sparse Grid
+	 */
 	public void addParticle(Particle aParticle)
 	{
 		if(locations.containsKey(aParticle))
@@ -147,6 +208,11 @@ public class OozeWars extends Game
 		particles.get(theLocation).add(aParticle);
 	}
 
+	/**
+	 * A method used to add Listeners to the game's current View.
+	 * @param view
+	 * :  The view that the Listeners will be added to.
+	 */
 	@Override
 	protected void registerListeners(View view) 
 	{
@@ -223,6 +289,7 @@ public class OozeWars extends Game
 	}
 
 	/**
+	 * The method that runs the game.
 	 * @param args
 	 */
 	public static void main(String[] args) 
@@ -234,11 +301,28 @@ public class OozeWars extends Game
 		game.reset();
 	}
 	
+	/**
+	 * Sets up the key bindings necessary for the controls that the player will be using.
+	 * @author Nick Kitten
+	 */
 	protected static class PlayerControls
 	{
 		private boolean up, down, left, right, fire;
 		private int upKey, downKey, leftKey, rightKey, fireKey;
 		
+		/**
+		 * Constructs the controls for the player. 
+		 * @param upKey
+		 * :  The key that will be used to make the player go up.
+		 * @param downKey
+		 * :  The key that will be used to make the player go down.
+		 * @param leftKey
+		 * :  The key that will be used to make the player go left.
+		 * @param rightKey
+		 * :  The key that will be used to make the player go right.
+		 * @param fireKey
+		 * :  The key that will be used to make the player shoot a Bullet.
+		 */
 		public PlayerControls(int upKey, int downKey, int leftKey, int rightKey, int fireKey)
 		{
 			this.upKey = upKey;
@@ -248,112 +332,223 @@ public class OozeWars extends Game
 			this.fireKey = fireKey;
 			up = down = left = right = fire = false;
 		}
-
+		
+		/**
+		 * @return
+		 * TRUE if the up key is being pressed.
+		 * <p>FALSE otherwise.</p>
+		 */
 		public boolean isUp() 
 		{
 			return up;
 		}
 
+		/**
+		 * Sets the value of this.up to the value provided in the parameter.
+		 * @param up
+		 * :  The value that this.up will be set to
+		 */
 		public void setUp(boolean up) 
 		{
 			this.up = up;
 		}
 
-		public boolean isDown() {
+		/**
+		 * @return
+		 * TRUE if the down key is being pressed.
+		 * <p> FALSE otherwise.</p>
+		 */
+		public boolean isDown() 
+		{
 			return down;
 		}
 
+		/**
+		 * Sets the value of this.down to the value provided in the parameter.
+		 * @param down
+		 * :  The value that this.down will be set to
+		 */
 		public void setDown(boolean down) 
 		{
 			this.down = down;
 		}
 
+		/**
+		 * @return
+		 * TRUE if the left key is being pressed.
+		 * <p> FALSE otherwise.</p>
+		 */
 		public boolean isLeft() 
 		{
 			return left;
 		}
 
+		/**
+		 * Sets the value of this.left to the value provided in the parameter.
+		 * @param left
+		 * :  The value that this.left will be set to
+		 */
 		public void setLeft(boolean left) 
 		{
 			this.left = left;
 		}
 
+		/**
+		 * @return
+		 * TRUE if the right key is being pressed.
+		 * <p> FALSE otherwise.</p>
+		 */
 		public boolean isRight() 
 		{
 			return right;
 		}
 
+		/**
+		 * Sets the value of this.right to the value provided in the parameter.
+		 * @param right
+		 * :  The value that this.right will be set to
+		 */
 		public void setRight(boolean right) 
 		{
 			this.right = right;
 		}
 
+		/**
+		 * @return
+		 * TRUE if the fire key is being pressed.
+		 * <p> FALSE otherwise.</p>
+		 */
 		public boolean isFire() 
 		{
 			return fire;
 		}
 
+		/**
+		 * Sets the value of this.fire to the value provided in the parameter.
+		 * @param fire
+		 * :  The value that this.fire will be set to
+		 */
 		public void setFire(boolean fire) 
 		{
 			this.fire = fire;
 		}
 
+		/**
+		 * @return
+		 * The integer value for the key representing up.
+		 */
 		public int getUpKey() 
 		{
 			return upKey;
 		}
 
+		/**
+		 * Sets the up key to the new key represented by the parameter.
+		 * @param upKey
+		 * :  The integer representing the new key that will move the player up.
+		 */
 		public void setUpKey(int upKey) 
 		{
 			this.upKey = upKey;
 		}
 
+		/**
+		 * @return
+		 * The integer value for the key representing down.
+		 */
 		public int getDownKey() 
 		{
 			return downKey;
 		}
 
+		/**
+		 * Sets the down key to the new key represented by the parameter.
+		 * @param downKey
+		 * :  The integer representing the new key that will move the player down.
+		 */
 		public void setDownKey(int downKey) 
 		{
 			this.downKey = downKey;
 		}
 
+		/**
+		 * @return
+		 * The integer value for the key representing left.
+		 */
 		public int getLeftKey() 
 		{
 			return leftKey;
 		}
 
+		/**
+		 * Sets the left key to the new key represented by the parameter.
+		 * @param leftKey
+		 * :  The integer representing the new key that will move the player left.
+		 */
 		public void setLeftKey(int leftKey) 
 		{
 			this.leftKey = leftKey;
 		}
 
+		/**
+		 * @return
+		 * The integer value for the key representing right.
+		 */
 		public int getRightKey() 
 		{
 			return rightKey;
 		}
 
+		/**
+		 * Sets the right key to the new key represented by the parameter.
+		 * @param rightKey
+		 * :  The integer representing the new key that will move the player right.
+		 */
 		public void setRightKey(int rightKey) 
 		{
 			this.rightKey = rightKey;
 		}
 
+		/**
+		 * @return
+		 * The integer value for the key representing fire.
+		 */
 		public int getFireKey() 
 		{
 			return fireKey;
 		}
 
+		/**
+		 * Sets the fire key to the new key represented by the parameter.
+		 * @param fireKey
+		 * :  The integer representing the new key that will make the player fire.
+		 */
 		public void setFireKey(int fireKey) 
 		{
 			this.fireKey = fireKey;
 		}
 	}
 	
+	/**
+	 * Used for the HashMaps of the Sparse Grid.  Has a lookup index for an associated Particle
+	 * in <i>allParticles</i>.
+	 * @author Nick Kitten & Sean Fedak
+	 */
 	protected static class Location
 	{
 		public final int x, y;
 		public int index;
 		
+		/**
+		 * Constructs a new Location for a given x and y location.  Holds the index for
+		 * the associated Particle in <i>allParticles</i>.
+		 * @param x
+		 * :  The x location associated with this Location.
+		 * @param y
+		 * :  The y location associated with this Location.
+		 * @param index
+		 * :  The index in <i>allParticles</i> associated with the Particle in this Location.
+		 */
 		public Location(int x, int y, int index)
 		{
 			this.x = x;
@@ -365,7 +560,8 @@ public class OozeWars extends Game
 		 * @see java.lang.Object#hashCode()
 		 */
 		@Override
-		public int hashCode() {
+		public int hashCode() 
+		{
 			return (x << 16) | (y & 0xFFFF);
 		}
 
@@ -379,8 +575,5 @@ public class OozeWars extends Game
 			Location l = (Location) obj;
 			return l.x == x && l.y == y;
 		}
-		
-		
 	}
-
 }
