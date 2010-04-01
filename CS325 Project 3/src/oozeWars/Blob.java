@@ -33,15 +33,14 @@ public class Blob extends Entity
 		this.color = color;
 		this.orientation = orientation;
 		particles = new ArrayList<Particle>();
-		head = new Head(x, y, 10, color, orientation);
+		//TODO:  Figure out default size for head
+		head = new Head(x, y, 5, color, orientation);
 		particles.add(head);
 		
 		while(numParticles-- >= 0)
 		{
-			particles.add(new Particle(x, y, 8, color));
+			particles.add(new Particle(x, y, 3, color));
 		}
-		//TODO:  Figure out the default size for the Head
-		head = new Head(x, y, 10, this.color, orientation);
 	}
 	
 	/**
