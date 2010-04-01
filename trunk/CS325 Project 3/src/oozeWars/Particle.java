@@ -20,9 +20,8 @@ public class Particle extends Entity implements Comparable<Particle>
 	private ArrayList<Particle> neighbors;
 	Color color;
 	protected byte blobID;
-	// TODO get graphics here
 	protected BufferedImage image;
-	protected static int BLUR_WIDTH = 20;
+	protected static int BLUR_WIDTH = 15;
 
 	/**
 	 * Used to create a new Particle at a given location with a defined radius.
