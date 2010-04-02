@@ -95,7 +95,12 @@ public class OozeWars extends Game
 	 */
 	public void removePlayer(int player)
 	{
-		controls[player-1] = null;
+		controls[player] = null;
+		for(Blob b : blobs)
+		{
+			if(b.getBlobID() == (byte)player)
+				b = new Blob(b.getParticles());
+		}
 		for(Blob b : blobs)
 		{
 			if(b.getBlobID() == (byte)player)
