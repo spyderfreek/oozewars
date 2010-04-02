@@ -52,16 +52,21 @@ public abstract class Entity implements Sprite, Agent
 	}
 
 	/**
-	 * @return the dead
+	 * @return
+	 * TRUE if the Entity is dead.<p></p>
+	 * FALSE if the Entity is alive.
 	 */
-	public boolean isDead() {
+	public boolean isDead() 
+	{
 		return dead;
 	}
 
 	/**
-	 * @param dead the dead to set
+	 * @param dead
+	 * The value to set this.dead to.
 	 */
-	public void setDead(boolean dead) {
+	public void setDead(boolean dead) 
+	{
 		this.dead = dead;
 	}
 	

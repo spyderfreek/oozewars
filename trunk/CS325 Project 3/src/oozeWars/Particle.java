@@ -41,11 +41,13 @@ public class Particle extends Entity implements Comparable<Particle>
 		image = createImage();
 	}
 	
-	public byte getBlobID() {
+	public byte getBlobID() 
+	{
 		return blobID;
 	}
 
-	public void setBlobID(byte blobID) {
+	public void setBlobID(byte blobID) 
+	{
 		this.blobID = blobID;
 	}
 
@@ -114,7 +116,8 @@ public class Particle extends Entity implements Comparable<Particle>
 	/**
 	 * @return the neighbors
 	 */
-	public ArrayList<Particle> getNeighbors() {
+	public ArrayList<Particle> getNeighbors() 
+	{
 		return neighbors;
 	}
 
