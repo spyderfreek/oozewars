@@ -1,8 +1,8 @@
 package oozeWars;
 
 import java.awt.Color;
-
 import oozeWars.OozeWars.PlayerControls;
+
 
 public class Head extends Particle 
 {
@@ -33,9 +33,10 @@ public class Head extends Particle
 	 * than other particles.
 	 */
 	@Override
-	public void applyForce(Particle neighbor)
+	public void applyForce(Particle neighbor, double k, double distance, double dx, double dy, double comfyDistance)
 	{
-		
+		k *= 1.5;
+		super.applyForce(neighbor, k, distance, dx, dy, comfyDistance);
 	}
 	
 	/**

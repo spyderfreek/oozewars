@@ -4,14 +4,14 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.*;
 import javax.swing.JOptionPane;
-import oozeWars.OozeWars.Location;
 
 public class Blob extends Entity 
 {
 	private ArrayList<Particle> particles;
 	private Head head;
 	private Color color;
-	private double orientation, minSpeed, maxSpeed, friction = .9, accel, health = 0;
+	private double orientation, minSpeed, maxSpeed, friction = .9, accel, health = 0, blobForce = 3.5;
+	private double comfyDistance = .5;
 	private byte blobID;
 	
 	/**
@@ -42,8 +42,12 @@ public class Blob extends Entity
 		head.setBlobID(this.blobID);
 		particles.add(head);
 		
-		while(numParticles-- >= 0)
-			particles.add(new Particle(x, y, 3, color));
+		while(numParticles-- > 0)
+		{
+			Particle aParticle = new Particle(x, y, 3, color);
+			aParticle.setBlobID(blobID);
+			particles.add(aParticle);
+		}
 		
 		updateHealth();
 	}
@@ -73,6 +77,11 @@ public class Blob extends Entity
 		Blob other = (Blob) theOther;
 		
 		return (blobID == other.getBlobID());
+	}
+	
+	public int hashCode(Object obj)
+	{
+		return (int)blobID;
 	}
 	
 	/**
@@ -128,7 +137,7 @@ public class Blob extends Entity
 				p.go(game, timestep, priorityLevel);
 			}
 		}
-		
+		updateHealth();
 		// blobs are rescheduled, but not particles for performance
 		super.go(game, timestep, priorityLevel);
 
@@ -242,6 +251,44 @@ public class Blob extends Entity
 	}
 	
 	/**
+	 * Sets the force that the Particles in the Blob will have on eachother.
+	 * @param blobForce
+	 * The value that the force of the Blob will be set to.
+	 */
+	public void setBlobForce(double blobForce) 
+	{
+		this.blobForce = blobForce;
+	}
+	
+	/**
+	 * Gets this Blob's force that all of it's Particles apply on eachother.
+	 * @return
+	 * The value for blobForce.
+	 */
+	public double getBlobForce() 
+	{
+		return blobForce;
+	}
+
+	/**
+	 * @param comfyDistance 
+	 * :  the comfyDistance to set
+	 */
+	public void setComfyDistance(double comfyDistance) 
+	{
+		this.comfyDistance = comfyDistance;
+	}
+
+	/**
+	 * @return 
+	 * the comfyDistance
+	 */
+	public double getComfyDistance() 
+	{
+		return comfyDistance;
+	}
+
+	/**
 	 * Updates the blob's particle list to include only connected neighbors
 	 */
 	public void checkConnectivity()
@@ -249,7 +296,6 @@ public class Blob extends Entity
 		wipeClean();
 		// should seed head for Agent-controlled blobs, and first particle otherwise
 		particles = getConnectivity( particles.get(0) );
-		updateHealth();
 	}
 	
 	/**
