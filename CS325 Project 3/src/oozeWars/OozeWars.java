@@ -4,7 +4,10 @@ import java.awt.Color;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
@@ -13,6 +16,7 @@ public class OozeWars extends Game
 	private int numPlayers;
 	private PlayerControls[] controls;
 	private ArrayList<Blob> blobs;
+	private LinkedHashMap<Byte, Blob> hBlobs;
 	private ArrayList<Particle> allParticles;
 	private HashMap<Particle, Location> locations;
 	private HashMap<Location, ArrayList<Particle>> particles;
@@ -34,6 +38,7 @@ public class OozeWars extends Game
 		this.numPlayers = numPlayers;
 		controls = new PlayerControls[numPlayers];
 		blobs = new ArrayList<Blob>();
+		hBlobs = new LinkedHashMap<Byte, Blob>();
 		allParticles = new ArrayList<Particle>();
 		locations = new HashMap<Particle, Location>();
 		particles = new HashMap<Location, ArrayList<Particle>>();
@@ -43,8 +48,10 @@ public class OozeWars extends Game
 		
 		while(numPlayers-- > 0)
 		{
-			byte ID = (byte)(numPlayers+1);
-			blobs.add(new Blob(100, 100, 0, 4, ID, Color.BLACK));
+			byte id = (byte)(numPlayers+1);
+			Blob newBlob = new Blob(100, 100, 0, 4, id, Color.BLACK);
+			blobs.add(newBlob);
+			hBlobs.put(id, newBlob);
 		}
 		
 		//adds all the particles currently in game to the Sparse Grid
@@ -597,6 +604,71 @@ public class OozeWars extends Game
 			if (obj == null || !(obj instanceof Location)) return false;
 			Location l = (Location) obj;
 			return l.x == x && l.y == y;
+		}
+	}
+	
+	private class ParticleManager implements Agent
+	{
+		BitSet touchedSet;
+		public ParticleManager()
+		{
+			touchedSet = new BitSet(allParticles.size());
+			
+		}
+
+		@Override
+		public void go(Game game, long timestep, int priorityLevel) 
+		{
+			// TODO Auto-generated method stub
+			
+		}
+		
+		private void wipeClean()
+		{
+			touchedSet.clear();
+		}
+		
+		/*
+		 * Updates the Particle's list of neighboring Particles and applies a force to them.
+		 * @param range The maximum distance from this Particle to a neighbor
+		 */
+		private void updateNeighbors( double range )
+		{
+			double squaredRange = range*range;
+			for(Particle p:  allParticles)
+			{
+				p.clearNeighbors();
+				
+				Location theLocation = locations.get(p);
+				ArrayList<Particle> neighborhood = particles.get(theLocation);
+				for(Particle op:  neighborhood)
+				{
+					if( touchedSet.get(locations.get(op).index) )
+						continue;
+					
+					double dx = op.getX() - p.getX();
+					double dy = op.getY() - p.getY();
+					double squaredDistance = dx*dx + dy*dy;
+					if(squaredDistance < squaredRange)
+					{
+						p.addNeighbor(op);
+						
+						double distance = Math.sqrt(squaredDistance);
+						Blob blob = hBlobs.get( p.getBlobID() );
+						double bForce = blob.getBlobForce();
+						double comfy = blob.getComfyDistance();
+						
+						Blob oBlob = hBlobs.get( op.getBlobID() );
+						double obForce = oBlob.getBlobForce();
+						double oComfy = oBlob.getComfyDistance();
+						
+						p.applyForce(op, bForce, distance, dx, dy, comfy);						
+						op.applyForce(p, obForce, distance, dx, dy, oComfy);
+						
+						touchedSet.set(theLocation.index);
+					}
+				}
+			}
 		}
 	}
 }

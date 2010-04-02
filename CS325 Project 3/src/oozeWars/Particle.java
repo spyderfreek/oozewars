@@ -16,7 +16,7 @@ public class Particle extends Entity implements Comparable<Particle>
 	// Indicates whether or not this particle has been touched while either
 	// (a) applying forces to neighbor particles, or (b) doing a connectivity search on blobs
 	private boolean touched = false;
-	private double radius;
+	private double radius, inverseMass;
 	private ArrayList<Particle> neighbors;
 	Color color;
 	protected byte blobID;
@@ -37,6 +37,7 @@ public class Particle extends Entity implements Comparable<Particle>
 		super(x, y);
 		neighbors = new ArrayList<Particle>();
 		this.radius = radius;
+		inverseMass = 1/radius;
 		this.color = color;
 		image = createImage();
 	}
@@ -99,18 +100,21 @@ public class Particle extends Entity implements Comparable<Particle>
 	 * @param neighbor
 	 * :  The particle in which the force will be applied.
 	 */
-	public void applyForce(Particle neighbor)
+	public void applyForce(Particle neighbor, double k, double distance, double dx, double dy, double comfyDistance)
 	{
+		comfyDistance += radius;
+		double x;
+		if(!this.isEnemy(neighbor))
+			x = dx - comfyDistance;
+		else
+			x = dx;
 		
-	}
-	
-	/**
-	 * Updates the Particle's list of neighboring Particles and applies a force to them.
-	 * @param range The maximum distance from this Particle to a neighbor
-	 */
-	public void updateNeighbors( double range )
-	{
+		double force = k * x;
+		double accel = force * inverseMass;
+		double dvx = dx * accel;
+		double dvy = dy * accel;
 		
+		neighbor.push(dvx, dvy);
 	}
 	
 	/**
@@ -119,6 +123,16 @@ public class Particle extends Entity implements Comparable<Particle>
 	public ArrayList<Particle> getNeighbors() 
 	{
 		return neighbors;
+	}
+	
+	public void addNeighbor(Particle p)
+	{
+		neighbors.add(p);
+	}
+	
+	public void clearNeighbors()
+	{
+		neighbors.clear();
 	}
 
 	/**
