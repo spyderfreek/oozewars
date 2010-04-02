@@ -26,7 +26,6 @@ public class Head extends Particle
 	{
 		super(x, y, radius, color);
 		this.orientation = orientation;
-		setBlobID((byte) 0);
 	}
 	
 	/**

@@ -46,6 +46,13 @@ public class OozeWars extends Game
 			byte ID = (byte)(numPlayers+1);
 			blobs.add(new Blob(100, 100, 0, 4, ID, Color.BLACK));
 		}
+		
+		//adds all the particles currently in game to the Sparse Grid
+		/*for(Blob b: blobs)
+		{
+			for(Particle p: b.getParticles())
+				addParticle(p);
+		}*/
 	}
 
 	/* (non-Javadoc)

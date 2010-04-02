@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.*;
 import javax.swing.JOptionPane;
-
 import oozeWars.OozeWars.Location;
 
 public class Blob extends Entity 
@@ -40,7 +39,7 @@ public class Blob extends Entity
 		
 		//TODO:  Figure out default size for head
 		head = new Head(x, y, 5, color, orientation);
-		head.setBlobID(blobID);
+		head.setBlobID(this.blobID);
 		particles.add(head);
 		
 		while(numParticles-- >= 0)
@@ -64,8 +63,7 @@ public class Blob extends Entity
 		head = null;
 		blobID = 0x00;
 		
-		for(Particle p: this.particles)
-			health += p.getRadius();
+		updateHealth();
 	}
 	
 	public boolean equals(Object theOther)
@@ -251,6 +249,7 @@ public class Blob extends Entity
 		wipeClean();
 		// should seed head for Agent-controlled blobs, and first particle otherwise
 		particles = getConnectivity( particles.get(0) );
+		updateHealth();
 	}
 	
 	/**
