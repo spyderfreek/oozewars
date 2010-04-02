@@ -176,9 +176,13 @@ public class OozeWars extends Game
 	 */
 	public Location getLocation(Particle aParticle)
 	{
-		int x = (int)Math.floor(aParticle.getX()/CELL_WIDTH);
-		int y = (int)Math.floor(aParticle.getY()/CELL_WIDTH);
-		return new Location(x, y, allParticles.size());
+		double divX = aParticle.getX()/CELL_WIDTH;
+		double divY = aParticle.getY()/CELL_WIDTH;
+		int x = (int)divX;
+		int y = (int)divY;
+		boolean isLeft = divX - x < .5;
+		boolean isTop = divY - y < .5;
+		return new Location(x, y, allParticles.size(), isLeft, isTop);
 	}
 	
 	/**
@@ -554,6 +558,7 @@ public class OozeWars extends Game
 	{
 		public final int x, y;
 		public int index;
+		public final boolean isLeft, isTop; 
 		
 		/**
 		 * Constructs a new Location for a given x and y location.  Holds the index for
@@ -565,11 +570,13 @@ public class OozeWars extends Game
 		 * @param index
 		 * :  The index in <i>allParticles</i> associated with the Particle in this Location.
 		 */
-		public Location(int x, int y, int index)
+		public Location(int x, int y, int index, boolean isLeft, boolean isTop)
 		{
 			this.x = x;
 			this.y = y;
 			this.index = index;
+			this.isLeft = isLeft;
+			this.isTop = isTop;
 		}
 
 		/* (non-Javadoc)
