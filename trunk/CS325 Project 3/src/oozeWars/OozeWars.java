@@ -48,11 +48,11 @@ public class OozeWars extends Game
 		}
 		
 		//adds all the particles currently in game to the Sparse Grid
-		/*for(Blob b: blobs)
+		for(Blob b: blobs)
 		{
 			for(Particle p: b.getParticles())
 				addParticle(p);
-		}*/
+		}
 	}
 
 	/* (non-Javadoc)
