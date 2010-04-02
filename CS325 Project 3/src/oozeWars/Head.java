@@ -50,8 +50,9 @@ public class Head extends Particle
 	 * @see oozeWars.Particle#go(oozeWars.Game, long, int)
 	 */
 	@Override
-	public void go(Game game, long timestep, int priorityLevel) {
-		PlayerControls pc = ((OozeWars)game).getControls()[blobID];
+	public void go(Game game, long timestep, int priorityLevel) 
+	{
+		PlayerControls pc = ((OozeWars)game).getControls()[blobID-1];
 		
 		
 		if(pc.isDown())
