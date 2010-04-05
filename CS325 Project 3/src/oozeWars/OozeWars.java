@@ -113,13 +113,15 @@ public class OozeWars extends Game
 		for(Blob b : blobs)
 		{
 			if(b.getBlobID() == (byte)player)
-				b = new Blob(b.getParticles());
+			{
+				ArrayList<Particle> theList = b.getParticles();
+				for(Particle p : theList)
+					p.setDead(true);
+				b = new Blob(theList);
+				break;
+			}
 		}
-		for(Blob b : blobs)
-		{
-			if(b.getBlobID() == (byte)player)
-				b = new Blob(b.getParticles());
-		}
+
 		// TODO: remove event listeners for dead player, check for win / loss conditions.
 		int playerLeft = 0;
 		if(--numPlayers == 1)
@@ -321,7 +323,7 @@ public class OozeWars extends Game
 	 */
 	public static void main(String[] args) 
 	{
-		OozeWars game = new OozeWars(30, 1);
+		OozeWars game = new OozeWars(30, 2);
 		View view = new View(game, 1, 800, 600);
 		JFrame frame = view.createFrame("Ooze Wars");
 		view.setKeystrokeFocus(frame);
@@ -610,17 +612,18 @@ public class OozeWars extends Game
 	private class ParticleManager implements Agent
 	{
 		BitSet touchedSet;
-		public ParticleManager()
+		public ParticleManager(Game game)
 		{
 			touchedSet = new BitSet(allParticles.size());
-			
+			go(game, 0, 1);
 		}
 
 		@Override
 		public void go(Game game, long timestep, int priorityLevel) 
 		{
-			// TODO Auto-generated method stub
-			
+			// TODO Finish implementing me
+			wipeClean();
+			updateNeighbors(.75);
 		}
 		
 		private void wipeClean()
