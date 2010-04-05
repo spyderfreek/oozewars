@@ -10,9 +10,9 @@ public class Blob extends Entity
 	private ArrayList<Particle> particles;
 	private Head head;
 	private Color color;
-	private double orientation, minSpeed, maxSpeed, friction = .9, accel, health = 0, blobForce = 3.5;
-	private double comfyDistance = .5;
-	private byte blobID;
+	private double orientation, minSpeed, maxSpeed, friction = .9, accel, health = 0, blobForce = 2.5;
+	private double comfyDistance = 10;
+	private int blobID;
 	
 	/**
 	 * Used to create a new Blob at a given spot, in a specified orientation, with
@@ -29,7 +29,7 @@ public class Blob extends Entity
 	 * @param color
 	 * :  The color the Blob will be
 	 */
-	public Blob(double x, double y, double orientation, int numParticles, byte blobID, Color color) 
+	public Blob(double x, double y, double orientation, int numParticles, int blobID, Color color) 
 	{
 		super(x, y);
 		this.color = color;
@@ -44,7 +44,7 @@ public class Blob extends Entity
 		
 		while(numParticles-- > 0)
 		{
-			Particle aParticle = new Particle(x, y, 3, color);
+			Particle aParticle = new Particle(x + Math.random()*10-5, y + Math.random()*10-5, 3, color);
 			aParticle.setBlobID(blobID);
 			particles.add(aParticle);
 		}
@@ -89,7 +89,7 @@ public class Blob extends Entity
 	 * @return
 	 * The Blob's current ID number.
 	 */
-	public byte getBlobID() 
+	public int getBlobID() 
 	{
 		return blobID;
 	}
@@ -104,6 +104,10 @@ public class Blob extends Entity
 		this.blobID = blobID;
 	}
 
+	public Head getHead() {
+		return head;
+	}
+
 	/**
 	 * A method used to draw the specified Blob.  Uses Particle's draw() method for each of
 	 * the Particles in the Blob.
@@ -115,16 +119,10 @@ public class Blob extends Entity
 			p.draw(graphics, game, color);
 	}
 
+	
 	@Override
 	public void go(Game game, long timestep, int priorityLevel) 
-	{
-		checkConnectivity();
-		OozeWars g = (OozeWars)game;
-		
-		// add any blobs which have been disconnected from this one
-		// to the master list
-		g.getBlobs().addAll( findStragglers() );
-		
+	{		
 		// ignore head for AI-less blobs
 		boolean headDead = ( head == null ) ? false : head.isDead();
 		
@@ -138,10 +136,9 @@ public class Blob extends Entity
 			}
 		}
 		updateHealth();
-		// blobs are rescheduled, but not particles for performance
-		super.go(game, timestep, priorityLevel);
 
 	}
+	
 	
 	/**
 	 * Picks the largest particle in the Blob, removes it, places it in front of the head,
@@ -287,88 +284,6 @@ public class Blob extends Entity
 	{
 		return comfyDistance;
 	}
-
-	/**
-	 * Updates the blob's particle list to include only connected neighbors
-	 */
-	public void checkConnectivity()
-	{
-		wipeClean();
-		// should seed head for Agent-controlled blobs, and first particle otherwise
-		particles = getConnectivity( particles.get(0) );
-	}
-	
-	/**
-	 * Does a BFS (starting at seed particle)
-	 * through all neighbors to decide which ones are still
-	 * part of the blob.
-	 * 
-	 * @param seed The particle from which to start the search
-	 * @return
-	 * The Linked List of Particles that are still part of the Blob.
-	 */
-	public ArrayList<Particle> getConnectivity( Particle seed )
-	{
-		// need to check headless blobs in case they have been absorbed,
-		// so they won't just persist forever
-		if( seed.getBlobID() != getBlobID() )
-		{
-			return new ArrayList<Particle>();
-		}
-		
-		LinkedList<Particle> queue = new LinkedList<Particle>();
-		ArrayList<Particle> neighbors;
-		ArrayList<Particle> connected = new ArrayList<Particle>();
-		
-		queue.add(seed);
-		seed.setTouched(true);
-		Particle currParticle;
-		
-		while( ! queue.isEmpty() )
-		{
-			connected.add( currParticle = queue.pop() );
-			neighbors = currParticle.getNeighbors();
-			
-			for( Particle p : neighbors )
-			{
-				// only looking for particles which can be absorbed
-				// into the current blob.
-				if( p.isTouched() || currParticle.isEnemy(p) )
-					continue;
-				
-				p.setBlobID(getBlobID());
-				p.setTouched(true);
-				queue.add(p);
-			}
-		}
-		
-		return connected;
-	}
-	
-	/**
-	 * Searches through list of particles looking for ones
-	 * which haven't been touched by checkConnectivity()
-	 * to add to new, neutral blobs.
-	 * 
-	 * @return
-	 * The list of new Blobs (if any) created.
-	 */
-	public ArrayList<Blob> findStragglers()
-	{
-		//TODO: need to put this function outside of blob;
-		// otherwise stragglers won't be found
-		ArrayList<Blob> newBlobs = new ArrayList<Blob>();
-		
-		for( Particle p : particles )
-		{
-			if( p.isTouched() )
-				continue;
-			//TODO: create default settings for neutral blobs
-			newBlobs.add( new Blob( getConnectivity( p ) ) );
-		}
-
-		return newBlobs;
-	}
 	
 	/**
 	 * Applies forces to all particles in this blob,
@@ -379,17 +294,6 @@ public class Blob extends Entity
 		
 	}
 	
-	/**
-	 * Sets the "touched" variable on all constituent particles
-	 * to false before a search.
-	 */
-	public void wipeClean()
-	{
-		for( Particle aParticle : particles )
-		{
-			aParticle.setTouched(false);
-		}
-	}
 	
 	/**
 	 * Uses the collection of particles in this blob to find its new health.

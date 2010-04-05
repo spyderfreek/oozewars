@@ -13,13 +13,10 @@ import com.jhlabs.image.ImageUtils;
 
 public class Particle extends Entity implements Comparable<Particle>
 {
-	// Indicates whether or not this particle has been touched while either
-	// (a) applying forces to neighbor particles, or (b) doing a connectivity search on blobs
-	private boolean touched = false;
 	private double radius, inverseMass;
 	private ArrayList<Particle> neighbors;
 	Color color;
-	protected byte blobID;
+	protected int blobID;
 	protected BufferedImage image;
 	protected static int BLUR_WIDTH = 15;
 
@@ -42,14 +39,14 @@ public class Particle extends Entity implements Comparable<Particle>
 		image = createImage();
 	}
 	
-	public byte getBlobID() 
+	public int getBlobID() 
 	{
 		return blobID;
 	}
 
-	public void setBlobID(byte blobID) 
+	public void setBlobID(int blobID2) 
 	{
-		this.blobID = blobID;
+		this.blobID = blobID2;
 	}
 
 	/**
@@ -105,7 +102,7 @@ public class Particle extends Entity implements Comparable<Particle>
 		comfyDistance += radius;
 		double x;
 		if(!this.isEnemy(neighbor))
-			x = dx - comfyDistance;
+			x = comfyDistance - dx;
 		else
 			x = dx;
 		
@@ -139,7 +136,7 @@ public class Particle extends Entity implements Comparable<Particle>
 	 * Sets the Particle's touched variable to the given value.
 	 * @param val
 	 * :  The value to which the Particle's touched variable will be set.
-	 */
+	 *
 	public void setTouched(boolean val)
 	{
 		touched = val;
@@ -149,7 +146,7 @@ public class Particle extends Entity implements Comparable<Particle>
 	 * Gets whether the Particle has been touched or not.
 	 * @return
 	 * :  The current value of touched.
-	 */
+	 *
 	public boolean isTouched()
 	{
 		return touched;
@@ -165,7 +162,7 @@ public class Particle extends Entity implements Comparable<Particle>
 	 */
 	public boolean isEnemy(Particle other)
 	{
-		byte id = other.getBlobID();
+		int id = other.getBlobID();
 		return ( id != blobID && id != 0 );
 	}
 	
