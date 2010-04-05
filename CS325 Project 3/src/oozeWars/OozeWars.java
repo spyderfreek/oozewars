@@ -144,11 +144,7 @@ public class OozeWars extends Game
 		
 		hBlobs.put(b.getBlobID(), b);
 		blobs.add(b);
-		for(Blob b : getBlobs())
-		{
-			if(b.getBlobID() == player)
-				b = new Blob(b.getParticles());
-		}
+
 		// TODO: remove event listeners for dead player, check for win / loss conditions.
 		int playerLeft = 0;
 		if(--numPlayers == 1)
