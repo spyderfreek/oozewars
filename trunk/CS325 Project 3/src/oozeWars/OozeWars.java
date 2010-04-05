@@ -628,10 +628,9 @@ public class OozeWars extends Game
 	private class ParticleManager implements Agent
 	{
 		BitSet touchedSet;
-		public ParticleManager(Game game)
+		public ParticleManager()
 		{
 			touchedSet = new BitSet(allParticles.size() * 2);
-			go(game, 0, 1);
 		}
 
 		@Override
