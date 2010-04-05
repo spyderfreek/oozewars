@@ -65,7 +65,7 @@ public class Blob extends Entity
 		orientation = 0;
 		this.particles = particles;
 		head = null;
-		blobID = 0x00;
+		blobID = 0;
 		
 		updateHealth();
 	}
@@ -104,7 +104,8 @@ public class Blob extends Entity
 		this.blobID = blobID;
 	}
 
-	public Head getHead() {
+	public Head getHead() 
+	{
 		return head;
 	}
 

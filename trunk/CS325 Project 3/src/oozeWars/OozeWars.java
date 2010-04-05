@@ -17,7 +17,6 @@ public class OozeWars extends Game
 {
 	private int numPlayers;
 	private PlayerControls[] controls;
-	private ArrayList<Blob> blobs;
 	private LinkedHashMap<Integer, Blob> hBlobs;
 	private ArrayList<Particle> allParticles;
 	private HashMap<Particle, Location> locations;
@@ -54,23 +53,18 @@ public class OozeWars extends Game
 			int id = numPlayers + 1;
 			switch (id)
 			{
-				case(0x01):
+				case(1):
 					Blob newBlob = new Blob(100, 100, 0, 4, id, Color.GREEN);
-					blobs.add(newBlob);
 					hBlobs.put(id, newBlob);
 					break;
-				case(0x02):
+				case(2):
 					Blob newerBlob = new Blob(500, 500, 0, 4, id, Color.BLUE);
-					blobs.add(newerBlob);
 					hBlobs.put(id, newerBlob);
 					break;
 				default:
 					System.out.println("Invalid number of players");
 			}
 		}
-		
-		Blob newBlob = new Blob(200, 200, 0, 4, 0, Color.RED);
-		hBlobs.put(0, newBlob);
 		
 		//adds all the particles currently in game to the Sparse Grid
 		for(Blob b: getBlobs())
@@ -134,7 +128,6 @@ public class OozeWars extends Game
 	{
 		//controls[player] = null;
 		Blob b = hBlobs.remove(player+1);
-		blobs.remove(b);
 		ArrayList<Particle> theList = b.getParticles();
 		
 		Particle head = theList.remove(0);
@@ -143,7 +136,6 @@ public class OozeWars extends Game
 		b = new Blob(theList);
 		
 		hBlobs.put(b.getBlobID(), b);
-		blobs.add(b);
 
 		// TODO: remove event listeners for dead player, check for win / loss conditions.
 		int playerLeft = 0;
