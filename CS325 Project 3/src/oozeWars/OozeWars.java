@@ -66,6 +66,9 @@ public class OozeWars extends Game
 			}
 		}
 		
+		ArrayList<Particle> neutralParticles = new ArrayList<Particle>();
+		hBlobs.put(0, new Blob(neutralParticles));
+		
 		//adds all the particles currently in game to the Sparse Grid
 		for(Blob b: getBlobs())
 		{
@@ -90,8 +93,9 @@ public class OozeWars extends Game
 		MAX_X = (int)(view.getWidth() / CELL_WIDTH);
 		MAX_Y = (int)(view.getHeight() / CELL_WIDTH);
 		
-		queue.schedule(0, manager);
+		
 		super.start();
+		queue.schedule(0, manager);
 	}
 
 	/*
@@ -641,7 +645,7 @@ public class OozeWars extends Game
 		{
 			//TODO: figure out reasonable values for range, comfydist, etc
 			wipeClean();
-			updateNeighbors(40);
+			updateNeighbors(20);
 			
 			wipeClean();
 			ArrayList<Particle> constituents;
@@ -660,8 +664,9 @@ public class OozeWars extends Game
 			
 			Blob neutral = hBlobs.get(0);
 			constituents = neutral.getParticles();
-			getConnectivity( constituents.get(0), 0, constituents, true );
-			
+			if( ! constituents.isEmpty() )
+				getConnectivity( constituents.get(0), 0, constituents, true );
+				
 			findStragglers();
 			
 			for(Blob b : getBlobs())
@@ -704,7 +709,7 @@ public class OozeWars extends Game
 				else
 				{
 					x1 = theLocation.x;
-					x2 = Math.min(MAX_X, theLocation.x);
+					x2 = Math.min(MAX_X, theLocation.x + 1);
 				}
 				
 				if( theLocation.isTop )
@@ -715,7 +720,7 @@ public class OozeWars extends Game
 				else
 				{
 					y1 = theLocation.y;
-					y2 = Math.min(MAX_Y, theLocation.y);
+					y2 = Math.min(MAX_Y, theLocation.y + 1);
 				}
 				
 				for(int x = x1; x <= x2; x++)
@@ -724,6 +729,9 @@ public class OozeWars extends Game
 						sector.x = x;
 						sector.y = y;
 
+						if(!particles.containsKey(sector))
+							continue;
+						
 						neighborhood = particles.get(sector);
 						for(Particle op:  neighborhood)
 						{
@@ -733,17 +741,18 @@ public class OozeWars extends Game
 							double dx = op.getX() - p.getX();
 							double dy = op.getY() - p.getY();
 							double squaredDistance = dx*dx + dy*dy;
+							
 							if(squaredDistance < squaredRange)
 							{
 								p.addNeighbor(op);
 								
 								double distance = Math.sqrt(squaredDistance);
 								Blob blob = hBlobs.get( p.getBlobID() );
-								double bForce = blob.getBlobForce();
+								double bForce = blob.getBlobForce() / range;
 								double comfy = blob.getComfyDistance();
 								
 								Blob oBlob = hBlobs.get( op.getBlobID() );
-								double obForce = oBlob.getBlobForce();
+								double obForce = oBlob.getBlobForce() / range;
 								double oComfy = oBlob.getComfyDistance();
 								
 								p.applyForce(op, bForce, distance, dx, dy, comfy);						
@@ -818,8 +827,6 @@ public class OozeWars extends Game
 		 */
 		public void findStragglers()
 		{
-			//TODO: need to put this function outside of blob;
-			// otherwise stragglers won't be found
 			ArrayList<Particle> constituents = hBlobs.get(0).getParticles();
 			
 			for( int i = 0; i < allParticles.size(); ++i )
