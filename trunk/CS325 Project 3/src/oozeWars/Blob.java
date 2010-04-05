@@ -10,7 +10,7 @@ public class Blob extends Entity
 	private ArrayList<Particle> particles;
 	private Head head;
 	private Color color;
-	private double orientation, minSpeed, maxSpeed, friction = .9, accel, health = 0, blobForce = 2.5;
+	private double orientation, minSpeed, maxSpeed, friction = .9, accel, health = 0, blobForce = .5;
 	private double comfyDistance = 10;
 	private int blobID;
 	
@@ -66,8 +66,6 @@ public class Blob extends Entity
 		this.particles = particles;
 		head = null;
 		blobID = 0;
-		
-		updateHealth();
 	}
 	
 	public boolean equals(Object theOther)
@@ -99,7 +97,7 @@ public class Blob extends Entity
 	 * @param blobID
 	 * The Blob's new ID number
 	 */
-	public void setBlobID(byte blobID) 
+	public void setBlobID(int blobID) 
 	{
 		this.blobID = blobID;
 	}
@@ -136,7 +134,9 @@ public class Blob extends Entity
 				p.go(game, timestep, priorityLevel);
 			}
 		}
-		updateHealth();
+		
+		if(head != null)
+			updateHealth();
 
 	}
 	
@@ -290,16 +290,7 @@ public class Blob extends Entity
 	{
 		return comfyDistance;
 	}
-	
-	/**
-	 * Applies forces to all particles in this blob,
-	 * marking them as touched.
-	 */
-	public void applyForces()
-	{
-		
-	}
-	
+
 	
 	/**
 	 * Uses the collection of particles in this blob to find its new health.
