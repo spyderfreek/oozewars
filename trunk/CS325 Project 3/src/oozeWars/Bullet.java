@@ -28,6 +28,12 @@ public class Bullet extends Particle
 		damage = radius*1.5;
 	}
 	
+	//TODO:  Implement move() and explode()
+	public void move()
+	{
+		
+	}
+	
 	public void explode()
 	{
 		

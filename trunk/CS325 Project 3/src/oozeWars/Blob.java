@@ -154,6 +154,11 @@ public class Blob extends Entity
 			return null;
 		Particle biggest = it.next();
 		
+		if(biggest instanceof Head && it.hasNext())
+			biggest = it.next();
+		else
+			return null;
+		
 		while(it.hasNext())
 		{
 			Particle theOther = it.next();

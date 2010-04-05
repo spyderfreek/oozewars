@@ -76,7 +76,7 @@ public class Particle extends Entity implements Comparable<Particle>
 		Graphics2D g = img.createGraphics();
 
 		BoxBlurFilter blur = new BoxBlurFilter(BLUR_WIDTH/3f, BLUR_WIDTH/3f, 3);
-		g.setColor(Color.BLACK);
+		g.setColor(color);
 		g.fillOval(BLUR_WIDTH, BLUR_WIDTH, (int)radius * 2, (int)radius * 2);
 		g.dispose();
 		
