@@ -5,8 +5,10 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -16,11 +18,13 @@ public class OozeWars extends Game
 	private int numPlayers;
 	private PlayerControls[] controls;
 	private ArrayList<Blob> blobs;
-	private LinkedHashMap<Byte, Blob> hBlobs;
+	private LinkedHashMap<Integer, Blob> hBlobs;
 	private ArrayList<Particle> allParticles;
 	private HashMap<Particle, Location> locations;
 	private HashMap<Location, ArrayList<Particle>> particles;
+	private ParticleManager manager;
 	private final double CELL_WIDTH = 40;
+	private int MAX_X, MAX_Y;
 	
 	/**
 	 * The constructor for the game OozeWars.  Calls the constructor for Game.java.  
@@ -37,8 +41,7 @@ public class OozeWars extends Game
 		super(2, maximumFrameRate);
 		this.numPlayers = numPlayers;
 		controls = new PlayerControls[numPlayers];
-		blobs = new ArrayList<Blob>();
-		hBlobs = new LinkedHashMap<Byte, Blob>();
+		hBlobs = new LinkedHashMap<Integer, Blob>();
 		allParticles = new ArrayList<Particle>();
 		locations = new HashMap<Particle, Location>();
 		particles = new HashMap<Location, ArrayList<Particle>>();
@@ -48,18 +51,22 @@ public class OozeWars extends Game
 		
 		while(numPlayers-- > 0)
 		{
-			byte id = (byte)(numPlayers+1);
+			int id = numPlayers + 1;
 			Blob newBlob = new Blob(100, 100, 0, 4, id, Color.BLACK);
-			blobs.add(newBlob);
 			hBlobs.put(id, newBlob);
 		}
 		
+		Blob newBlob = new Blob(200, 200, 0, 4, 0, Color.RED);
+		hBlobs.put(0, newBlob);
+		
 		//adds all the particles currently in game to the Sparse Grid
-		for(Blob b: blobs)
+		for(Blob b: getBlobs())
 		{
 			for(Particle p: b.getParticles())
 				addParticle(p);
 		}
+		
+		manager = new ParticleManager();
 	}
 
 	/* (non-Javadoc)
@@ -68,12 +75,15 @@ public class OozeWars extends Game
 	@Override
 	protected void start() 
 	{
-		for(Blob b : blobs)
+		for(Blob b : getBlobs())
 		{
-			queue.schedule(0, b);
 			view.addSprite(b, 0);
 		}
 		
+		MAX_X = (int)(view.getWidth() / CELL_WIDTH);
+		MAX_Y = (int)(view.getHeight() / CELL_WIDTH);
+		
+		queue.schedule(0, manager);
 		super.start();
 	}
 
@@ -110,9 +120,9 @@ public class OozeWars extends Game
 	public void removePlayer(int player)
 	{
 		controls[player] = null;
-		for(Blob b : blobs)
+		for(Blob b : getBlobs())
 		{
-			if(b.getBlobID() == (byte)player)
+			if(b.getBlobID() == player)
 			{
 				ArrayList<Particle> theList = b.getParticles();
 				for(Particle p : theList)
@@ -121,7 +131,11 @@ public class OozeWars extends Game
 				break;
 			}
 		}
-
+		for(Blob b : getBlobs())
+		{
+			if(b.getBlobID() == player)
+				b = new Blob(b.getParticles());
+		}
 		// TODO: remove event listeners for dead player, check for win / loss conditions.
 		int playerLeft = 0;
 		if(--numPlayers == 1)
@@ -161,9 +175,9 @@ public class OozeWars extends Game
 	 * @return 
 	 * The Blobs currently in the game.
 	 */
-	public ArrayList<Blob> getBlobs() 
+	public Collection<Blob> getBlobs() 
 	{
-		return blobs;
+		return hBlobs.values();
 	}
 
 	/**
@@ -172,7 +186,6 @@ public class OozeWars extends Game
 	 */
 	public void setBlobs(ArrayList<Blob> blobs) 
 	{
-		this.blobs = blobs;
 	}
 	
 	/**
@@ -206,6 +219,9 @@ public class OozeWars extends Game
 			Location theLocation = locations.remove(aParticle);
 			ArrayList<Particle> theParticles = particles.get(theLocation);
 			theParticles.remove(aParticle);
+			
+			if( theParticles.isEmpty() )
+				particles.remove(theLocation);
 			
 			Particle anotherParticle = allParticles.remove(allParticles.size()-1);
 			allParticles.set(theLocation.index, anotherParticle);
@@ -565,7 +581,7 @@ public class OozeWars extends Game
 	 */
 	protected static class Location
 	{
-		public final int x, y;
+		public int x, y;
 		public int index;
 		public final boolean isLeft, isTop; 
 		
@@ -614,16 +630,45 @@ public class OozeWars extends Game
 		BitSet touchedSet;
 		public ParticleManager(Game game)
 		{
-			touchedSet = new BitSet(allParticles.size());
+			touchedSet = new BitSet(allParticles.size() * 2);
 			go(game, 0, 1);
 		}
 
 		@Override
 		public void go(Game game, long timestep, int priorityLevel) 
 		{
-			// TODO Finish implementing me
+			//TODO: figure out reasonable values for range, comfydist, etc
 			wipeClean();
-			updateNeighbors(.75);
+			updateNeighbors(40);
+			
+			wipeClean();
+			ArrayList<Particle> constituents;
+			
+			for(Blob b : getBlobs())
+			{	
+				int id = b.getBlobID();
+				
+				if( id == 0)
+					continue;
+
+				constituents = b.getParticles();
+				getConnectivity( b.getHead(), id, constituents, true );
+				
+			}
+			
+			Blob neutral = hBlobs.get(0);
+			constituents = neutral.getParticles();
+			getConnectivity( constituents.get(0), 0, constituents, true );
+			
+			findStragglers();
+			
+			for(Blob b : getBlobs())
+			{
+				b.go(game, timestep, priorityLevel);
+			}
+			
+			game.queue.schedule(priorityLevel, this);
+			
 		}
 		
 		private void wipeClean()
@@ -638,40 +683,151 @@ public class OozeWars extends Game
 		private void updateNeighbors( double range )
 		{
 			double squaredRange = range*range;
+			int x1, x2, y1, y2;
+			ArrayList<Particle> neighborhood;
+			Location sector = new Location(0,0,0,false,false);
+			
 			for(Particle p:  allParticles)
 			{
 				p.clearNeighbors();
 				
 				Location theLocation = locations.get(p);
-				ArrayList<Particle> neighborhood = particles.get(theLocation);
-				for(Particle op:  neighborhood)
+				if( theLocation.isLeft )
 				{
-					if( touchedSet.get(locations.get(op).index) )
+					x1 = Math.max(0, theLocation.x - 1);
+					x2 = theLocation.x;
+				}
+				else
+				{
+					x1 = theLocation.x;
+					x2 = Math.min(MAX_X, theLocation.x);
+				}
+				
+				if( theLocation.isTop )
+				{
+					y1 = Math.max(0, theLocation.y - 1);
+					y2 = theLocation.y;
+				}
+				else
+				{
+					y1 = theLocation.y;
+					y2 = Math.min(MAX_Y, theLocation.y);
+				}
+				
+				for(int x = x1; x <= x2; x++)
+					for(int y = y1; y <= y2; y++)
+					{
+						sector.x = x;
+						sector.y = y;
+
+						neighborhood = particles.get(sector);
+						for(Particle op:  neighborhood)
+						{
+							if( touchedSet.get(locations.get(op).index) )
+								continue;
+							
+							double dx = op.getX() - p.getX();
+							double dy = op.getY() - p.getY();
+							double squaredDistance = dx*dx + dy*dy;
+							if(squaredDistance < squaredRange)
+							{
+								p.addNeighbor(op);
+								
+								double distance = Math.sqrt(squaredDistance);
+								Blob blob = hBlobs.get( p.getBlobID() );
+								double bForce = blob.getBlobForce();
+								double comfy = blob.getComfyDistance();
+								
+								Blob oBlob = hBlobs.get( op.getBlobID() );
+								double obForce = oBlob.getBlobForce();
+								double oComfy = oBlob.getComfyDistance();
+								
+								p.applyForce(op, bForce, distance, dx, dy, comfy);						
+								op.applyForce(p, obForce, distance, dx, dy, oComfy);
+								
+								
+							}
+						}
+					}
+				
+				touchedSet.set(theLocation.index);
+			}
+		}
+		
+		/**
+		 * Does a BFS (starting at seed particle)
+		 * through all neighbors to decide which ones are still
+		 * part of the blob.
+		 * 
+		 * @param seed The particle from which to start the search
+		 * @return
+		 * The Linked List of Particles that are still part of the Blob.
+		 */
+		public void getConnectivity( Particle seed, int blobID, ArrayList<Particle> connected, boolean clear )
+		{
+			// need to check headless blobs in case they have been absorbed,
+			// so they won't just persist forever
+			if(clear)
+				connected.clear();
+			
+			if( seed.getBlobID() != blobID )
+			{
+				return;
+			}
+			
+			LinkedList<Particle> queue = new LinkedList<Particle>();
+			ArrayList<Particle> neighbors;
+			connected.add(seed);
+			
+			queue.add(seed);
+			touchedSet.set(locations.get(seed).index);
+			Particle currParticle;
+			int index;
+			
+			while( ! queue.isEmpty() )
+			{
+				connected.add( currParticle = queue.pop() );
+				neighbors = currParticle.getNeighbors();
+				
+				for( Particle p : neighbors )
+				{
+					// only looking for particles which can be absorbed
+					// into the current blob.
+					index = locations.get(p).index;
+					if( touchedSet.get(index) || currParticle.isEnemy(p) )
 						continue;
 					
-					double dx = op.getX() - p.getX();
-					double dy = op.getY() - p.getY();
-					double squaredDistance = dx*dx + dy*dy;
-					if(squaredDistance < squaredRange)
-					{
-						p.addNeighbor(op);
-						
-						double distance = Math.sqrt(squaredDistance);
-						Blob blob = hBlobs.get( p.getBlobID() );
-						double bForce = blob.getBlobForce();
-						double comfy = blob.getComfyDistance();
-						
-						Blob oBlob = hBlobs.get( op.getBlobID() );
-						double obForce = oBlob.getBlobForce();
-						double oComfy = oBlob.getComfyDistance();
-						
-						p.applyForce(op, bForce, distance, dx, dy, comfy);						
-						op.applyForce(p, obForce, distance, dx, dy, oComfy);
-						
-						touchedSet.set(theLocation.index);
-					}
+					p.setBlobID( blobID );
+					touchedSet.set(index);
+					queue.add(p);
 				}
 			}
+		}
+		
+		/**
+		 * Searches through list of particles looking for ones
+		 * which haven't been touched by checkConnectivity()
+		 * to add to new, neutral blobs.
+		 * 
+		 * @return
+		 * The list of new Blobs (if any) created.
+		 */
+		public void findStragglers()
+		{
+			//TODO: need to put this function outside of blob;
+			// otherwise stragglers won't be found
+			ArrayList<Particle> constituents = hBlobs.get(0).getParticles();
+			
+			for( int i = 0; i < allParticles.size(); ++i )
+			{
+				if( touchedSet.get(i) )
+					continue;
+				//TODO: create default settings for neutral blobs (and find
+				// better way to manage them)
+				
+				getConnectivity( allParticles.get(i), 0, constituents, false);
+			}
+
 		}
 	}
 }
