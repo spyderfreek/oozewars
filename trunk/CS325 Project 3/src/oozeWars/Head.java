@@ -74,7 +74,7 @@ public class Head extends Particle
 		}
 		if(pc.isFire())
 		{
-			
+			((OozeWars)game).removePlayer(blobID-1);
 		}
 		
 		applyFriction(1, 8, .95);
