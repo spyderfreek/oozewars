@@ -55,7 +55,6 @@ public class Head extends Particle
 	{
 		PlayerControls pc = ((OozeWars)game).getControls()[blobID-1];
 		
-		
 		if(pc.isDown())
 		{
 			vy += 5;
@@ -73,7 +72,7 @@ public class Head extends Particle
 			vx += 5;
 		}
 		if(pc.isFire())
-		{
+		{ //TODO:  Change this
 			((OozeWars)game).removePlayer(blobID-1);
 		}
 		

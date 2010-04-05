@@ -52,8 +52,21 @@ public class OozeWars extends Game
 		while(numPlayers-- > 0)
 		{
 			int id = numPlayers + 1;
-			Blob newBlob = new Blob(100, 100, 0, 4, id, Color.BLACK);
-			hBlobs.put(id, newBlob);
+			switch (id)
+			{
+				case(0x01):
+					Blob newBlob = new Blob(100, 100, 0, 4, id, Color.GREEN);
+					blobs.add(newBlob);
+					hBlobs.put(id, newBlob);
+					break;
+				case(0x02):
+					Blob newerBlob = new Blob(500, 500, 0, 4, id, Color.BLUE);
+					blobs.add(newerBlob);
+					hBlobs.put(id, newerBlob);
+					break;
+				default:
+					System.out.println("Invalid number of players");
+			}
 		}
 		
 		Blob newBlob = new Blob(200, 200, 0, 4, 0, Color.RED);
@@ -119,18 +132,18 @@ public class OozeWars extends Game
 	 */
 	public void removePlayer(int player)
 	{
-		controls[player] = null;
-		for(Blob b : getBlobs())
-		{
-			if(b.getBlobID() == player)
-			{
-				ArrayList<Particle> theList = b.getParticles();
-				for(Particle p : theList)
-					p.setDead(true);
-				b = new Blob(theList);
-				break;
-			}
-		}
+		//controls[player] = null;
+		Blob b = hBlobs.remove(player+1);
+		blobs.remove(b);
+		ArrayList<Particle> theList = b.getParticles();
+		
+		Particle head = theList.remove(0);
+		removeParticle(head);
+		
+		b = new Blob(theList);
+		
+		hBlobs.put(b.getBlobID(), b);
+		blobs.add(b);
 		for(Blob b : getBlobs())
 		{
 			if(b.getBlobID() == player)
@@ -339,7 +352,9 @@ public class OozeWars extends Game
 	 */
 	public static void main(String[] args) 
 	{
-		OozeWars game = new OozeWars(30, 2);
+		String answer = JOptionPane.showInputDialog("How many players?");
+		int n = Integer.parseInt(answer);
+		OozeWars game = new OozeWars(30, n);
 		View view = new View(game, 1, 800, 600);
 		JFrame frame = view.createFrame("Ooze Wars");
 		view.setKeystrokeFocus(frame);
@@ -668,6 +683,7 @@ public class OozeWars extends Game
 			
 			game.queue.schedule(priorityLevel, this);
 			
+			
 		}
 		
 		private void wipeClean()
@@ -677,7 +693,8 @@ public class OozeWars extends Game
 		
 		/*
 		 * Updates the Particle's list of neighboring Particles and applies a force to them.
-		 * @param range The maximum distance from this Particle to a neighbor
+		 * @param range 
+		 * :  The maximum distance from this Particle to a neighbor
 		 */
 		private void updateNeighbors( double range )
 		{
