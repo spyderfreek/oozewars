@@ -47,17 +47,19 @@ public class OozeWars extends Game
 		for(int i = 0; i < numPlayers; i++)
 			controls[i] = setPlayerControls(i);
 		
+		int numParticles = 4;
+		
 		while(numPlayers-- > 0)
 		{
 			int id = numPlayers + 1;
 			switch (id)
 			{
 				case(1):
-					Blob newBlob = new Blob(200, 200, 0, 4, id,this , Color.GREEN);
+					Blob newBlob = new Blob(200, 200, 0, numParticles, id,this , Color.GREEN);
 					hBlobs.put(id, newBlob);
 					break;
 				case(2):
-					Blob newerBlob = new Blob(500, 500, 0, 4, id, this, Color.BLUE);
+					Blob newerBlob = new Blob(500, 500, 0, numParticles, id, this, Color.BLUE);
 					hBlobs.put(id, newerBlob);
 					break;
 				default:
@@ -66,7 +68,8 @@ public class OozeWars extends Game
 		}
 		
 		ArrayList<Particle> neutralParticles = new ArrayList<Particle>();
-		neutralParticles.add(new Particle(300, 300, 4, Color.BLACK));
+		for( int i = 0; i < numParticles; i++ )
+			neutralParticles.add(new Particle(300 + random.nextInt(80) - 40, 300 + random.nextInt(80) - 40, 8, Color.BLACK));
 		hBlobs.put(0, new Blob(neutralParticles));
 		
 		//adds all the particles currently in game to the Sparse Grid
@@ -645,7 +648,7 @@ public class OozeWars extends Game
 		{
 			//TODO: figure out reasonable values for range, comfydist, etc
 			wipeClean();
-			updateNeighbors(40);
+			updateNeighbors(50);
 			
 			wipeClean();
 			ArrayList<Particle> constituents;
@@ -751,15 +754,15 @@ public class OozeWars extends Game
 								
 								double distance = Math.sqrt(squaredDistance);
 								Blob blob = hBlobs.get( p.getBlobID() );
-								double bForce = blob.getBlobForce() / range;
+								double bForce = blob.getBlobForce();
 								double comfy = blob.getComfyDistance();
 								
 								Blob oBlob = hBlobs.get( op.getBlobID() );
-								double obForce = oBlob.getBlobForce() / range;
+								double obForce = oBlob.getBlobForce();
 								double oComfy = oBlob.getComfyDistance();
 								
-								p.applyForce(op, bForce, distance, dx, dy, comfy);						
-								op.applyForce(p, obForce, distance, dx, dy, oComfy);
+								p.applyForce(op, bForce, distance, dx, dy, comfy, range);						
+								op.applyForce(p, obForce, distance, -dx, -dy, oComfy, range);
 								
 								
 							}
@@ -793,7 +796,6 @@ public class OozeWars extends Game
 			
 			LinkedList<Particle> queue = new LinkedList<Particle>();
 			ArrayList<Particle> neighbors;
-			connected.add(seed);
 			
 			queue.add(seed);
 			touchedSet.set(locations.get(seed).index);

@@ -19,6 +19,7 @@ public class Particle extends Entity implements Comparable<Particle>
 	protected int blobID;
 	protected BufferedImage image;
 	protected static int BLUR_WIDTH = 15;
+	private int halfWidth;
 
 	/**
 	 * Used to create a new Particle at a given location with a defined radius.
@@ -62,15 +63,16 @@ public class Particle extends Entity implements Comparable<Particle>
 	{
 		int newColor = color.getRGB();
 		int oldColor = this.color.getRGB();
-		this.color = new Color(ImageMath.mixColors(.3f, oldColor, newColor));
-		graphics.drawImage(image, (int)x, (int)y, null);
+		this.color = new Color(ImageMath.mixColors(.2f, oldColor, newColor));
+		graphics.drawImage(image, (int)x - halfWidth, (int)y - halfWidth, null);
 		
 		//graphics.drawImage(image, (int)x, (int)y, color, null);
 	}
 	
 	protected BufferedImage createImage()
 	{
-		int size = (int)((radius + BLUR_WIDTH) * 2);
+		halfWidth = (int)(radius + BLUR_WIDTH);
+		int size =  halfWidth * 2;
 		//BufferedImage img = new BufferedImage( size, size, BufferedImage.TYPE_BYTE_GRAY );
 		BufferedImage img = new BufferedImage( size, size, BufferedImage.TYPE_INT_ARGB );
 		Graphics2D g = img.createGraphics();
@@ -97,16 +99,16 @@ public class Particle extends Entity implements Comparable<Particle>
 	 * @param neighbor
 	 * :  The particle in which the force will be applied.
 	 */
-	public void applyForce(Particle neighbor, double k, double distance, double dx, double dy, double comfyDistance)
+	public void applyForce(Particle neighbor, double k, double distance, double dx, double dy, double comfyDistance, double range)
 	{
-		comfyDistance += radius;
+		comfyDistance += radius + neighbor.getRadius();
 		double x;
 		if(!this.isEnemy(neighbor))
-			x = comfyDistance - dx;
+			x = comfyDistance - distance;
 		else
-			x = dx;
+			x = range - distance;
 		
-		double force = k * x;
+		double force = k * x / ( range * distance + .01);
 		double accel = force * inverseMass;
 		double dvx = dx * accel;
 		double dvy = dy * accel;
