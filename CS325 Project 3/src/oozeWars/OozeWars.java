@@ -155,6 +155,7 @@ public class OozeWars extends Game
 					break;
 			}
 			JOptionPane.showMessageDialog(null, "Player " + playerLeft + " wins!");
+			
 		}
 		else if(numPlayers == 0) //There was a draw
 		{

@@ -1,6 +1,7 @@
 package oozeWars;
 
 import java.awt.Color;
+
 import oozeWars.OozeWars.PlayerControls;
 
 
@@ -51,9 +52,10 @@ public class Head extends Particle
 	 * @see oozeWars.Particle#go(oozeWars.Game, long, int)
 	 */
 	@Override
-	public void go(Game game, long timestep, int priorityLevel) 
+	public void go(Game game, long timestep, int priorityLevel, double minSpeed, double maxSpeed, double friction) 
 	{
-		PlayerControls pc = ((OozeWars)game).getControls()[blobID-1];
+		OozeWars ow = (OozeWars)game;
+		PlayerControls pc = ow.getControls()[blobID-1];
 		
 		if(pc.isDown())
 		{
@@ -73,12 +75,10 @@ public class Head extends Particle
 		}
 		if(pc.isFire())
 		{ //TODO:  Change this
-			((OozeWars)game).removePlayer(blobID-1);
+			ow.removePlayer(blobID-1);
 		}
 		
-		applyFriction(1, 8, .95);
-		
-		super.go(game, timestep, priorityLevel);
+		super.go(game, timestep, priorityLevel, minSpeed, maxSpeed, friction);
 	}
 	
 	

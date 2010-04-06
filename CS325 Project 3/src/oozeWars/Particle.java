@@ -90,8 +90,12 @@ public class Particle extends Entity implements Comparable<Particle>
 	{
 		x += vx;
 		y += vy;
-		// don't reschedule because parent blob is already being scheduled
-		//super.go(game, timestep, priorityLevel);
+	}
+	
+	public void go(Game game, long timestep, int priorityLevel, double minSpeed, double maxSpeed, double friction)
+	{
+		applyFriction(minSpeed, maxSpeed, friction);
+		go(game, timestep, priorityLevel);
 	}
 	
 	/**
@@ -102,14 +106,14 @@ public class Particle extends Entity implements Comparable<Particle>
 	public void applyForce(Particle neighbor, double k, double distance, double dx, double dy, double comfyDistance, double range)
 	{
 		comfyDistance += radius + neighbor.getRadius();
-		double cushion = .0000001;
+		/*double cushion = .0000001;
 		if( (distance < comfyDistance+cushion || distance > comfyDistance-cushion) && (!this.isEnemy(neighbor) || neighbor.getBlobID() == 0) )
 		{
 			this.vx = neighbor.getVX();
 			this.vy = neighbor.getVY();
 		}
 		else
-		{
+		{*/
 			double x;
 			if(!this.isEnemy(neighbor))
 				x = comfyDistance - distance;
@@ -122,7 +126,7 @@ public class Particle extends Entity implements Comparable<Particle>
 			double dvy = dy * accel;
 			
 			neighbor.push(dvx, dvy);
-		}
+		//}
 	}
 	
 	/**
