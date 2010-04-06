@@ -122,8 +122,6 @@ public class OozeWars extends Game
 			default:
 				throw new IllegalArgumentException("Invalid Player Count");
 		}
-		
-
 	}
 	
 	/**
@@ -146,14 +144,17 @@ public class OozeWars extends Game
 
 		// TODO: remove event listeners for dead player, check for win / loss conditions.
 		int playerLeft = 0;
+		Collection<Blob> blobsLeft = getBlobs();
+		
 		if(--numPlayers == 1)
 		{
-			for(int i = 0; i < controls.length; i++)
+			for(Blob blob : blobsLeft)
 			{
-				if(controls[i] != null)
-					playerLeft = i+1;
+				playerLeft = blob.getBlobID();
+				if(playerLeft != 0)
+					break;
 			}
-			JOptionPane.showMessageDialog(null, "Congratulations player " + playerLeft + ", you won!");
+			JOptionPane.showMessageDialog(null, "Player " + playerLeft + " wins!");
 		}
 		else if(numPlayers == 0) //There was a draw
 		{
