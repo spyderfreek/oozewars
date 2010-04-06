@@ -174,6 +174,11 @@ public class Particle extends Entity implements Comparable<Particle>
 	public boolean isEnemy(Particle other)
 	{
 		int id = other.getBlobID();
+		return isEnemy(id);
+	}
+	
+	public boolean isEnemy( int id )
+	{
 		return ( id != blobID && id != 0 );
 	}
 	

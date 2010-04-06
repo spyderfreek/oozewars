@@ -788,7 +788,7 @@ public class OozeWars extends Game
 			if(clear)
 				connected.clear();
 			
-			if( seed.getBlobID() != blobID )
+			if( seed.isEnemy(blobID) )
 			{
 				return;
 			}
