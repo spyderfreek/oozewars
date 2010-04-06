@@ -10,8 +10,8 @@ public class Blob extends Entity
 	private ArrayList<Particle> particles;
 	private Head head;
 	private Color color;
-	private double orientation, minSpeed = .5, maxSpeed = 8, friction = .9, accel, health = 0, blobForce = .6;
-	private double comfyDistance = 20;
+	private double orientation, minSpeed = .5, maxSpeed = 8, friction = .9, accel, health = 0, blobForce = 4;
+	private double comfyDistance = 10;
 	private int blobID;
 	
 	/**
