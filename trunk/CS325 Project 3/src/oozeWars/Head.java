@@ -33,10 +33,10 @@ public class Head extends Particle
 	 * than other particles.
 	 */
 	@Override
-	public void applyForce(Particle neighbor, double k, double distance, double dx, double dy, double comfyDistance)
+	public void applyForce(Particle neighbor, double k, double distance, double dx, double dy, double comfyDistance, double range)
 	{
 		k *= 1.5;
-		super.applyForce(neighbor, k, distance, dx, dy, comfyDistance);
+		super.applyForce(neighbor, k, distance, dx, dy, comfyDistance, range);
 	}
 	
 	/**
