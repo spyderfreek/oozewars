@@ -10,8 +10,8 @@ public class Blob extends Entity
 	private ArrayList<Particle> particles;
 	private Head head;
 	private Color color;
-	private double orientation, minSpeed, maxSpeed, friction = .9, accel, health = 0, blobForce = .05;
-	private double comfyDistance = 20;
+	private double orientation, minSpeed, maxSpeed, friction = .9, accel, health = 0, blobForce = 15;
+	private double comfyDistance = 15;
 	private int blobID;
 	
 	/**
@@ -38,13 +38,13 @@ public class Blob extends Entity
 		particles = new ArrayList<Particle>();
 		
 		//TODO:  Figure out default size for head
-		head = new Head(x, y, 7, color, orientation);
+		head = new Head(x, y, 8, color, orientation);
 		head.setBlobID(this.blobID);
 		particles.add(head);
 		
 		while(numParticles-- > 0)
 		{
-			Particle aParticle = new Particle(x + game.random.nextInt(30) - 15, y + game.random.nextInt(30)-15, 3, color);
+			Particle aParticle = new Particle(x + game.random.nextDouble()*80 - 40, y + game.random.nextDouble()*80-40, 6, color);
 			aParticle.setBlobID(blobID);
 			particles.add(aParticle);
 		}
@@ -61,7 +61,7 @@ public class Blob extends Entity
 	public Blob( ArrayList<Particle> particles )
 	{
 		super(0,0);
-		color = Color.BLUE;
+		color = Color.BLACK;
 		orientation = 0;
 		this.particles = particles;
 		head = null;
@@ -134,7 +134,7 @@ public class Blob extends Entity
 			for(Particle p : particles)
 			{
 				p.go(game, timestep, priorityLevel);
-				//g.addParticle(p);
+				g.addParticle(p);
 			}
 		}
 		
