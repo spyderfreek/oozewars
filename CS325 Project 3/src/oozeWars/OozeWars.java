@@ -9,7 +9,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
-
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
@@ -54,11 +53,11 @@ public class OozeWars extends Game
 			switch (id)
 			{
 				case(1):
-					Blob newBlob = new Blob(100, 100, 0, 4, id, Color.GREEN);
+					Blob newBlob = new Blob(100, 100, 0, 4, id,this , Color.GREEN);
 					hBlobs.put(id, newBlob);
 					break;
 				case(2):
-					Blob newerBlob = new Blob(500, 500, 0, 4, id, Color.BLUE);
+					Blob newerBlob = new Blob(500, 500, 0, 4, id, this, Color.BLUE);
 					hBlobs.put(id, newerBlob);
 					break;
 				default:
