@@ -26,6 +26,7 @@ public class Head extends Particle
 	public Head(double x, double y, double radius, Color color, double orientation) 
 	{
 		super(x, y, radius, color);
+		inverseMass = 0;
 		this.orientation = orientation;
 	}
 	
@@ -52,7 +53,8 @@ public class Head extends Particle
 	 * @see oozeWars.Particle#go(oozeWars.Game, long, int)
 	 */
 	@Override
-	public void go(Game game, long timestep, int priorityLevel, double minSpeed, double maxSpeed, double friction) 
+	public void go(Game game, long timestep, int priorityLevel, 
+			double minSpeed, double maxSpeed, double friction )
 	{
 		OozeWars ow = (OozeWars)game;
 		PlayerControls pc = ow.getControls()[blobID-1];

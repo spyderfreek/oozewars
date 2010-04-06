@@ -650,7 +650,7 @@ public class OozeWars extends Game
 		{
 			//TODO: figure out reasonable values for range, comfydist, etc
 			wipeClean();
-			updateNeighbors(50);
+			updateNeighbors(60);
 			
 			wipeClean();
 			ArrayList<Particle> constituents;

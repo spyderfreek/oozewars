@@ -13,8 +13,8 @@ import com.jhlabs.image.ImageUtils;
 
 public class Particle extends Entity implements Comparable<Particle>
 {
-	private double radius, inverseMass;
-	private ArrayList<Particle> neighbors;
+	protected double radius, inverseMass;
+	protected ArrayList<Particle> neighbors;
 	Color color;
 	protected int blobID;
 	protected BufferedImage image;
@@ -92,7 +92,8 @@ public class Particle extends Entity implements Comparable<Particle>
 		y += vy;
 	}
 	
-	public void go(Game game, long timestep, int priorityLevel, double minSpeed, double maxSpeed, double friction)
+	public void go(Game game, long timestep, int priorityLevel, 
+			double minSpeed, double maxSpeed, double friction )
 	{
 		applyFriction(minSpeed, maxSpeed, friction);
 		go(game, timestep, priorityLevel);
@@ -106,24 +107,24 @@ public class Particle extends Entity implements Comparable<Particle>
 	public void applyForce(Particle neighbor, double k, double distance, double dx, double dy, double comfyDistance, double range)
 	{
 		comfyDistance += radius + neighbor.getRadius();
-		/*double cushion = .0000001;
-		if( (distance < comfyDistance+cushion || distance > comfyDistance-cushion) && (!this.isEnemy(neighbor) || neighbor.getBlobID() == 0) )
-		{
-			this.vx = neighbor.getVX();
-			this.vy = neighbor.getVY();
-		}
-		else
-		{*/
+		double cushion = 5;
+
 			double x;
 			if(!this.isEnemy(neighbor))
+			{
 				x = comfyDistance - distance;
+				if( Math.abs(x) < cushion )
+					return;
+			}
 			else
 				x = range - distance;
 			
-			double force = k * x / ( range * distance + .01);
-			double accel = force * inverseMass;
+			double force = k * x / ( distance + .01);
+			double accel = force * neighbor.getInverseMass();
 			double dvx = dx * accel;
 			double dvy = dy * accel;
+			//dvx -= neighbor.getVX() * 0.005;
+			//dvy -= neighbor.getVY() * 0.005;
 			
 			neighbor.push(dvx, dvy);
 		//}
@@ -195,6 +196,10 @@ public class Particle extends Entity implements Comparable<Particle>
 		return radius;
 	}
 	
+	public double getInverseMass() {
+		return inverseMass;
+	}
+
 	/**
 	 * Compares this Particle's radius to the other Particle's radius.
 	 * @return
