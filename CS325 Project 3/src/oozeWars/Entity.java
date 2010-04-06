@@ -88,6 +88,16 @@ public abstract class Entity implements Sprite, Agent
 		return y;
 	}
 	
+	public double getVX()
+	{
+		return vx;
+	}
+	
+	public double getVY()
+	{
+		return vy;
+	}
+	
 	public void push(double dvx, double dvy)
 	{
 		vx += dvx;

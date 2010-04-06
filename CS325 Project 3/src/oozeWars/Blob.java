@@ -11,7 +11,7 @@ public class Blob extends Entity
 	private Head head;
 	private Color color;
 	private double orientation, minSpeed, maxSpeed, friction = .9, accel, health = 0, blobForce = 15;
-	private double comfyDistance = 15;
+	private double comfyDistance = .5;
 	private int blobID;
 	
 	/**
@@ -136,6 +136,7 @@ public class Blob extends Entity
 				p.go(game, timestep, priorityLevel);
 				g.addParticle(p);
 			}
+			draw( (Graphics2D)g.view.getGraphics(), game );
 		}
 		
 		if(head != null)
@@ -170,11 +171,16 @@ public class Blob extends Entity
 				biggest = theOther;
 		}
 		//We must remove a Particle with the same sized radius as the biggest.. doesn't necessarily
-		//have to be the particle that we found as the biggest.
+		//have to be the Particle that we found as the biggest.
 		it = particles.iterator();
 		while(it.hasNext())
 		{
 			Particle theOther = it.next();
+			if(theOther instanceof Head && it.hasNext())
+				theOther = it.next();
+			else
+				return null;
+			
 			if(biggest.compareTo(theOther) == 0)
 			{
 				it.remove();

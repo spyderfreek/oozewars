@@ -761,10 +761,8 @@ public class OozeWars extends Game
 								double obForce = oBlob.getBlobForce();
 								double oComfy = oBlob.getComfyDistance();
 								
-								p.applyForce(op, bForce, distance, dx, dy, comfy, range);						
+								p.applyForce(op, bForce, distance, dx, dy, comfy, range);	
 								op.applyForce(p, obForce, distance, -dx, -dy, oComfy, range);
-								
-								
 							}
 						}
 					}
@@ -843,7 +841,6 @@ public class OozeWars extends Game
 				
 				getConnectivity( allParticles.get(i), 0, constituents, false);
 			}
-
 		}
 	}
 }
