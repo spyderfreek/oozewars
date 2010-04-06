@@ -650,7 +650,7 @@ public class OozeWars extends Game
 		{
 			//TODO: figure out reasonable values for range, comfydist, etc
 			wipeClean();
-			updateNeighbors(60);
+			updateNeighbors(50);
 			
 			wipeClean();
 			ArrayList<Particle> constituents;
@@ -692,6 +692,12 @@ public class OozeWars extends Game
 			touchedSet.clear();
 		}
 		
+		private void clearNeighbors()
+		{
+			for( Particle p : allParticles )
+				p.getNeighbors().clear();
+		}
+		
 		/*
 		 * Updates the Particle's list of neighboring Particles and applies a force to them.
 		 * @param range 
@@ -704,35 +710,37 @@ public class OozeWars extends Game
 			ArrayList<Particle> neighborhood;
 			Location sector = new Location(0,0,0,false,false);
 			
+			clearNeighbors();
+			
 			for(Particle p:  allParticles)
 			{
-				p.clearNeighbors();
+				//p.clearNeighbors();
 				
 				Location theLocation = locations.get(p);
 				if( theLocation.isLeft )
 				{
 					x1 = Math.max(0, theLocation.x - 1);
-					x2 = theLocation.x;
+					x2 = theLocation.x + 1;
 				}
 				else
 				{
 					x1 = theLocation.x;
-					x2 = Math.min(MAX_X, theLocation.x + 1);
+					x2 = Math.min(MAX_X + 1, theLocation.x + 2);
 				}
 				
 				if( theLocation.isTop )
 				{
 					y1 = Math.max(0, theLocation.y - 1);
-					y2 = theLocation.y;
+					y2 = theLocation.y + 1;
 				}
 				else
 				{
 					y1 = theLocation.y;
-					y2 = Math.min(MAX_Y, theLocation.y + 1);
+					y2 = Math.min(MAX_Y + 1, theLocation.y + 2);
 				}
 				
-				for(int x = x1; x <= x2; x++)
-					for(int y = y1; y <= y2; y++)
+				for(int x = x1; x < x2; x++)
+					for(int y = y1; y < y2; y++)
 					{
 						sector.x = x;
 						sector.y = y;
@@ -753,6 +761,7 @@ public class OozeWars extends Game
 							if(squaredDistance < squaredRange)
 							{
 								p.addNeighbor(op);
+								op.addNeighbor(p);
 								
 								double distance = Math.sqrt(squaredDistance);
 								Blob blob = hBlobs.get( p.getBlobID() );
