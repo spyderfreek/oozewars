@@ -29,7 +29,7 @@ public class Blob extends Entity
 	 * @param color
 	 * :  The color the Blob will be
 	 */
-	public Blob(double x, double y, double orientation, int numParticles, int blobID, Color color) 
+	public Blob(double x, double y, double orientation, int numParticles, int blobID, Game game, Color color) 
 	{
 		super(x, y);
 		this.color = color;
@@ -44,7 +44,7 @@ public class Blob extends Entity
 		
 		while(numParticles-- > 0)
 		{
-			Particle aParticle = new Particle(x + Math.random()*10-5, y + Math.random()*10-5, 3, color);
+			Particle aParticle = new Particle(x + game.random.nextInt(3)*10-5, y + game.random.nextInt(3)*10-5, 3, color);
 			aParticle.setBlobID(blobID);
 			particles.add(aParticle);
 		}
