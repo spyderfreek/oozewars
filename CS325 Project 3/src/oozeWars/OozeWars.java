@@ -53,7 +53,7 @@ public class OozeWars extends Game
 			switch (id)
 			{
 				case(1):
-					Blob newBlob = new Blob(100, 100, 0, 4, id,this , Color.GREEN);
+					Blob newBlob = new Blob(200, 200, 0, 4, id,this , Color.GREEN);
 					hBlobs.put(id, newBlob);
 					break;
 				case(2):
@@ -66,6 +66,7 @@ public class OozeWars extends Game
 		}
 		
 		ArrayList<Particle> neutralParticles = new ArrayList<Particle>();
+		neutralParticles.add(new Particle(300, 300, 4, Color.BLACK));
 		hBlobs.put(0, new Blob(neutralParticles));
 		
 		//adds all the particles currently in game to the Sparse Grid
@@ -644,7 +645,7 @@ public class OozeWars extends Game
 		{
 			//TODO: figure out reasonable values for range, comfydist, etc
 			wipeClean();
-			updateNeighbors(20);
+			updateNeighbors(40);
 			
 			wipeClean();
 			ArrayList<Particle> constituents;
@@ -672,6 +673,9 @@ public class OozeWars extends Game
 			{
 				b.go(game, timestep, priorityLevel);
 			}
+			
+			/*for(Particle p : allParticles)
+				addParticle(p);*/
 			
 			game.queue.schedule(priorityLevel, this);
 			
