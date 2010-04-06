@@ -11,7 +11,7 @@ public class Blob extends Entity
 	private Head head;
 	private Color color;
 	private double orientation, minSpeed, maxSpeed, friction = .9, accel, health = 0, blobForce = 15;
-	private double comfyDistance = .5;
+	private double comfyDistance = 10;
 	private int blobID;
 	
 	/**
@@ -82,6 +82,11 @@ public class Blob extends Entity
 		return (int)blobID;
 	}
 	
+	public double getFriction()
+	{
+		return friction;
+	}
+	
 	/**
 	 * Returns the Blob's current ID number.
 	 * @return
@@ -133,15 +138,16 @@ public class Blob extends Entity
 		{
 			for(Particle p : particles)
 			{
-				p.go(game, timestep, priorityLevel);
+				if(p instanceof Head)
+					((Head)p).go(game, timestep, priorityLevel, minSpeed, maxSpeed, friction);
+				else
+					p.go(game, timestep, priorityLevel, minSpeed, maxSpeed, friction);
 				g.addParticle(p);
 			}
-			draw( (Graphics2D)g.view.getGraphics(), game );
 		}
 		
 		if(head != null)
 			updateHealth();
-
 	}
 	
 	
