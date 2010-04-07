@@ -37,7 +37,7 @@ public class Head extends Particle
 	@Override
 	public void applyForce(Particle neighbor, double k, double distance, double dx, double dy, double comfyDistance, double range)
 	{
-		k *= 1.5;
+		k *= 100;
 		super.applyForce(neighbor, k, distance, dx, dy, comfyDistance, range);
 	}
 	
@@ -85,7 +85,15 @@ public class Head extends Particle
 		}
 		if(pc.isFire())
 		{ //TODO:  Change this
-			ow.removePlayer(blobID-1);
+			Blob thisBlob = null;
+			for(Blob b : ow.getBlobs())
+			{
+				if(b.getBlobID() == blobID)
+					thisBlob = b;
+			}
+			
+			if(thisBlob != null)
+				thisBlob.shoot();
 		}
 		
 		super.go(game, timestep, priorityLevel, minSpeed, maxSpeed, friction);
