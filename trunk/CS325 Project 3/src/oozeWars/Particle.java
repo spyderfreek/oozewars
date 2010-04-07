@@ -119,7 +119,13 @@ public class Particle extends Entity implements Comparable<Particle>
 			else
 				x = range - distance;
 			
-			double force = k * x / ( distance + .01);
+			if(comfyDistance+.00000001 > distance)
+			{
+				neighbor.push(0, 0);
+				return;
+			}
+			
+			double force = k * x * 5 / ( distance + .01);
 			double accel = force * neighbor.getInverseMass();
 			double dvx = dx * accel;
 			double dvy = dy * accel;

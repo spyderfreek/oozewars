@@ -10,8 +10,8 @@ public class Blob extends Entity
 	private ArrayList<Particle> particles;
 	private Head head;
 	private Color color;
-	private double orientation, minSpeed = .5, maxSpeed = 8, friction = .9, accel, health = 0, blobForce = 4;
-	private double comfyDistance = 5;
+	private double orientation, minSpeed = .5, maxSpeed = 8, friction = .9, accel, health = 0, blobForce = 10;
+	private double comfyDistance = 10;
 	private int blobID;
 	
 	/**
@@ -137,6 +137,7 @@ public class Blob extends Entity
 			setDead(true);
 		else
 		{
+			setParticlesColor();
 			for(Particle p : particles)
 			{
 				p.go(game, timestep, priorityLevel, minSpeed, maxSpeed, friction);
@@ -192,7 +193,7 @@ public class Blob extends Entity
 			}
 		}
 		
-		
+		head.calcOrientation();
 		double bigRad = biggest.getRadius();
 		return new Bullet(head.getX()+bigRad, head.getY()+bigRad, bigRad, color, head.getOrientation());
 	}
@@ -303,7 +304,12 @@ public class Blob extends Entity
 	{
 		return comfyDistance;
 	}
-
+	
+	public void setParticlesColor()
+	{
+		for(Particle p : particles)
+			p.color = color;
+	}
 	
 	/**
 	 * Uses the collection of particles in this blob to find its new health.
@@ -313,6 +319,11 @@ public class Blob extends Entity
 		health = head.getRadius();
 		for(Particle p:  particles)
 			health += p.getRadius();
+	}
+	
+	public void setParticles(ArrayList<Particle> particles)
+	{
+		this.particles = particles;
 	}
 	
 	public ArrayList<Particle> getParticles()
