@@ -55,7 +55,7 @@ public class OozeWars extends Game
 			switch (id)
 			{
 				case(1):
-					Blob newBlob = new Blob(200, 200, 0, numParticles, id,this , Color.GREEN);
+					Blob newBlob = new Blob(200, 200, 0, numParticles, id, this , Color.GREEN);
 					hBlobs.put(id, newBlob);
 					break;
 				case(2):
