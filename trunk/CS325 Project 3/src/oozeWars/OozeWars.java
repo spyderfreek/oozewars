@@ -21,7 +21,7 @@ public class OozeWars extends Game
 	private HashMap<Particle, Location> locations;
 	private HashMap<Location, ArrayList<Particle>> particles;
 	private ParticleManager manager;
-	private final double CELL_WIDTH = 40;
+	private final double CELL_WIDTH = 80;
 	private int MAX_X, MAX_Y;
 	
 	/**
@@ -47,7 +47,7 @@ public class OozeWars extends Game
 		for(int i = 0; i < numPlayers; i++)
 			controls[i] = setPlayerControls(i);
 		
-		int numParticles = 4;
+		int numParticles = 100;
 		
 		while(numPlayers-- > 0)
 		{
@@ -640,6 +640,8 @@ public class OozeWars extends Game
 	private class ParticleManager implements Agent
 	{
 		BitSet touchedSet;
+		private final double RANGE = CELL_WIDTH * 0.5;
+		
 		public ParticleManager()
 		{
 			touchedSet = new BitSet(allParticles.size() * 2);
@@ -650,7 +652,7 @@ public class OozeWars extends Game
 		{
 			//TODO: figure out reasonable values for range, comfydist, etc
 			wipeClean();
-			updateNeighbors(50);
+			updateNeighbors( RANGE );
 			
 			wipeClean();
 			ArrayList<Particle> constituents;
