@@ -639,8 +639,8 @@ public class OozeWars extends Game
 	
 	private class ParticleManager implements Agent
 	{
-		BitSet touchedSet;
-		private final double RANGE = CELL_WIDTH * 0.5;
+		private BitSet touchedSet;
+		private final double RANGE = CELL_WIDTH * 0.75;
 		
 		public ParticleManager()
 		{
@@ -843,7 +843,8 @@ public class OozeWars extends Game
 		 */
 		public void findStragglers()
 		{
-			ArrayList<Particle> constituents = hBlobs.get(0).getParticles();
+			Blob neutral = hBlobs.get(0);
+			ArrayList<Particle> constituents = neutral.getParticles();
 			
 			for( int i = 0; i < allParticles.size(); ++i )
 			{
