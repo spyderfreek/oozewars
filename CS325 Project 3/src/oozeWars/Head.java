@@ -41,6 +41,14 @@ public class Head extends Particle
 		super.applyForce(neighbor, k, distance, dx, dy, comfyDistance, range);
 	}
 	
+	public void calcOrientation()
+	{
+		if( vx * vx + vy * vy < .001 )
+			return;
+		
+		orientation = Math.atan2(vy, vx);
+	}
+	
 	/**
 	 * @return
 	 * The current orientation (in Degrees) of the Head
