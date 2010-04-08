@@ -107,33 +107,26 @@ public class Particle extends Entity implements Comparable<Particle>
 	public void applyForce(Particle neighbor, double k, double distance, double dx, double dy, double comfyDistance, double range)
 	{
 		comfyDistance += radius + neighbor.getRadius();
-		double cushion = 5;
+		double cushion = 1;
 
-			double x;
-			if(!this.isEnemy(neighbor))
-			{
-				x = comfyDistance - distance;
-				if( Math.abs(x) < cushion )
-					return;
-			}
-			else
-				x = range - distance;
-			
-			if(comfyDistance+.00000001 > distance)
-			{
-				neighbor.push(0, 0);
+		double x;
+		if(!this.isEnemy(neighbor))
+		{
+			x = comfyDistance - distance;
+			if( Math.abs(x) < cushion )
 				return;
-			}
-			
-			double force = k * x * 5 / ( distance + .01);
-			double accel = force * neighbor.getInverseMass();
-			double dvx = dx * accel;
-			double dvy = dy * accel;
-			//dvx -= neighbor.getVX() * 0.005;
-			//dvy -= neighbor.getVY() * 0.005;
-			
-			neighbor.push(dvx, dvy);
-		//}
+		}
+		else
+			x = range - distance;
+		
+		double force = k * x / ( distance + .01);
+		double accel = force * neighbor.getInverseMass();
+		double dvx = dx * accel;
+		double dvy = dy * accel;
+		//dvx -= neighbor.getVX() * 0.005;
+		//dvy -= neighbor.getVY() * 0.005;
+		
+		neighbor.push(dvx, dvy);
 	}
 	
 	/**

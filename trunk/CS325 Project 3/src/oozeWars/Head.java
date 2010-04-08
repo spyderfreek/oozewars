@@ -37,8 +37,8 @@ public class Head extends Particle
 	@Override
 	public void applyForce(Particle neighbor, double k, double distance, double dx, double dy, double comfyDistance, double range)
 	{
-		k *= 30;
-		range *= 1.1;
+		k *= 100;
+		range *= radius/3;
 		comfyDistance *= .5;
 		super.applyForce(neighbor, k, distance, dx, dy, comfyDistance, range);
 	}
@@ -53,7 +53,7 @@ public class Head extends Particle
 	
 	/**
 	 * @return
-	 * The current orientation (in Degrees) of the Head
+	 * The current orientation (in Radians) of the Head
 	 */
 	public double getOrientation()
 	{
