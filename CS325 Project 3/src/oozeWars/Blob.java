@@ -11,7 +11,7 @@ public class Blob extends Entity
 	private Head head;
 	private Color color;
 	private double orientation, minSpeed = .5, maxSpeed = 10, friction = .9, accel, health = 0, blobForce = 10;
-	private double comfyDistance = 20;
+	private double comfyDistance = 15;
 	private int blobID;
 	
 	/**

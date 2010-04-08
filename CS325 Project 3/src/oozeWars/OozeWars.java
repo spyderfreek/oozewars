@@ -69,7 +69,7 @@ public class OozeWars extends Game
 		
 		ArrayList<Particle> neutralParticles = new ArrayList<Particle>();
 		for( int i = 0; i < numParticles; i++ )
-			neutralParticles.add(new Particle(450 + random.nextInt(80) - 40, 450 + random.nextInt(80) - 40, 8, Color.WHITE));
+			neutralParticles.add(new Particle(700 + random.nextInt(80) - 40, 100 + random.nextInt(80) - 40, 8, Color.WHITE));
 		hBlobs.put(0, new Blob(neutralParticles));
 		
 		//adds all the particles currently in game to the Sparse Grid
