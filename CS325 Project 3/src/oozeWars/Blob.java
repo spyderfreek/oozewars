@@ -10,8 +10,8 @@ public class Blob extends Entity
 	private ArrayList<Particle> particles;
 	private Head head;
 	private Color color;
-	private double orientation, minSpeed = .5, maxSpeed = 8, friction = .9, accel, health = 0, blobForce = 10;
-	private double comfyDistance = 10;
+	private double orientation, minSpeed = .5, maxSpeed = 10, friction = .9, accel, health = 0, blobForce = 10;
+	private double comfyDistance = 20;
 	private int blobID;
 	
 	/**
@@ -38,14 +38,14 @@ public class Blob extends Entity
 		particles = new ArrayList<Particle>();
 		
 		//TODO:  Figure out default size for head
-		head = new Head(x, y, 8, color, orientation);
+		head = new Head(x, y, 20, color, orientation);
 		head.setBlobID(this.blobID);
 		particles.add(head);
 		
 		while(numParticles-- > 0)
 		{
 			Particle aParticle = new Particle(x + game.random.nextDouble()*80 - 40, 
-					y +	game.random.nextDouble()*80-40, game.random.nextDouble()*8, color);
+					y +	game.random.nextDouble()*80-40, game.random.nextInt(10)<<1, color);
 			aParticle.setBlobID(blobID);
 			particles.add(aParticle);
 		}
@@ -160,7 +160,7 @@ public class Blob extends Entity
 	public Bullet shoot()
 	{
 		Iterator<Particle> it = particles.iterator();
-		if(!it.hasNext())
+		if( !it.hasNext() )
 			return null;
 		Particle biggest = it.next();
 		

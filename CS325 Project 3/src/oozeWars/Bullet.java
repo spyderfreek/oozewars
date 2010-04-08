@@ -25,13 +25,16 @@ public class Bullet extends Particle
 	{
 		super(x, y, radius, color);
 		this.orientation = orientation;
+		vx = 20*Math.cos(orientation);
+		vy = 20*Math.sin(orientation);
 		damage = radius*1.5;
 	}
 	
 	//TODO:  Implement move() and explode()
-	public void move()
+	@Override
+	public void go(Game game, long timestep, int priorityLevel)
 	{
-		
+		super.go(game, timestep, priorityLevel);
 	}
 	
 	public void explode()
