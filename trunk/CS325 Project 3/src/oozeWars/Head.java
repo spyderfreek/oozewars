@@ -21,7 +21,7 @@ public class Head extends Particle
 	 * @param radius
 	 * :  The radius of the Head.
 	 * @param orientation
-	 * :  The angle at which the head will be facing when it first appears (in Degrees).
+	 * :  The angle at which the head will be facing when it first appears (in Radians).
 	 */
 	public Head(double x, double y, double radius, Color color, double orientation) 
 	{
@@ -71,27 +71,30 @@ public class Head extends Particle
 		
 		if(pc.isDown())
 		{
-			vy += 5;
+			vy += 1;
 		}
 		if(pc.isUp())
 		{
-			vy -= 5;
+			vy -= 1;
 		}
 		if(pc.isLeft())
 		{
-			vx -= 5;
+			vx -= 1;
 		}
 		if(pc.isRight())
 		{
-			vx += 5;
+			vx += 1;
 		}
 		if(pc.isFire())
-		{ //TODO:  Change this
+		{
 			Blob thisBlob = null;
 			for(Blob b : ow.getBlobs())
 			{
 				if(b.getBlobID() == blobID)
+				{
 					thisBlob = b;
+					break;
+				}
 			}
 			
 			if(thisBlob != null)
