@@ -223,20 +223,10 @@ public class OozeWars extends Game
 	 * :  The particle that will be removed from the Sparse Grid.
 	 */
 	public void removeParticle(Particle aParticle)
-	{
-		if(locations.containsKey(aParticle))
-		{
-			Location theLocation = locations.remove(aParticle);
-			ArrayList<Particle> theParticles = particles.get(theLocation);
-			theParticles.remove(aParticle);
-			
-			if( theParticles.isEmpty() )
-				particles.remove(theLocation);
-			
-			Particle anotherParticle = allParticles.remove(allParticles.size()-1);
-			allParticles.set(theLocation.index, anotherParticle);
-			locations.get(anotherParticle).index = theLocation.index;
-		}
+	{	
+		Particle anotherParticle = allParticles.remove(allParticles.size()-1);
+		anotherParticle.setIndex(aParticle.getIndex());
+		allParticles.set(aParticle.getIndex(), anotherParticle);
 	}
 	
 	/**
@@ -247,20 +237,8 @@ public class OozeWars extends Game
 	 */
 	public void addParticle(Particle aParticle)
 	{
-		if(locations.containsKey(aParticle))
-			removeParticle(aParticle);
-		
-		Location theLocation = getLocation(aParticle);
-		
+		aParticle.setIndex(allParticles.size());
 		allParticles.add(aParticle);
-		locations.put(aParticle, theLocation);
-		
-		if( ! particles.containsKey(theLocation) )
-		{
-			particles.put(theLocation, new ArrayList<Particle>());
-		}
-		
-		particles.get(theLocation).add(aParticle);
 	}
 
 	/**
@@ -667,11 +645,6 @@ public class OozeWars extends Game
 				constituents = b.getParticles();
 				getConnectivity( b.getHead(), id, constituents, true );
 			}
-			
-			Blob neutral = hBlobs.get(0);
-			constituents = neutral.getParticles();
-			if( ! constituents.isEmpty() )
-				getConnectivity( constituents.get(0), 0, constituents, true );
 				
 			findStragglers();
 			
@@ -765,7 +738,7 @@ public class OozeWars extends Game
 			ArrayList<Particle> neighbors;
 			
 			queue.add(seed);
-			touchedSet.set(locations.get(seed).index);
+			touchedSet.set(seed.getIndex());
 			Particle currParticle;
 			int index;
 			
@@ -778,7 +751,7 @@ public class OozeWars extends Game
 				{
 					// only looking for particles which can be absorbed
 					// into the current blob.
-					index = locations.get(p).index;
+					index = p.getIndex();
 					if( touchedSet.get(index) || currParticle.isEnemy(p) )
 						continue;
 					
@@ -801,6 +774,7 @@ public class OozeWars extends Game
 		{
 			Blob neutral = hBlobs.get(0);
 			ArrayList<Particle> constituents = neutral.getParticles();
+			constituents.clear();
 			
 			for( int i = 0; i < allParticles.size(); ++i )
 			{
