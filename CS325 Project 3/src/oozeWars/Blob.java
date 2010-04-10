@@ -62,7 +62,7 @@ public class Blob extends Entity
 	public Blob( ArrayList<Particle> particles )
 	{
 		super(0,0);
-		color = Color.BLACK;
+		color = Color.WHITE;
 		orientation = 0;
 		this.particles = particles;
 		head = null;
@@ -137,7 +137,6 @@ public class Blob extends Entity
 			setDead(true);
 		else
 		{
-			setParticlesColor();
 			for(Particle p : particles)
 			{
 				p.go(game, timestep, priorityLevel, minSpeed, maxSpeed, friction);

@@ -19,6 +19,7 @@ public class Particle extends Entity implements Comparable<Particle>
 	protected int blobID;
 	protected BufferedImage image;
 	protected static int BLUR_WIDTH = 15;
+	protected int index;
 	private int halfWidth;
 
 	/**
@@ -37,6 +38,7 @@ public class Particle extends Entity implements Comparable<Particle>
 		this.radius = radius;
 		inverseMass = 1/radius;
 		this.color = color;
+		index = -1;
 		image = createImage();
 	}
 	
@@ -63,10 +65,10 @@ public class Particle extends Entity implements Comparable<Particle>
 	{
 		int newColor = color.getRGB();
 		int oldColor = this.color.getRGB();
-		this.color = new Color(ImageMath.mixColors(.2f, oldColor, newColor));
-		graphics.drawImage(image, (int)x - halfWidth, (int)y - halfWidth, null);
-		
-		//graphics.drawImage(image, (int)x, (int)y, color, null);
+		this.color = new Color(0xff000000 | ImageMath.mixColors(.05f, oldColor, newColor));
+		//graphics.drawImage(image, (int)x - halfWidth, (int)y - halfWidth, null);
+		graphics.setColor(this.color);
+		graphics.fillOval((int)x - halfWidth, (int)y - halfWidth, 2 * halfWidth, 2 * halfWidth);
 	}
 	
 	protected BufferedImage createImage()
@@ -197,6 +199,14 @@ public class Particle extends Entity implements Comparable<Particle>
 	
 	public double getInverseMass() {
 		return inverseMass;
+	}
+
+	public int getIndex() {
+		return index;
+	}
+
+	public void setIndex(int index) {
+		this.index = index;
 	}
 
 	/**
