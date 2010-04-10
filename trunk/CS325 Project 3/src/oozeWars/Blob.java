@@ -10,8 +10,8 @@ public class Blob extends Entity
 	private ArrayList<Particle> particles;
 	private Head head;
 	private Color color;
-	private double orientation, minSpeed = .5, maxSpeed = 10, friction = .9, accel, health = 0, blobForce = 10;
-	private double comfyDistance = 15;
+	private double orientation, minSpeed = .5, maxSpeed = 10, friction = .6, accel, health = 0, blobForce = 5;
+	private double comfyDistance = 30;
 	private int blobID;
 	
 	/**
@@ -140,7 +140,6 @@ public class Blob extends Entity
 			for(Particle p : particles)
 			{
 				p.go(game, timestep, priorityLevel, minSpeed, maxSpeed, friction);
-				g.addParticle(p);
 			}
 		}
 		
