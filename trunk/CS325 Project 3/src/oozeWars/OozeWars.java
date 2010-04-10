@@ -21,7 +21,7 @@ public class OozeWars extends Game
 	private HashMap<Particle, Location> locations;
 	private HashMap<Location, ArrayList<Particle>> particles;
 	private ParticleManager manager;
-	private final double CELL_WIDTH = 80;
+	private final double CELL_WIDTH = 200;
 	private int MAX_X, MAX_Y;
 	
 	/**
@@ -705,79 +705,38 @@ public class OozeWars extends Game
 		private void updateNeighbors( double range )
 		{
 			double squaredRange = range*range;
-			int x1, x2, y1, y2;
-			ArrayList<Particle> neighborhood;
-			Location sector = new Location(0,0,0,false,false);
 			
 			clearNeighbors();
 			
-			for(Particle p:  allParticles)
+			for(int i = 0; i < allParticles.size(); i++)
 			{
-				//p.clearNeighbors();
-				
-				Location theLocation = locations.get(p);
-				if( theLocation.isLeft )
+				Particle p = allParticles.get(i);
+				for(int j = i+1; j < allParticles.size(); j++)
 				{
-					x1 = Math.max(0, theLocation.x - 1);
-					x2 = theLocation.x + 1;
-				}
-				else
-				{
-					x1 = theLocation.x;
-					x2 = Math.min(MAX_X + 1, theLocation.x + 2);
-				}
-				
-				if( theLocation.isTop )
-				{
-					y1 = Math.max(0, theLocation.y - 1);
-					y2 = theLocation.y + 1;
-				}
-				else
-				{
-					y1 = theLocation.y;
-					y2 = Math.min(MAX_Y + 1, theLocation.y + 2);
-				}
-				
-				for(int x = x1; x < x2; x++)
-					for(int y = y1; y < y2; y++)
+					Particle op = allParticles.get(j);
+					
+					double dx = op.getX() - p.getX();
+					double dy = op.getY() - p.getY();
+					double squaredDistance = dx*dx + dy*dy;
+					
+					if(squaredDistance < squaredRange)
 					{
-						sector.x = x;
-						sector.y = y;
-
-						if(!particles.containsKey(sector))
-							continue;
+						p.addNeighbor(op);
+						op.addNeighbor(p);
 						
-						neighborhood = particles.get(sector);
-						for(Particle op:  neighborhood)
-						{
-							if( touchedSet.get(locations.get(op).index) )
-								continue;
-							
-							double dx = op.getX() - p.getX();
-							double dy = op.getY() - p.getY();
-							double squaredDistance = dx*dx + dy*dy;
-							
-							if(squaredDistance < squaredRange)
-							{
-								p.addNeighbor(op);
-								op.addNeighbor(p);
-								
-								double distance = Math.sqrt(squaredDistance);
-								Blob blob = hBlobs.get( p.getBlobID() );
-								double bForce = blob.getBlobForce();
-								double comfy = blob.getComfyDistance();
-								
-								Blob oBlob = hBlobs.get( op.getBlobID() );
-								double obForce = oBlob.getBlobForce();
-								double oComfy = oBlob.getComfyDistance();
-								
-								p.applyForce(op, bForce, distance, dx, dy, comfy, range);	
-								op.applyForce(p, obForce, distance, -dx, -dy, oComfy, range);
-							}
-						}
+						double distance = Math.sqrt(squaredDistance);
+						Blob blob = hBlobs.get( p.getBlobID() );
+						double bForce = blob.getBlobForce();
+						double comfy = blob.getComfyDistance();
+						
+						Blob oBlob = hBlobs.get( op.getBlobID() );
+						double obForce = oBlob.getBlobForce();
+						double oComfy = oBlob.getComfyDistance();
+						
+						p.applyForce(op, bForce, distance, dx, dy, comfy, range);	
+						op.applyForce(p, obForce, distance, -dx, -dy, oComfy, range);
 					}
-				
-				touchedSet.set(theLocation.index);
+				}
 			}
 		}
 		
