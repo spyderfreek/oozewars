@@ -85,21 +85,6 @@ public class Head extends Particle
 		{
 			vx += 5;
 		}
-		if(pc.isFire())
-		{
-			Blob thisBlob = null;
-			for(Blob b : ow.getBlobs())
-			{
-				if(b.getBlobID() == blobID)
-				{
-					thisBlob = b;
-					break;
-				}
-			}
-			
-			if(thisBlob != null)
-				thisBlob.shoot();
-		}
 		
 		super.go(game, timestep, priorityLevel, minSpeed, maxSpeed, friction);
 	}

@@ -2,8 +2,23 @@ package oozeWars;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
+import java.awt.image.LookupOp;
+import java.awt.image.RescaleOp;
 import java.util.*;
 import javax.swing.JOptionPane;
+
+import com.jhlabs.image.Colormap;
+import com.jhlabs.image.FadeFilter;
+import com.jhlabs.image.Gradient;
+import com.jhlabs.image.LinearColormap;
+import com.jhlabs.image.LookupFilter;
+import com.jhlabs.image.RescaleFilter;
+import com.jhlabs.image.ScaleFilter;
+
+import oozeWars.OozeWars.PlayerControls;
 
 public class Blob extends Entity 
 {
@@ -12,7 +27,12 @@ public class Blob extends Entity
 	private Color color;
 	private double orientation, minSpeed = .5, maxSpeed = 10, friction = .6, accel, health = 0, blobForce = 5;
 	private double comfyDistance = 30;
+	private int coolDown = 60;
+	private boolean fireReady = true;
 	private int blobID;
+	private BufferedImage backBuf, frontBuf;
+	private Colormap colorMap;
+	private LookupFilter filter;
 	
 	/**
 	 * Used to create a new Blob at a given spot, in a specified orientation, with
@@ -29,7 +49,7 @@ public class Blob extends Entity
 	 * @param color
 	 * :  The color the Blob will be
 	 */
-	public Blob(double x, double y, double orientation, int numParticles, int blobID, Game game, Color color) 
+	public Blob(double x, double y, double orientation, int numParticles, int blobID, OozeWars game, Color color) 
 	{
 		super(x, y);
 		this.color = color;
@@ -49,6 +69,8 @@ public class Blob extends Entity
 			aParticle.setBlobID(blobID);
 			particles.add(aParticle);
 		}
+
+		init( game );
 		
 		updateHealth();
 	}
@@ -58,8 +80,9 @@ public class Blob extends Entity
 	 * This Blob will be flagged as neutral and will have an ID = 0;
 	 * @param particles 
 	 * : An initialization list of particles that this Blob will contain.
+	 * @param game TODO
 	 */
-	public Blob( ArrayList<Particle> particles )
+	public Blob( ArrayList<Particle> particles, OozeWars game )
 	{
 		super(0,0);
 		color = Color.WHITE;
@@ -67,6 +90,19 @@ public class Blob extends Entity
 		this.particles = particles;
 		head = null;
 		blobID = 0;
+		
+		init( game );
+		
+	}
+	
+	public void init( OozeWars game )
+	{
+		backBuf = new BufferedImage(game.getWidth()>>2, game.getHeight()>>2, BufferedImage.TYPE_INT_ARGB);
+		frontBuf = new BufferedImage(game.getWidth()>>2, game.getHeight()>>2, BufferedImage.TYPE_INT_ARGB);
+		int[] knots = { 0xffff0000, 0xff00ff00, 0xff0000ff };
+		//colorMap = new Gradient(knots);
+		colorMap = new LinearColormap();
+		filter = new LookupFilter( colorMap );
 	}
 	
 	public boolean equals(Object theOther)
@@ -120,8 +156,36 @@ public class Blob extends Entity
 	@Override
 	public void draw(Graphics2D graphics, Game game) 
 	{
+		OozeWars ow = (OozeWars) game;
+
+		/*float[] scalars = {0.95f};
+		float[] offsets = {0f};
+		RenderingHints rh = new RenderingHints(null);
+		rh.put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
+		*/
+		//new RescaleOp( scalars, offsets, rh).filter(frontBuf.getAlphaRaster(), backBuf.getAlphaRaster());
+		//new RescaleFilter( 0.95f ).filter(image, image);
+		new FadeFilter( 0.95f ).filter(frontBuf, backBuf);
+		
+		
+		Graphics2D g = backBuf.createGraphics();
+		
 		for( Particle p : particles )
-			p.draw(graphics, game, color);
+			p.draw(g, game, color);
+		
+		g.dispose();
+
+		
+		BufferedImage temp = backBuf;
+		backBuf = frontBuf;
+		frontBuf = temp;
+			
+		filter.filter(frontBuf, backBuf);
+		graphics.drawRenderedImage(frontBuf, AffineTransform.getScaleInstance(4, 4));
+		//graphics.drawRenderedImage( frontBuf, AffineTransform.getScaleInstance(1, 1));
+		
+		//ScaleFilter s = new ScaleFilter(ow.getWidth(), ow.getHeight());
+		//graphics.drawRenderedImage( s.filter(frontBuf, null), null);
 	}
 
 	
@@ -144,7 +208,16 @@ public class Blob extends Entity
 		}
 		
 		if(head != null)
+		{
 			updateHealth();
+			PlayerControls pc = g.getControls()[blobID-1];
+			
+			if(pc.isFire())
+			{
+				shoot();
+				g.queue.scheduleIn(coolDown, 0, new GunEnabler(this) );
+			}
+		}
 	}
 	
 	
@@ -157,6 +230,8 @@ public class Blob extends Entity
 	 */
 	public Bullet shoot()
 	{
+		setFireReady(false);
+		
 		Iterator<Particle> it = particles.iterator();
 		if( !it.hasNext() )
 			return null;
@@ -265,6 +340,22 @@ public class Blob extends Entity
 		return maxSpeed;
 	}
 	
+	public int getCoolDown() {
+		return coolDown;
+	}
+
+	public void setCoolDown(int coolDown) {
+		this.coolDown = coolDown;
+	}
+
+	public boolean isFireReady() {
+		return fireReady;
+	}
+
+	public void setFireReady(boolean fireReady) {
+		this.fireReady = fireReady;
+	}
+
 	/**
 	 * Sets the force that the Particles in the Blob will have on eachother.
 	 * @param blobForce
