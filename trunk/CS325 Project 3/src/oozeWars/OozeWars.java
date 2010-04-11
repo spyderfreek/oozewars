@@ -3,6 +3,7 @@ package oozeWars;
 import java.awt.Color;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collection;
@@ -21,8 +22,11 @@ public class OozeWars extends Game
 	private HashMap<Particle, Location> locations;
 	private HashMap<Location, ArrayList<Particle>> particles;
 	private ParticleManager manager;
-	private final double CELL_WIDTH = 200;
+	private Backdrop backdrop;
+	private final double CELL_WIDTH = 100;
 	private int MAX_X, MAX_Y;
+	private final double SCALE = 0.5;
+	private int width, height;
 	
 	/**
 	 * The constructor for the game OozeWars.  Calls the constructor for Game.java.  
@@ -47,7 +51,31 @@ public class OozeWars extends Game
 		for(int i = 0; i < numPlayers; i++)
 			controls[i] = setPlayerControls(i);
 		
-		int numParticles = 100;
+		
+		
+		manager = new ParticleManager();
+		System.out.println(System.getProperty("user.dir"));
+		String imgPath = "C:/Users/Nick/Documents/GMU/CS 325/CS325 Project 3 Revised/images/cells_bg.jpg";
+		/*URL imgURL = ClassLoader.getSystemClassLoader().getResource(imgPath);
+
+		if(imgURL == null)
+		{
+			System.out.println("File not found");
+			System.exit(1);
+		}*/
+		backdrop = new Backdrop(imgPath);
+	}
+
+	/* (non-Javadoc)
+	 * @see oozeWars.Game#start()
+	 */
+	@Override
+	protected void start() 
+	{
+		width = view.preferredWidth + 20;
+		height = view.preferredHeight + 20;
+		
+		int numParticles = 50;
 		
 		while(numPlayers-- > 0)
 		{
@@ -70,28 +98,17 @@ public class OozeWars extends Game
 		ArrayList<Particle> neutralParticles = new ArrayList<Particle>();
 		for( int i = 0; i < numParticles; i++ )
 			neutralParticles.add(new Particle(700 + random.nextInt(80) - 40, 100 + random.nextInt(80) - 40, 8, Color.WHITE));
-		hBlobs.put(0, new Blob(neutralParticles));
+		hBlobs.put(0, new Blob(neutralParticles, this));
 		
 		//adds all the particles currently in game to the Sparse Grid
 		for(Blob b: getBlobs())
 		{
 			for(Particle p: b.getParticles())
 				addParticle(p);
+			view.addSprite(b, 1);
 		}
 		
-		manager = new ParticleManager();
-	}
-
-	/* (non-Javadoc)
-	 * @see oozeWars.Game#start()
-	 */
-	@Override
-	protected void start() 
-	{
-		for(Blob b : getBlobs())
-		{
-			view.addSprite(b, 0);
-		}
+		view.addSprite(backdrop, 0);
 		
 		MAX_X = (int)(view.getWidth() / CELL_WIDTH);
 		MAX_Y = (int)(view.getHeight() / CELL_WIDTH);
@@ -99,6 +116,22 @@ public class OozeWars extends Game
 		
 		super.start();
 		queue.schedule(0, manager);
+	}
+
+	public int getWidth() {
+		return width;
+	}
+
+	public void setWidth(int width) {
+		this.width = width;
+	}
+
+	public int getHeight() {
+		return height;
+	}
+
+	public void setHeight(int height) {
+		this.height = height;
 	}
 
 	/*
@@ -138,7 +171,7 @@ public class OozeWars extends Game
 		Particle head = theList.remove(0);
 		removeParticle(head);
 		
-		b = new Blob(theList);
+		b = new Blob(theList, null);
 		
 		hBlobs.put(b.getBlobID(), b);
 
@@ -330,7 +363,7 @@ public class OozeWars extends Game
 		String answer = JOptionPane.showInputDialog("How many players?");
 		int n = Integer.parseInt(answer);
 		OozeWars game = new OozeWars(30, n);
-		View view = new View(game, 1, 800, 600);
+		View view = new View(game, 2, 800, 600);
 		JFrame frame = view.createFrame("Ooze Wars");
 		view.setKeystrokeFocus(frame);
 		game.reset();
