@@ -66,7 +66,7 @@ public class Head extends Particle
 			double distance, double dx, double dy, double pushDist,
 			double pullDist) 
 	{
-		super.applyStickConstraint(neighbor, k*8, distance, dx, dy, pushDist * 1.1, pullDist * .5);
+		super.applyStickConstraint(neighbor, k*10, distance, dx, dy, pushDist * 1.1, pullDist * .5);
 	}
 
 	/**

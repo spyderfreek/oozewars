@@ -70,7 +70,7 @@ public class Particle extends Entity implements Comparable<Particle>
 	 * @param color
 	 * :  The color that the Particle will be.
 	 */
-	public void draw(Graphics2D graphics, Game game, Color col) 
+	public void draw(Graphics2D graphics, Game game, Color col, double scale) 
 	{
 		int newColor = col.getRGB();
 		int oldColor = this.color.getRGB();
@@ -81,7 +81,10 @@ public class Particle extends Entity implements Comparable<Particle>
 		scales[2] = color.getBlue() * factor;
 		colorFilt = new RescaleOp(scales, offsets, null);
 		colorFilt.filter(image.getRaster(), colored.getRaster());
-		graphics.drawRenderedImage( colored, AffineTransform.getTranslateInstance((int)x - halfWidth, (int)y - halfWidth));
+		AffineTransform at = AffineTransform.getScaleInstance(scale, scale);
+		//AffineTransform at = AffineTransform.getTranslateInstance((int)x - halfWidth, (int)y - halfWidth);
+		at.translate((int)x - halfWidth, (int)y - halfWidth);
+		graphics.drawRenderedImage( colored, at);
 		//graphics.setColor(this.color);
 		//graphics.fillOval((int)x - halfWidth, (int)y - halfWidth, 2 * halfWidth, 2 * halfWidth);
 	}

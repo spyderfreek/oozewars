@@ -9,6 +9,8 @@ import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 
+import com.jhlabs.image.ImageMath;
+
 //Moves particles around (naturally)
 class Explosion extends Entity
 {
@@ -151,7 +153,7 @@ class Explosion extends Entity
 		// scale relative to the bomb's power
 		double scale = 1.1 + falloff( time, bangDuration, accel / 16 );
 		transform.scale(scale, scale);
-		alpha = (float)lerp( time, bangDuration, 1, 0 );
+		alpha = (float)ImageMath.clamp( (float)lerp( time, bangDuration, 1, 0 ), 0, 1 );
 		
 		// once visual is done, stop updating this sprite
 		if( time >= bangDuration )

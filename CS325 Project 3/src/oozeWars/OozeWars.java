@@ -25,7 +25,7 @@ public class OozeWars extends Game
 	private Backdrop backdrop;
 	private final double CELL_WIDTH = 75;
 	private int MAX_X, MAX_Y;
-	private final double SCALE = 0.5;
+	public final double SCALE = 0.25;
 	private int width, height;
 	
 	/**
@@ -364,7 +364,7 @@ public class OozeWars extends Game
 		String answer = JOptionPane.showInputDialog("How many players?");
 		int n = Integer.parseInt(answer);
 		OozeWars game = new OozeWars(30, n);
-		View view = new View(game, 2, 800, 600);
+		OozeView view = new OozeView(game, 3, 800, 600, 0.25);
 		JFrame frame = view.createFrame("Ooze Wars");
 		view.setKeystrokeFocus(frame);
 		game.reset();
@@ -721,7 +721,7 @@ public class OozeWars extends Game
 					p = constituents.get(i);
 					dx = headX - p.getX();
 					dy = headY - p.getY();
-					double k = .0005 * (1 - i * factor);
+					double k = .0005 * (1.2 - i * factor);
 					
 					//head.applyStickConstraint( p, .001 * (1 - i * factor), Math.sqrt(comfyDist * comfyDist + 1), dx, dy, 0, comfyDist);
 					p.push(k * dx, k * dy);
