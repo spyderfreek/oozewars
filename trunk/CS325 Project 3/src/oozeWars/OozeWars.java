@@ -662,11 +662,7 @@ public class OozeWars extends Game
 		@Override
 		public void go(Game game, long timestep, int priorityLevel) 
 		{
-			//TODO: figure out reasonable values for range, comfydist, etc
-			for(Blob b : getBlobs())
-			{
-				b.go(game, timestep, priorityLevel);
-			}
+
 			
 			
 			wipeClean();
@@ -676,6 +672,12 @@ public class OozeWars extends Game
 			getConnectivity();
 				
 			findStragglers();
+			
+			//TODO: figure out reasonable values for range, comfydist, etc
+			for(Blob b : getBlobs())
+			{
+				b.go(game, timestep, priorityLevel);
+			}
 			
 			/*
 			for(int i = 0; i < 1; i++)
@@ -870,6 +872,7 @@ public class OozeWars extends Game
 			Blob neutral = hBlobs.get(0);
 			ArrayList<Particle> constituents = neutral.getParticles();
 			constituents.clear();
+			Particle seed;
 			
 			for( int i = 0; i < allParticles.size(); ++i )
 			{
@@ -877,8 +880,10 @@ public class OozeWars extends Game
 					continue;
 				//TODO: create default settings for neutral blobs (and find
 				// better way to manage them)
+				seed = allParticles.get(i);
+				seed.setBlobID(0);
 				
-				getConnectivity( allParticles.get(i), 0, constituents, false);
+				getConnectivity( seed, 0, constituents, false);
 			}
 		}
 	}

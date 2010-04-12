@@ -212,11 +212,15 @@ public class Blob extends Entity
 			setDead(true);
 		else
 		{
-			for(Particle p : particles)
+			Particle p;
+			for(int i = 0; i < particles.size(); i++)
 			{
+				p = particles.get(i);
+				
 				if( p.isDead() )
 				{
 					g.removeParticle(p);
+					removeParticle(i);
 					continue;
 				}
 				
@@ -237,7 +241,7 @@ public class Blob extends Entity
 				
 				g.queue.schedule(0, b );
 				g.view.addSprite(b, 1);
-				g.queue.scheduleIn(coolDown, 1, new GunEnabler(this) );
+				g.queue.scheduleIn(coolDown, 0, new GunEnabler(this) );
 			}
 		}
 	}
@@ -260,7 +264,7 @@ public class Blob extends Entity
 			return null;
 		
 		biggest.setDead(true);
-		particles.remove(particles.size() - 1);
+		//particles.remove(particles.size() - 1);
 		
 		head.calcOrientation();
 		double bigRad = biggest.getRadius();
@@ -394,6 +398,12 @@ public class Blob extends Entity
 	{
 		for(Particle p : particles)
 			p.color = color;
+	}
+	
+	public void removeParticle( int i )
+	{
+		Particle last = particles.remove(particles.size() - 1);
+		particles.set(i, last);
 	}
 	
 	/**
