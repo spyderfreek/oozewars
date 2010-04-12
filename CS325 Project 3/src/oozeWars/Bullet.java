@@ -62,6 +62,12 @@ public class Bullet extends Particle
 				dx = x - p.getX();
 				dy = y - p.getY();
 				
+				if( dx != dx)
+				{
+					System.out.println("Bullet.go() failed");
+					System.exit(1);
+				}
+				
 				if(dx * dx + dy * dy < range)
 				{
 					Explosion e = explode( targets );

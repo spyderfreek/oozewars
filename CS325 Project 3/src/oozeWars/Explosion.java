@@ -149,6 +149,7 @@ class Explosion extends Entity
 	 */
 	private void updateVisual()
 	{
+		//System.out.println( "Updating visuals");
 		// once visual is done, stop updating this sprite
 		if( time > bangDuration )
 		{
