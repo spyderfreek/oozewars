@@ -73,7 +73,7 @@ class Explosion extends Entity
 		accel = acc;
 		duration = dur;
 		this.damage = damage;
-		bangDuration = 8 * dur;
+		bangDuration = 2 * dur;
 		particlesPushed = false;
 		minR2 = maxR2 = 0;
 		time = 0;
@@ -88,11 +88,11 @@ class Explosion extends Entity
 	@Override
 	public void go(Game game, long timestep, int priorityLevel)
 	{
-		time++;
-		OozeWars g = (OozeWars)game;
+		
+		//OozeWars g = (OozeWars)game;
 		super.go(game, timestep, priorityLevel);
 		updateVisual();
-		
+		time++;
 		// while particles get updated rapidly to avoid multiple pushes,
 		// the visual needs to stay on the screen longer to be noticed
 		if( particlesPushed )
@@ -129,7 +129,6 @@ class Explosion extends Entity
 			speed = falloff( dist, radius, accel);
 			p.damage(speed * damage);
 			
-			speed /= dist;
 			vx *= speed;
 			vy *= speed;
 			
@@ -150,16 +149,26 @@ class Explosion extends Entity
 	 */
 	private void updateVisual()
 	{
-		// scale relative to the bomb's power
-		double scale = 1.1 + falloff( time, bangDuration, accel / 16 );
-		transform.scale(scale, scale);
-		alpha = (float)lerp( time, bangDuration, 0.99, 0.01 );
-		
 		// once visual is done, stop updating this sprite
-		if( time >= bangDuration )
+		if( time > bangDuration )
 		{
 			setDead(true);
+			return;
 		}
+		
+		// scale relative to the bomb's power
+		double scale = 1.1 + falloff( time, bangDuration, accel / 3 );
+		transform.scale(scale, scale);
+		alpha = lerp( time, bangDuration, 1f, 0f );
+		if(alpha < 0 || alpha > 1)
+		{
+			System.out.println(alpha);
+			System.out.println(time);
+			System.out.println(bangDuration);
+			System.exit(-1);
+		}
+		
+
 	}
 	
 	// returns the result of an inverse-square falloff curve
@@ -174,6 +183,12 @@ class Explosion extends Entity
 	
 	// returns a linear interpolation between minF and maxF for the
 	// function ranging from t = 0 to maxT
+	float lerp(float t, float maxT, float minF, float maxF)
+	{
+		float range = maxF - minF;
+		return t * range / maxT + minF;
+	}
+	
 	double lerp(double t, double maxT, double minF, double maxF)
 	{
 		double range = maxF - minF;
