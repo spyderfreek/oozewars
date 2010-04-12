@@ -664,6 +664,11 @@ public class OozeWars extends Game
 		{
 
 			
+			//TODO: figure out reasonable values for range, comfydist, etc
+			for(Blob b : getBlobs())
+			{
+				b.go(game, timestep, priorityLevel);
+			}			
 			
 			wipeClean();
 			updateNeighbors( RANGE );
@@ -672,12 +677,7 @@ public class OozeWars extends Game
 			getConnectivity();
 				
 			findStragglers();
-			
-			//TODO: figure out reasonable values for range, comfydist, etc
-			for(Blob b : getBlobs())
-			{
-				b.go(game, timestep, priorityLevel);
-			}
+
 			
 			/*
 			for(int i = 0; i < 1; i++)
