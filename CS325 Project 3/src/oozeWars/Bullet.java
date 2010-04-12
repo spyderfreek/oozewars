@@ -30,7 +30,7 @@ public class Bullet extends Particle
 		this.orientation = orientation;
 		friction = 1;
 		push( speed*Math.cos(orientation), speed*Math.sin(orientation) );
-		damage = radius*3;
+		damage = radius*2;
 	}
 	
 	//TODO:  Implement move() and explode()
@@ -77,7 +77,7 @@ public class Bullet extends Particle
 	public Explosion explode( ArrayList<Particle> targets )
 	{
 		setDead(true);
-		return new Explosion(x, y, radius * 3, .4, 6, damage, targets);
+		return new Explosion(x, y, radius * 10, .8, 6, damage, targets);
 	}
 
 	/* (non-Javadoc)
