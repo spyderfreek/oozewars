@@ -75,7 +75,7 @@ public class OozeWars extends Game
 		width = view.preferredWidth + 20;
 		height = view.preferredHeight + 20;
 		
-		int numParticles = 100;
+		int numParticles = 50;
 		
 		while(numPlayers-- > 0)
 		{
@@ -97,7 +97,7 @@ public class OozeWars extends Game
 		
 		ArrayList<Particle> neutralParticles = new ArrayList<Particle>();
 		for( int i = 0; i < numParticles; i++ )
-			neutralParticles.add(new Particle(700 + random.nextInt(80) - 40, 100 + random.nextInt(80) - 40, 8, Color.WHITE, 0));
+			neutralParticles.add(new Particle(700 + random.nextInt(80) - 40, 100 + random.nextInt(80) - 40, 6, Color.WHITE, 0));
 		hBlobs.put(0, new Blob(neutralParticles, this));
 		
 		//adds all the particles currently in game to the Sparse Grid

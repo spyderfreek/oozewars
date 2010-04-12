@@ -64,14 +64,14 @@ public class Blob extends Entity
 		bullets = new ArrayList<Bullet>();
 		
 		//TODO:  Figure out default size for head
-		head = new Head(x, y, 5, color, blobID, orientation);
+		head = new Head(x, y, 8, color, blobID, orientation);
 		head.setBlobID(this.blobID);
 		particles.add(head);
 		
 		while(numParticles-- > 0)
 		{
 			Particle aParticle = new Particle(x + game.random.nextDouble()*80 - 40, 
-					y +	game.random.nextDouble()*80-40, game.random.nextInt(5), color, blobID);
+					y +	game.random.nextDouble()*80-40, game.random.nextInt(5) + 3, color, blobID);
 			aParticle.setBlobID(blobID);
 			particles.add(aParticle);
 		}

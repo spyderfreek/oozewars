@@ -153,7 +153,7 @@ class Explosion extends Entity
 		// scale relative to the bomb's power
 		double scale = 1.1 + falloff( time, bangDuration, accel / 16 );
 		transform.scale(scale, scale);
-		alpha = (float)ImageMath.clamp( (float)lerp( time, bangDuration, 1, 0 ), 0, 1 );
+		alpha = (float)lerp( time, bangDuration, 0.99, 0.01 );
 		
 		// once visual is done, stop updating this sprite
 		if( time >= bangDuration )
