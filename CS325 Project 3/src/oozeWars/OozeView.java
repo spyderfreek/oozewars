@@ -8,6 +8,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
 import java.util.Iterator;
 
+import com.jhlabs.image.AlphaThresholdFilter;
 import com.jhlabs.image.FadeFilter;
 
 public class OozeView extends View 
@@ -16,6 +17,7 @@ public class OozeView extends View
 	private BufferedImage smallFront, smallBack;
 	private AffineTransform transform;
 	private BufferedImageOp fader;
+	private BufferedImageOp threshold;
 	
 	public OozeView(Game game, int layers, int preferredWidth,
 			int preferredHeight, double scale) 
@@ -26,7 +28,8 @@ public class OozeView extends View
 		int realHeight = (int)(preferredHeight * SCALE);
 		smallFront = new BufferedImage( realWidth + 20, realHeight + 20, BufferedImage.TYPE_INT_ARGB);
 		smallBack = new BufferedImage( realWidth + 20, realHeight + 20, BufferedImage.TYPE_INT_ARGB);
-		fader = new FadeFilter( 0.98f );
+		fader = new FadeFilter( 0.97f );
+		threshold = new AlphaThresholdFilter( 60 );
 		transform = AffineTransform.getScaleInstance((double)preferredWidth / realWidth, (double)preferredHeight / realHeight);
 	}
 
@@ -55,11 +58,14 @@ public class OozeView extends View
 			sprite.draw(small, game);
 		}
 		small.dispose();
-		BufferedImage temp = smallBack;
-		smallBack = smallFront;
-		smallFront = temp;
 		
+		threshold.filter(smallBack, smallFront);
 		graphics.drawRenderedImage(smallFront, transform);
+		
+		//BufferedImage temp = smallBack;
+		//smallBack = smallFront;
+		//smallFront = temp;
+		
 		
 		for(int i = 2; i < sprites.length; i++)
 		{
