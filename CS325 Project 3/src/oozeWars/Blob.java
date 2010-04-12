@@ -5,39 +5,27 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
-import java.awt.image.LookupOp;
-import java.awt.image.RescaleOp;
 import java.util.*;
 import javax.swing.JOptionPane;
 
 import com.jhlabs.image.Colormap;
 import com.jhlabs.image.FadeFilter;
-import com.jhlabs.image.Gradient;
 import com.jhlabs.image.LinearColormap;
-import com.jhlabs.image.LookupFilter;
 import com.jhlabs.image.PointFilter;
 import com.jhlabs.image.PremultiplyFilter;
-import com.jhlabs.image.RescaleFilter;
-import com.jhlabs.image.ScaleFilter;
-import com.jhlabs.image.ThresholdFilter;
 
 import oozeWars.OozeWars.PlayerControls;
 
 public class Blob extends Entity 
 {
 	private ArrayList<Particle> particles;
-	private ArrayList<Bullet> bullets;
 	private Head head;
 	private Color color;
-	private double orientation, minSpeed = .5, maxSpeed = 10, friction = .97, accel, health = 0, blobForce = .001;
+	private double minSpeed = .5, maxSpeed = 10, friction = .97, accel, health = 0, blobForce = .001;
 	private double comfyDistance = 20;
 	private int coolDown = 10;
 	private boolean fireReady = true;
 	private int blobID;
-	private BufferedImage backBuf, frontBuf;
-	private Colormap colorMap;
-	private LookupFilter filter;
-	private ThresholdFilter threshold;
 	private HealthBar healthBar;
 	
 	/**
@@ -59,10 +47,8 @@ public class Blob extends Entity
 	{
 		super(x, y);
 		this.color = color;
-		this.orientation = orientation;
 		this.blobID = blobID;
 		particles = new ArrayList<Particle>();
-		bullets = new ArrayList<Bullet>();
 		
 		//TODO:  Figure out default size for head
 		head = new Head(x, y, 8, color, blobID, orientation);
@@ -92,7 +78,6 @@ public class Blob extends Entity
 	{
 		super(0,0);
 		color = Color.lightGray;
-		orientation = 0;
 		this.particles = particles;
 		head = null;
 		blobID = 0;
