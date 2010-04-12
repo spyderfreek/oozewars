@@ -686,6 +686,11 @@ public class OozeWars extends Game
 			
 			wipeClean();
 			getConnectivity();
+
+			// 50% chance of  a new particle every 2 seconds
+			// use .9772 for every second
+			if( random.nextFloat() > .9885f )
+				addParticle( new Particle( random.nextFloat()* width, random.nextFloat()* height, random.nextFloat()*5+3, Color.LIGHT_GRAY, 0));
 				
 			findStragglers();
 
@@ -726,7 +731,7 @@ public class OozeWars extends Game
 				int numNeighbors = constituents.size();
 				
 				double comfyDist = b.getComfyDistance();
-				double factor = 1.0 / numNeighbors;
+				double factor = 1.0 / 100;
 				double dx, dy;
 				
 				for( int i  = 1; i < numNeighbors; i++ )
@@ -734,7 +739,7 @@ public class OozeWars extends Game
 					p = constituents.get(i);
 					dx = headX - p.getX();
 					dy = headY - p.getY();
-					double k = .001 * (1.2 - i * factor);
+					double k = .005 * (1 - i * factor);
 					
 					//head.applyStickConstraint( p, .001 * (1 - i * factor), Math.sqrt(comfyDist * comfyDist + 1), dx, dy, 0, comfyDist);
 					p.push(k * dx, k * dy);
