@@ -23,7 +23,7 @@ public class OozeWars extends Game
 	private HashMap<Location, ArrayList<Particle>> particles;
 	private ParticleManager manager;
 	private Backdrop backdrop;
-	private final double CELL_WIDTH = 100;
+	private final double CELL_WIDTH = 75;
 	private int MAX_X, MAX_Y;
 	private final double SCALE = 0.5;
 	private int width, height;
@@ -75,7 +75,7 @@ public class OozeWars extends Game
 		width = view.preferredWidth + 20;
 		height = view.preferredHeight + 20;
 		
-		int numParticles = 50;
+		int numParticles = 100;
 		
 		while(numPlayers-- > 0)
 		{
@@ -97,7 +97,7 @@ public class OozeWars extends Game
 		
 		ArrayList<Particle> neutralParticles = new ArrayList<Particle>();
 		for( int i = 0; i < numParticles; i++ )
-			neutralParticles.add(new Particle(700 + random.nextInt(80) - 40, 100 + random.nextInt(80) - 40, 8, Color.WHITE));
+			neutralParticles.add(new Particle(700 + random.nextInt(80) - 40, 100 + random.nextInt(80) - 40, 8, Color.WHITE, 0));
 		hBlobs.put(0, new Blob(neutralParticles, this));
 		
 		//adds all the particles currently in game to the Sparse Grid
@@ -260,6 +260,7 @@ public class OozeWars extends Game
 		Particle anotherParticle = allParticles.remove(allParticles.size()-1);
 		anotherParticle.setIndex(aParticle.getIndex());
 		allParticles.set(aParticle.getIndex(), anotherParticle);
+		view.removeSprite(aParticle, 1);
 	}
 	
 	/**
@@ -662,10 +663,36 @@ public class OozeWars extends Game
 		public void go(Game game, long timestep, int priorityLevel) 
 		{
 			//TODO: figure out reasonable values for range, comfydist, etc
+			for(Blob b : getBlobs())
+			{
+				b.go(game, timestep, priorityLevel);
+			}
+			
+			
 			wipeClean();
 			updateNeighbors( RANGE );
 			
 			wipeClean();
+			getConnectivity();
+				
+			findStragglers();
+			
+			/*
+			for(int i = 0; i < 1; i++)
+			{
+				wipeClean();
+				applyConstraints( RANGE );
+			}
+			*/
+			
+			/*for(Particle p : allParticles)
+				addParticle(p);*/
+			
+			game.queue.schedule(priorityLevel, this);
+		}
+		
+		private void getConnectivity()
+		{
 			ArrayList<Particle> constituents;
 			
 			for(Blob b : getBlobs())
@@ -676,20 +703,31 @@ public class OozeWars extends Game
 					continue;
 
 				constituents = b.getParticles();
-				getConnectivity( b.getHead(), id, constituents, true );
-			}
+				Head head = b.getHead();
+				getConnectivity( head, id, constituents, true );
 				
-			findStragglers();
-			
-			for(Blob b : getBlobs())
-			{
-				b.go(game, timestep, priorityLevel);
+				
+				Particle p;
+				double headX = head.getX();
+				double headY = head.getY();
+				int numNeighbors = constituents.size();
+				
+				double comfyDist = b.getComfyDistance();
+				double factor = 1.0 / numNeighbors;
+				double dx, dy;
+				
+				for( int i  = 1; i < numNeighbors; i++ )
+				{	
+					p = constituents.get(i);
+					dx = headX - p.getX();
+					dy = headY - p.getY();
+					double k = .0005 * (1 - i * factor);
+					
+					//head.applyStickConstraint( p, .001 * (1 - i * factor), Math.sqrt(comfyDist * comfyDist + 1), dx, dy, 0, comfyDist);
+					p.push(k * dx, k * dy);
+				}
+				
 			}
-			
-			/*for(Particle p : allParticles)
-				addParticle(p);*/
-			
-			game.queue.schedule(priorityLevel, this);
 		}
 		
 		private void wipeClean()
@@ -739,10 +777,34 @@ public class OozeWars extends Game
 						double obForce = oBlob.getBlobForce();
 						double oComfy = oBlob.getComfyDistance();
 						
-						p.applyForce(op, bForce, distance, dx, dy, comfy, range);	
-						op.applyForce(p, obForce, distance, -dx, -dy, oComfy, range);
+						p.applyStickConstraint(op, bForce, distance, dx, dy, range, comfy);	
 					}
 				}
+			}
+		}
+		
+		private void applyConstraints( double pushDist )
+		{
+			for( Particle p : allParticles )
+			{
+				ArrayList<Particle> neighbors = p.getNeighbors();
+				Blob blob = hBlobs.get( p.getBlobID() );
+				double bForce = blob.getBlobForce();
+				double pullDist = blob.getComfyDistance();
+				
+				for( Particle q : neighbors )
+				{
+					if( touchedSet.get( q.getIndex() ) )
+						continue;
+					
+					double dx = q.getX() - p.getX();
+					double dy = q.getY() - p.getY();
+					double distance = Math.sqrt( dx * dx + dy * dy );
+					
+					p.applyStickConstraint(q, bForce, distance, dx, dy, pushDist, pullDist);
+				}
+				
+				touchedSet.set( p.getIndex() );
 			}
 		}
 		

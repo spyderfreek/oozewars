@@ -23,9 +23,9 @@ public class Head extends Particle
 	 * @param orientation
 	 * :  The angle at which the head will be facing when it first appears (in Radians).
 	 */
-	public Head(double x, double y, double radius, Color color, double orientation) 
+	public Head(double x, double y, double radius, Color color, int blobid, double orientation) 
 	{
-		super(x, y, radius, color);
+		super(x, y, radius, color, blobid);
 		inverseMass = 0;
 		this.orientation = orientation;
 	}
@@ -34,6 +34,7 @@ public class Head extends Particle
 	 * The head applies a stronger force to neighboring particles
 	 * than other particles.
 	 */
+	/*
 	@Override
 	public void applyForce(Particle neighbor, double k, double distance, double dx, double dy, double comfyDistance, double range)
 	{
@@ -42,15 +43,32 @@ public class Head extends Particle
 		comfyDistance *= .5;
 		super.applyForce(neighbor, k, distance, dx, dy, comfyDistance, range);
 	}
+	*/
+	
+	
 	
 	public void calcOrientation()
 	{
+		double vx = x - oldX;
+		double vy = y - oldY;
+		
 		if( vx * vx + vy * vy < .001 )
 			return;
 		
 		orientation = Math.atan2(vy, vx);
 	}
 	
+	/* (non-Javadoc)
+	 * @see oozeWars.Particle#applyStickConstraint(oozeWars.Particle, double, double, double, double, double, double)
+	 */
+	@Override
+	public void applyStickConstraint(Particle neighbor, double k,
+			double distance, double dx, double dy, double pushDist,
+			double pullDist) 
+	{
+		super.applyStickConstraint(neighbor, k*8, distance, dx, dy, pushDist * 1.1, pullDist * .5);
+	}
+
 	/**
 	 * @return
 	 * The current orientation (in Radians) of the Head
@@ -71,19 +89,19 @@ public class Head extends Particle
 		
 		if(pc.isDown())
 		{
-			vy += 5;
+			y += .2;
 		}
 		if(pc.isUp())
 		{
-			vy -= 5;
+			y -= .2;
 		}
 		if(pc.isLeft())
 		{
-			vx -= 5;
+			x -= .2;
 		}
 		if(pc.isRight())
 		{
-			vx += 5;
+			x += .2;
 		}
 		
 		super.go(game, timestep, priorityLevel, minSpeed, maxSpeed, friction);

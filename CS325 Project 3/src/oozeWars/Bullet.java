@@ -1,11 +1,14 @@
 package oozeWars;
 
 import java.awt.Color;
+import java.awt.Graphics2D;
+import java.util.ArrayList;
 
 public class Bullet extends Particle 
 {
 	private double damage;
 	private double orientation;
+	private final double range = 400;
 	// TODO get graphics here
 	
 	/**
@@ -21,13 +24,13 @@ public class Bullet extends Particle
 	 * :  The orientation of the bullet (in Degrees) relative to the orientation of
 	 * the Head when it was fired.
 	 */
-	public Bullet(double x, double y, double radius, Color color, double orientation) 
+	public Bullet(double x, double y, double radius, Color color, int blobid, double orientation, double speed) 
 	{
-		super(x, y, radius, color);
+		super(x, y, radius, color, blobid);
 		this.orientation = orientation;
-		vx = 20*Math.cos(orientation);
-		vy = 20*Math.sin(orientation);
-		damage = radius*1.5;
+		friction = 1;
+		push( speed*Math.cos(orientation), speed*Math.sin(orientation) );
+		damage = radius*3;
 	}
 	
 	//TODO:  Implement move() and explode()
@@ -35,11 +38,57 @@ public class Bullet extends Particle
 	public void go(Game game, long timestep, int priorityLevel)
 	{
 		super.go(game, timestep, priorityLevel);
+
+		if( ! isDead() )
+			game.queue.schedule(priorityLevel, this);
+		else
+		{
+			game.view.removeSprite(this, 1);
+			return;
+		}
+		
+		ArrayList<Particle> targets;
+		
+		for( Blob b : ( ( OozeWars )game ).getBlobs() )
+		{
+			if( b.getBlobID() == blobID )
+				continue;
+			
+			targets = b.getParticles();
+			double dx, dy;
+			
+			for( Particle p : targets )
+			{
+				dx = x - p.getX();
+				dy = y - p.getY();
+				
+				if(dx * dx + dy * dy < range)
+				{
+					Explosion e = explode( targets );
+					game.queue.schedule(priorityLevel, e );
+					game.view.addSprite(e, 1);
+					return;
+				}
+			}
+			
+		}	
 	}
 	
-	public void explode()
+	public Explosion explode( ArrayList<Particle> targets )
 	{
-		
+		setDead(true);
+		return new Explosion(x, y, radius * 3, .4, 6, damage, targets);
 	}
+
+	/* (non-Javadoc)
+	 * @see oozeWars.Particle#draw(java.awt.Graphics2D, oozeWars.Game, java.awt.Color)
+	 */
+	@Override
+	public void draw(Graphics2D graphics, Game game ) {
+		// TODO Auto-generated method stub
+		super.draw(graphics, game, color);
+	}
+	
+	
 
 }
