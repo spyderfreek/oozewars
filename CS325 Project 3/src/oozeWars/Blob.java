@@ -38,6 +38,7 @@ public class Blob extends Entity
 	private Colormap colorMap;
 	private LookupFilter filter;
 	private ThresholdFilter threshold;
+	private HealthBar healthBar;
 	
 	/**
 	 * Used to create a new Blob at a given spot, in a specified orientation, with
@@ -76,9 +77,8 @@ public class Blob extends Entity
 			particles.add(aParticle);
 		}
 
-		//init( game );
+		init( game );
 		
-		updateHealth();
 	}
 	
 	/**
@@ -97,12 +97,16 @@ public class Blob extends Entity
 		head = null;
 		blobID = 0;
 		
-		//init( game );
+		init( game );
 		
 	}
 	
 	public void init( OozeWars game )
 	{
+		updateHealth();
+		healthBar = new HealthBar(10, 10 + 15 * blobID, 100, 10, this, color);
+		game.queue.schedule(1, healthBar);
+		/*
 		final int divisor = 2;
 		backBuf = new BufferedImage(game.getWidth()>>divisor, game.getHeight()>>divisor, BufferedImage.TYPE_INT_ARGB);
 		frontBuf = new BufferedImage(game.getWidth()>>divisor, game.getHeight()>>divisor, BufferedImage.TYPE_INT_ARGB);
@@ -113,6 +117,7 @@ public class Blob extends Entity
 		threshold = new ThresholdFilter(0);
 		threshold.setLowerThreshold(0);
 		threshold.setUpperThreshold(255);
+		*/
 	}
 	
 	public boolean equals(Object theOther)
@@ -179,9 +184,12 @@ public class Blob extends Entity
 		
 		
 		//Graphics2D g = backBuf.createGraphics();
+		double scale = ((OozeView)game.view).SCALE;
 		
 		for( Particle p : particles )
-			p.draw(graphics, game, color, ((OozeView)game.view).SCALE);
+			p.draw(graphics, game, color, scale );
+		
+		healthBar.draw(graphics, game, scale);
 		
 		//g.dispose();
 
@@ -204,6 +212,7 @@ public class Blob extends Entity
 	public void go(Game game, long timestep, int priorityLevel) 
 	{		
 		OozeWars g = (OozeWars)game;
+		updateHealth();
 		
 		// ignore head for AI-less blobs
 		boolean headDead = ( head == null ) ? false : head.isDead();
@@ -230,7 +239,6 @@ public class Blob extends Entity
 		
 		if(head != null)
 		{
-			updateHealth();
 			PlayerControls pc = g.getControls()[blobID-1];
 			
 			if(pc.isFire() && isFireReady())
@@ -411,7 +419,7 @@ public class Blob extends Entity
 	 */
 	public void updateHealth()
 	{
-		health = head.getRadius();
+		health = (head != null) ? head.getRadius() : 0;
 		for(Particle p:  particles)
 			health += p.getRadius();
 	}
