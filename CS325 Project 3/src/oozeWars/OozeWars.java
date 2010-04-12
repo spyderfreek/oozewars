@@ -76,10 +76,11 @@ public class OozeWars extends Game
 		height = view.preferredHeight + 20;
 		
 		int numParticles = 50;
+		int player = numPlayers;
 		
-		while(numPlayers-- > 0)
+		while( player-- > 0)
 		{
-			int id = numPlayers + 1;
+			int id = player + 1;
 			switch (id)
 			{
 				case(1):
@@ -96,8 +97,10 @@ public class OozeWars extends Game
 		}
 		
 		ArrayList<Particle> neutralParticles = new ArrayList<Particle>();
+		
 		for( int i = 0; i < numParticles; i++ )
 			neutralParticles.add(new Particle(700 + random.nextInt(80) - 40, 100 + random.nextInt(80) - 40, 6, Color.WHITE, 0));
+		
 		hBlobs.put(0, new Blob(neutralParticles, this));
 		
 		//adds all the particles currently in game to the Sparse Grid
@@ -171,9 +174,9 @@ public class OozeWars extends Game
 		Particle head = theList.remove(0);
 		removeParticle(head);
 		
-		b = new Blob(theList, null);
+		//b = new Blob(theList, null);
 		
-		hBlobs.put(b.getBlobID(), b);
+		//hBlobs.put(b.getBlobID(), b);
 
 		// TODO: remove event listeners for dead player, check for win / loss conditions.
 		int playerLeft = 0;
@@ -187,7 +190,8 @@ public class OozeWars extends Game
 				if(playerLeft != 0)
 					break;
 			}
-			JOptionPane.showMessageDialog(null, "Player " + playerLeft + " wins!");
+			JOptionPane.showMessageDialog(null, "Player " + playerLeft  + " wins!");
+			reset();
 			
 		}
 		else if(numPlayers == 0) //There was a draw
@@ -257,10 +261,15 @@ public class OozeWars extends Game
 	 */
 	public void removeParticle(Particle aParticle)
 	{	
-		Particle anotherParticle = allParticles.remove(allParticles.size()-1);
-		anotherParticle.setIndex(aParticle.getIndex());
-		allParticles.set(aParticle.getIndex(), anotherParticle);
-		view.removeSprite(aParticle, 1);
+		int lastInd = allParticles.size()-1;
+		int ind = aParticle.getIndex();
+		Particle anotherParticle = allParticles.remove( lastInd );
+		if( ind != lastInd )
+		{
+			anotherParticle.setIndex( ind );
+			allParticles.set( ind, anotherParticle);
+		}
+		//view.removeSprite(aParticle, 1);
 	}
 	
 	/**
@@ -667,6 +676,8 @@ public class OozeWars extends Game
 			//TODO: figure out reasonable values for range, comfydist, etc
 			for(Blob b : getBlobs())
 			{
+				if( b.isDead() && b.getBlobID() != 0)
+					removePlayer( b.getBlobID() - 1 );
 				b.go(game, timestep, priorityLevel);
 			}			
 			
@@ -723,7 +734,7 @@ public class OozeWars extends Game
 					p = constituents.get(i);
 					dx = headX - p.getX();
 					dy = headY - p.getY();
-					double k = .0005 * (1.2 - i * factor);
+					double k = .001 * (1.2 - i * factor);
 					
 					//head.applyStickConstraint( p, .001 * (1 - i * factor), Math.sqrt(comfyDist * comfyDist + 1), dx, dy, 0, comfyDist);
 					p.push(k * dx, k * dy);
@@ -856,6 +867,7 @@ public class OozeWars extends Game
 					touchedSet.set(index);
 					queue.add(p);
 				}
+				//System.out.println("Getting connectivity");
 			}
 		}
 		

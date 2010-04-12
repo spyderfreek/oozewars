@@ -37,7 +37,9 @@ public class Bullet extends Particle
 	@Override
 	public void go(Game game, long timestep, int priorityLevel)
 	{
-		super.go(game, timestep, priorityLevel);
+		
+		if( x < 0 || y < 0 || x > game.view.getWidth() || y > game.view.getHeight() )
+			setDead(true);
 
 		if( ! isDead() )
 			game.queue.schedule(priorityLevel, this);
@@ -46,6 +48,8 @@ public class Bullet extends Particle
 			game.view.removeSprite(this, 1);
 			return;
 		}
+		
+		super.go(game, timestep, priorityLevel);
 		
 		ArrayList<Particle> targets;
 		
@@ -62,11 +66,12 @@ public class Bullet extends Particle
 				dx = x - p.getX();
 				dy = y - p.getY();
 				
+				/*
 				if( dx != dx)
 				{
 					System.out.println("Bullet.go() failed");
 					System.exit(1);
-				}
+				}*/
 				
 				if(dx * dx + dy * dy < range)
 				{

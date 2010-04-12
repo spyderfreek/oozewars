@@ -214,10 +214,10 @@ public class Blob extends Entity
 		OozeWars g = (OozeWars)game;
 		updateHealth();
 		
-		// ignore head for AI-less blobs
-		boolean headDead = ( head == null ) ? false : head.isDead();
+		//System.out.println("Blob go");
 		
-		if(particles.isEmpty() || headDead )
+		// ignore head for AI-less blobs
+		if( ( head != null ) && ( head.isDead() || particles.isEmpty() ) )
 			setDead(true);
 		else
 		{
@@ -230,6 +230,7 @@ public class Blob extends Entity
 				{
 					g.removeParticle(p);
 					removeParticle(i);
+					i--;
 					continue;
 				}
 				
@@ -247,9 +248,9 @@ public class Blob extends Entity
 				if( b == null)
 					return;
 				
-				g.queue.schedule(0, b );
+				g.queue.schedule(1, b );
 				g.view.addSprite(b, 1);
-				g.queue.scheduleIn(coolDown, 0, new GunEnabler(this) );
+				g.queue.scheduleIn(coolDown, priorityLevel, new GunEnabler(this) );
 			}
 		}
 	}
@@ -410,8 +411,11 @@ public class Blob extends Entity
 	
 	public void removeParticle( int i )
 	{
-		Particle last = particles.remove(particles.size() - 1);
-		particles.set(i, last);
+		int size = particles.size();
+		Particle last = particles.remove( size - 1);
+		
+		if( i != size - 1 )
+			particles.set(i, last);
 	}
 	
 	/**
