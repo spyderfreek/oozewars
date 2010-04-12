@@ -28,7 +28,7 @@ public class OozeView extends View
 		int realHeight = (int)(preferredHeight * SCALE);
 		smallFront = new BufferedImage( realWidth + 20, realHeight + 20, BufferedImage.TYPE_INT_ARGB);
 		smallBack = new BufferedImage( realWidth + 20, realHeight + 20, BufferedImage.TYPE_INT_ARGB);
-		fader = new FadeFilter( 0.97f );
+		fader = new FadeFilter( 0.98f );
 		threshold = new AlphaThresholdFilter( 70 );
 		transform = AffineTransform.getScaleInstance((double)preferredWidth / realWidth, (double)preferredHeight / realHeight);
 	}
