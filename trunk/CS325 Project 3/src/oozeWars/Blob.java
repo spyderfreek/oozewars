@@ -175,25 +175,25 @@ public class Blob extends Entity
 		*/
 		//new RescaleOp( scalars, offsets, rh).filter(frontBuf.getAlphaRaster(), backBuf.getAlphaRaster());
 		//new RescaleFilter( 0.95f ).filter(image, image);
-		new FadeFilter( 0.98f ).filter(frontBuf, backBuf);
+		//new FadeFilter( 0.98f ).filter(frontBuf, backBuf);
 		
 		
-		Graphics2D g = backBuf.createGraphics();
+		//Graphics2D g = backBuf.createGraphics();
 		
 		for( Particle p : particles )
-			p.draw(g, game, color);
+			p.draw(graphics, game, color, ((OozeView)game.view).SCALE);
 		
-		g.dispose();
+		//g.dispose();
 
 		
-		BufferedImage temp = backBuf;
-		backBuf = frontBuf;
-		frontBuf = temp;
+		//BufferedImage temp = backBuf;
+		//backBuf = frontBuf;
+		//frontBuf = temp;
 			
 		//filter.filter(frontBuf, backBuf);
 		//threshold.filter(backBuf, frontBuf);
 		//graphics.drawRenderedImage(threshold.filter(new PremultiplyFilter().filter(frontBuf,null), null), AffineTransform.getScaleInstance(4, 4));
-		graphics.drawRenderedImage( frontBuf, AffineTransform.getScaleInstance(4, 4));
+		//graphics.drawRenderedImage( frontBuf, AffineTransform.getScaleInstance(4, 4));
 		
 		//ScaleFilter s = new ScaleFilter(ow.getWidth(), ow.getHeight());
 		//graphics.drawRenderedImage( s.filter(frontBuf, null), null);

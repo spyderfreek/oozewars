@@ -61,7 +61,7 @@ public class Backdrop implements Sprite
 	{
 		OozeWars g = (OozeWars) game;
 		graphics.drawImage(image, 0, 0, g.getWidth(), g.getHeight(), Color.MAGENTA, null);
-		//graphics.drawRenderedImage(image, null);
+		//graphics.drawRenderedImage(image, AffineTransform.getTranslateInstance(0, 0));
 	}
 
 }

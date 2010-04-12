@@ -66,7 +66,7 @@ public class Bullet extends Particle
 				{
 					Explosion e = explode( targets );
 					game.queue.schedule(priorityLevel, e );
-					game.view.addSprite(e, 1);
+					game.view.addSprite(e, 2);
 					return;
 				}
 			}
@@ -86,7 +86,7 @@ public class Bullet extends Particle
 	@Override
 	public void draw(Graphics2D graphics, Game game ) {
 		// TODO Auto-generated method stub
-		super.draw(graphics, game, color);
+		super.draw(graphics, game, color, ((OozeView)game.view).SCALE);
 	}
 	
 	
