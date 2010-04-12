@@ -14,11 +14,12 @@ import com.jhlabs.image.ImageUtils;
 public class Particle extends Entity implements Comparable<Particle>
 {
 	protected double radius, inverseMass;
+	protected double friction;
 	protected ArrayList<Particle> neighbors;
 	Color color;
 	protected int blobID;
 	protected BufferedImage image;
-	protected static int BLUR_WIDTH = 15;
+	protected static int BLUR_WIDTH = 10;
 	protected int index;
 	private int halfWidth;
 
@@ -31,15 +32,16 @@ public class Particle extends Entity implements Comparable<Particle>
 	 * @param radius
 	 * :  The radius of the Particle
 	 */
-	public Particle(double x, double y, double radius, Color color) 
+	public Particle(double x, double y, double radius, Color color, int blobid) 
 	{
 		super(x, y);
 		neighbors = new ArrayList<Particle>();
 		this.radius = radius;
-		inverseMass = 1/radius;
+		inverseMass = 1/(radius);
 		this.color = color;
 		index = -1;
 		image = createImage();
+		blobID = blobid;
 	}
 	
 	public int getBlobID() 
@@ -66,9 +68,9 @@ public class Particle extends Entity implements Comparable<Particle>
 		int newColor = color.getRGB();
 		int oldColor = this.color.getRGB();
 		this.color = new Color(0xff000000 | ImageMath.mixColors(.05f, oldColor, newColor));
-		//graphics.drawImage(image, (int)x - halfWidth, (int)y - halfWidth, null);
-		graphics.setColor(this.color);
-		graphics.fillOval((int)x - halfWidth, (int)y - halfWidth, 2 * halfWidth, 2 * halfWidth);
+		graphics.drawImage(image, (int)x - halfWidth, (int)y - halfWidth, null);
+		//graphics.setColor(this.color);
+		//graphics.fillOval((int)x - halfWidth, (int)y - halfWidth, 2 * halfWidth, 2 * halfWidth);
 	}
 	
 	protected BufferedImage createImage()
@@ -89,15 +91,20 @@ public class Particle extends Entity implements Comparable<Particle>
 
 	@Override
 	public void go(Game game, long timestep, int priorityLevel) 
-	{
-		x += vx;
-		y += vy;
+	{	
+		double tmpX = x;
+		double tmpY = y;
+		x += friction*( x - oldX );
+		y += friction * ( y - oldY );
+		oldX = tmpX;
+		oldY = tmpY;
 	}
 	
 	public void go(Game game, long timestep, int priorityLevel, 
-			double minSpeed, double maxSpeed, double friction )
+			double minSpeed, double maxSpeed, double frictn )
 	{
-		applyFriction(minSpeed, maxSpeed, friction);
+		//applyFriction(minSpeed, maxSpeed, friction);
+		friction = frictn;
 		go(game, timestep, priorityLevel);
 	}
 	
@@ -106,6 +113,7 @@ public class Particle extends Entity implements Comparable<Particle>
 	 * @param neighbor
 	 * :  The particle in which the force will be applied.
 	 */
+	/*
 	public void applyForce(Particle neighbor, double k, double distance, double dx, double dy, double comfyDistance, double range)
 	{
 		comfyDistance += radius + neighbor.getRadius();
@@ -129,6 +137,39 @@ public class Particle extends Entity implements Comparable<Particle>
 		//dvy -= neighbor.getVY() * 0.005;
 		
 		neighbor.push(dvx, dvy);
+	}
+	*/
+	
+	/**
+	 * Applies a force to the Particle's neighbor, pulling its neighbor closer to it.
+	 * @param neighbor
+	 * :  The particle in which the force will be applied.
+	 */
+	
+	public void applyStickConstraint(Particle neighbor, double k, double distance, double dx, double dy, double pushDist, double pullDist)
+	{
+		double nInvMass = neighbor.getInverseMass();
+		if( ( inverseMass + nInvMass ) == 0 )
+			return;
+		double dr = radius + neighbor.getRadius();
+		pushDist += dr;
+		pullDist += dr;
+		double comfyDist = isEnemy(neighbor) ? pushDist : pullDist;
+		
+		double diff = k * ( distance - comfyDist ) / ( distance * (inverseMass + nInvMass ) );
+		dx *= diff;
+		dy *= diff;
+		
+		push( dx * inverseMass, dy * inverseMass );
+		neighbor.push(-dx * nInvMass, -dy * nInvMass );
+	}
+	
+	public void damage( double amount )
+	{
+		if( amount >= radius )
+			setDead(true);
+		else
+			radius -= amount;
 	}
 	
 	/**

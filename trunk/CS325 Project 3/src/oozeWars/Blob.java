@@ -15,24 +15,29 @@ import com.jhlabs.image.FadeFilter;
 import com.jhlabs.image.Gradient;
 import com.jhlabs.image.LinearColormap;
 import com.jhlabs.image.LookupFilter;
+import com.jhlabs.image.PointFilter;
+import com.jhlabs.image.PremultiplyFilter;
 import com.jhlabs.image.RescaleFilter;
 import com.jhlabs.image.ScaleFilter;
+import com.jhlabs.image.ThresholdFilter;
 
 import oozeWars.OozeWars.PlayerControls;
 
 public class Blob extends Entity 
 {
 	private ArrayList<Particle> particles;
+	private ArrayList<Bullet> bullets;
 	private Head head;
 	private Color color;
-	private double orientation, minSpeed = .5, maxSpeed = 10, friction = .6, accel, health = 0, blobForce = 5;
-	private double comfyDistance = 30;
-	private int coolDown = 60;
+	private double orientation, minSpeed = .5, maxSpeed = 10, friction = .97, accel, health = 0, blobForce = .001;
+	private double comfyDistance = 20;
+	private int coolDown = 10;
 	private boolean fireReady = true;
 	private int blobID;
 	private BufferedImage backBuf, frontBuf;
 	private Colormap colorMap;
 	private LookupFilter filter;
+	private ThresholdFilter threshold;
 	
 	/**
 	 * Used to create a new Blob at a given spot, in a specified orientation, with
@@ -56,16 +61,17 @@ public class Blob extends Entity
 		this.orientation = orientation;
 		this.blobID = blobID;
 		particles = new ArrayList<Particle>();
+		bullets = new ArrayList<Bullet>();
 		
 		//TODO:  Figure out default size for head
-		head = new Head(x, y, 20, color, orientation);
+		head = new Head(x, y, 5, color, blobID, orientation);
 		head.setBlobID(this.blobID);
 		particles.add(head);
 		
 		while(numParticles-- > 0)
 		{
 			Particle aParticle = new Particle(x + game.random.nextDouble()*80 - 40, 
-					y +	game.random.nextDouble()*80-40, game.random.nextInt(10)<<1, color);
+					y +	game.random.nextDouble()*80-40, game.random.nextInt(5), color, blobID);
 			aParticle.setBlobID(blobID);
 			particles.add(aParticle);
 		}
@@ -97,12 +103,16 @@ public class Blob extends Entity
 	
 	public void init( OozeWars game )
 	{
-		backBuf = new BufferedImage(game.getWidth()>>2, game.getHeight()>>2, BufferedImage.TYPE_INT_ARGB);
-		frontBuf = new BufferedImage(game.getWidth()>>2, game.getHeight()>>2, BufferedImage.TYPE_INT_ARGB);
+		final int divisor = 0;
+		backBuf = new BufferedImage(game.getWidth()>>divisor, game.getHeight()>>divisor, BufferedImage.TYPE_INT_ARGB);
+		frontBuf = new BufferedImage(game.getWidth()>>divisor, game.getHeight()>>divisor, BufferedImage.TYPE_INT_ARGB);
 		int[] knots = { 0xffff0000, 0xff00ff00, 0xff0000ff };
 		//colorMap = new Gradient(knots);
 		colorMap = new LinearColormap();
 		filter = new LookupFilter( colorMap );
+		threshold = new ThresholdFilter(0);
+		threshold.setLowerThreshold(0);
+		threshold.setUpperThreshold(255);
 	}
 	
 	public boolean equals(Object theOther)
@@ -165,7 +175,7 @@ public class Blob extends Entity
 		*/
 		//new RescaleOp( scalars, offsets, rh).filter(frontBuf.getAlphaRaster(), backBuf.getAlphaRaster());
 		//new RescaleFilter( 0.95f ).filter(image, image);
-		new FadeFilter( 0.95f ).filter(frontBuf, backBuf);
+		new FadeFilter( 0.98f ).filter(frontBuf, backBuf);
 		
 		
 		Graphics2D g = backBuf.createGraphics();
@@ -180,9 +190,10 @@ public class Blob extends Entity
 		backBuf = frontBuf;
 		frontBuf = temp;
 			
-		filter.filter(frontBuf, backBuf);
-		graphics.drawRenderedImage(frontBuf, AffineTransform.getScaleInstance(4, 4));
-		//graphics.drawRenderedImage( frontBuf, AffineTransform.getScaleInstance(1, 1));
+		//filter.filter(frontBuf, backBuf);
+		//threshold.filter(backBuf, frontBuf);
+		//graphics.drawRenderedImage(threshold.filter(new PremultiplyFilter().filter(frontBuf,null), null), AffineTransform.getScaleInstance(4, 4));
+		graphics.drawRenderedImage( frontBuf, AffineTransform.getScaleInstance(1, 1));
 		
 		//ScaleFilter s = new ScaleFilter(ow.getWidth(), ow.getHeight());
 		//graphics.drawRenderedImage( s.filter(frontBuf, null), null);
@@ -203,6 +214,12 @@ public class Blob extends Entity
 		{
 			for(Particle p : particles)
 			{
+				if( p.isDead() )
+				{
+					g.removeParticle(p);
+					continue;
+				}
+				
 				p.go(game, timestep, priorityLevel, minSpeed, maxSpeed, friction);
 			}
 		}
@@ -212,10 +229,15 @@ public class Blob extends Entity
 			updateHealth();
 			PlayerControls pc = g.getControls()[blobID-1];
 			
-			if(pc.isFire())
+			if(pc.isFire() && isFireReady())
 			{
-				shoot();
-				g.queue.scheduleIn(coolDown, 0, new GunEnabler(this) );
+				Bullet b = shoot();
+				if( b == null)
+					return;
+				
+				g.queue.schedule(0, b );
+				g.view.addSprite(b, 1);
+				g.queue.scheduleIn(coolDown, 1, new GunEnabler(this) );
 			}
 		}
 	}
@@ -232,43 +254,17 @@ public class Blob extends Entity
 	{
 		setFireReady(false);
 		
-		Iterator<Particle> it = particles.iterator();
-		if( !it.hasNext() )
-			return null;
-		Particle biggest = it.next();
+		Particle biggest = particles.get(particles.size() - 1);
 		
-		if(biggest instanceof Head && it.hasNext())
-			biggest = it.next();
-		else
+		if(biggest == head)
 			return null;
 		
-		while(it.hasNext())
-		{
-			Particle theOther = it.next();
-			if( biggest.compareTo(theOther) == -1 )
-				biggest = theOther;
-		}
-		//We must remove a Particle with the same sized radius as the biggest.. doesn't necessarily
-		//have to be the Particle that we found as the biggest.
-		it = particles.iterator();
-		while(it.hasNext())
-		{
-			Particle theOther = it.next();
-			if(theOther instanceof Head && it.hasNext())
-				theOther = it.next();
-			else
-				return null;
-			
-			if(biggest.compareTo(theOther) == 0)
-			{
-				it.remove();
-				break;
-			}
-		}
+		biggest.setDead(true);
+		particles.remove(particles.size() - 1);
 		
 		head.calcOrientation();
 		double bigRad = biggest.getRadius();
-		return new Bullet(head.getX()+bigRad, head.getY()+bigRad, bigRad, color, head.getOrientation());
+		return new Bullet(head.getX(), head.getY(), bigRad, color, blobID, head.getOrientation(), 15);
 	}
 	
 	/**

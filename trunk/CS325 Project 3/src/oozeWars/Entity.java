@@ -4,16 +4,17 @@ import java.awt.Graphics2D;
 
 public abstract class Entity implements Sprite, Agent
 {
-	protected double x, y, vx = 0, vy = 0;
+	protected double x, y, oldX, oldY;
 	protected boolean dead;
 	
 	public Entity(double x, double y)
 	{
-		this.x = x;
-		this.y = y;
+		this.x = oldX = x;
+		this.y = oldY = y;
 		dead = false;
 	}
 	
+	/*
 	public void applyFriction(double minSpeed, double maxSpeed, double friction)
 	{
 		double speed = Math.sqrt(vx * vx + vy * vy);
@@ -31,7 +32,7 @@ public abstract class Entity implements Sprite, Agent
 			vx *= friction;
 			vy *= friction;
 		}
-	}
+	}*/
 	
 	@Override
 	public void draw(Graphics2D graphics, Game game)
@@ -48,7 +49,7 @@ public abstract class Entity implements Sprite, Agent
 		if(!isDead())
 			game.queue.schedule(priorityLevel, this);
 		else
-			game.view.removeSprite(this, 0);
+			game.view.removeSprite(this, 1);
 	}
 
 	/**
@@ -88,19 +89,19 @@ public abstract class Entity implements Sprite, Agent
 		return y;
 	}
 	
-	public double getVX()
+	public double getOldX()
 	{
-		return vx;
+		return oldX;
 	}
 	
-	public double getVY()
+	public double getOldY()
 	{
-		return vy;
+		return oldY;
 	}
 	
-	public void push(double dvx, double dvy)
+	public void push(double dx, double dy)
 	{
-		vx += dvx;
-		vy += dvy;
+		x += dx;
+		y += dy;
 	}
 }
