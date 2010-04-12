@@ -77,7 +77,7 @@ public class Bullet extends Particle
 	public Explosion explode( ArrayList<Particle> targets )
 	{
 		setDead(true);
-		return new Explosion(x, y, radius * 10, .8, 6, damage, targets);
+		return new Explosion(x, y, radius * 6, 5, 6, damage, targets);
 	}
 
 	/* (non-Javadoc)

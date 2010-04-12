@@ -76,7 +76,7 @@ public class Blob extends Entity
 			particles.add(aParticle);
 		}
 
-		init( game );
+		//init( game );
 		
 		updateHealth();
 	}
@@ -91,13 +91,13 @@ public class Blob extends Entity
 	public Blob( ArrayList<Particle> particles, OozeWars game )
 	{
 		super(0,0);
-		color = Color.WHITE;
+		color = Color.lightGray;
 		orientation = 0;
 		this.particles = particles;
 		head = null;
 		blobID = 0;
 		
-		init( game );
+		//init( game );
 		
 	}
 	
