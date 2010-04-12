@@ -4,7 +4,9 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Paint;
 import java.awt.color.ColorSpace;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.awt.image.RescaleOp;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import com.jhlabs.image.BoxBlurFilter;
@@ -18,7 +20,10 @@ public class Particle extends Entity implements Comparable<Particle>
 	protected ArrayList<Particle> neighbors;
 	Color color;
 	protected int blobID;
-	protected BufferedImage image;
+	protected BufferedImage image, colored;
+	protected RescaleOp colorFilt;
+	protected float[] scales = {1f,1f,1f,1f};
+	protected final float[] offsets = {0f,0f,0f,0f};
 	protected static int BLUR_WIDTH = 10;
 	protected int index;
 	private int halfWidth;
@@ -41,7 +46,9 @@ public class Particle extends Entity implements Comparable<Particle>
 		this.color = color;
 		index = -1;
 		image = createImage();
+		colored = new BufferedImage( halfWidth * 2, halfWidth * 2, BufferedImage.TYPE_INT_ARGB );
 		blobID = blobid;
+		colorFilt = new RescaleOp(offsets, scales, null);
 	}
 	
 	public int getBlobID() 
@@ -63,12 +70,18 @@ public class Particle extends Entity implements Comparable<Particle>
 	 * @param color
 	 * :  The color that the Particle will be.
 	 */
-	public void draw(Graphics2D graphics, Game game, Color color) 
+	public void draw(Graphics2D graphics, Game game, Color col) 
 	{
-		int newColor = color.getRGB();
+		int newColor = col.getRGB();
 		int oldColor = this.color.getRGB();
-		this.color = new Color(0xff000000 | ImageMath.mixColors(.05f, oldColor, newColor));
-		graphics.drawImage(image, (int)x - halfWidth, (int)y - halfWidth, null);
+		color = new Color(0xff000000 | ImageMath.mixColors(.05f, oldColor, newColor));
+		float factor = (float) (1.0 / 255);
+		scales[0] = color.getRed() * factor;
+		scales[1] = color.getGreen() * factor;
+		scales[2] = color.getBlue() * factor;
+		colorFilt = new RescaleOp(scales, offsets, null);
+		colorFilt.filter(image.getRaster(), colored.getRaster());
+		graphics.drawRenderedImage( colored, AffineTransform.getTranslateInstance((int)x - halfWidth, (int)y - halfWidth));
 		//graphics.setColor(this.color);
 		//graphics.fillOval((int)x - halfWidth, (int)y - halfWidth, 2 * halfWidth, 2 * halfWidth);
 	}
@@ -82,7 +95,7 @@ public class Particle extends Entity implements Comparable<Particle>
 		Graphics2D g = img.createGraphics();
 
 		BoxBlurFilter blur = new BoxBlurFilter(BLUR_WIDTH/3f, BLUR_WIDTH/3f, 3);
-		g.setColor(color);
+		g.setColor(color.white);
 		g.fillOval(BLUR_WIDTH, BLUR_WIDTH, (int)radius * 2, (int)radius * 2);
 		g.dispose();
 		

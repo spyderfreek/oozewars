@@ -14,7 +14,7 @@ class Explosion extends Entity
 {
 	// determines how quickly the falloff function goes to zero:
 	// higher values indicate a steeper drop-off
-	static final double SCALE_FACTOR = 7;
+	static final double SCALE_FACTOR = 5;
 	// Shape used to draw explosion animation
 	Shape star = createStar();
 	// max radius of the explosion

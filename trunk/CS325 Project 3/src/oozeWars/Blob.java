@@ -103,7 +103,7 @@ public class Blob extends Entity
 	
 	public void init( OozeWars game )
 	{
-		final int divisor = 0;
+		final int divisor = 2;
 		backBuf = new BufferedImage(game.getWidth()>>divisor, game.getHeight()>>divisor, BufferedImage.TYPE_INT_ARGB);
 		frontBuf = new BufferedImage(game.getWidth()>>divisor, game.getHeight()>>divisor, BufferedImage.TYPE_INT_ARGB);
 		int[] knots = { 0xffff0000, 0xff00ff00, 0xff0000ff };
@@ -193,7 +193,7 @@ public class Blob extends Entity
 		//filter.filter(frontBuf, backBuf);
 		//threshold.filter(backBuf, frontBuf);
 		//graphics.drawRenderedImage(threshold.filter(new PremultiplyFilter().filter(frontBuf,null), null), AffineTransform.getScaleInstance(4, 4));
-		graphics.drawRenderedImage( frontBuf, AffineTransform.getScaleInstance(1, 1));
+		graphics.drawRenderedImage( frontBuf, AffineTransform.getScaleInstance(4, 4));
 		
 		//ScaleFilter s = new ScaleFilter(ow.getWidth(), ow.getHeight());
 		//graphics.drawRenderedImage( s.filter(frontBuf, null), null);
