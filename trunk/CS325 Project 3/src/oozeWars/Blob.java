@@ -157,6 +157,7 @@ public class Blob extends Entity
 	public void draw(Graphics2D graphics, Game game) 
 	{
 		OozeWars ow = (OozeWars) game;
+		OozeView ov = (OozeView) ow.view;
 
 		/*float[] scalars = {0.95f};
 		float[] offsets = {0f};
@@ -169,7 +170,7 @@ public class Blob extends Entity
 		
 		
 		//Graphics2D g = backBuf.createGraphics();
-		double scale = ((OozeView)game.view).SCALE;
+		double scale = ov.SCALE;
 		
 		for( Particle p : particles )
 			p.draw(graphics, game, color, scale );
