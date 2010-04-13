@@ -71,6 +71,8 @@ public class OozeWars extends Game
 		hBlobs.clear();
 		allParticles.clear();
 		manager = new ParticleManager(this);
+		for(PlayerControls pc : controls)
+			pc.resetBooleans();
 		
 		width = view.preferredWidth + 20;
 		height = view.preferredHeight + 20;
@@ -201,7 +203,11 @@ public class OozeWars extends Game
 			if(answer == JOptionPane.YES_OPTION)
 				numPlayers = 2;
 			else
-				System.exit(0);
+			{
+				boolean quit = quit();
+				if(quit)
+					System.exit(0);
+			}
 			
 			reset();
 			
@@ -216,7 +222,11 @@ public class OozeWars extends Game
 			if(answer == JOptionPane.YES_OPTION)
 				numPlayers = 2;
 			else
-				System.exit(0);
+			{
+				boolean quit = quit();
+				if(quit)
+					System.exit(0);
+			}
 			
 			reset();
 		}
@@ -626,6 +636,11 @@ public class OozeWars extends Game
 		public void setFireKey(int fireKey) 
 		{
 			this.fireKey = fireKey;
+		}
+		
+		public void resetBooleans()
+		{
+			up = left = down = right = fire = false;
 		}
 	}
 	
