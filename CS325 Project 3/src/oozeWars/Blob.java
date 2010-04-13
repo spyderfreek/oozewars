@@ -334,19 +334,23 @@ public class Blob extends Entity
 		return maxSpeed;
 	}
 	
-	public int getCoolDown() {
+	public int getCoolDown() 
+	{
 		return coolDown;
 	}
 
-	public void setCoolDown(int coolDown) {
+	public void setCoolDown(int coolDown) 
+	{
 		this.coolDown = coolDown;
 	}
 
-	public boolean isFireReady() {
+	public boolean isFireReady() 
+	{
 		return fireReady;
 	}
 
-	public void setFireReady(boolean fireReady) {
+	public void setFireReady(boolean fireReady) 
+	{
 		this.fireReady = fireReady;
 	}
 

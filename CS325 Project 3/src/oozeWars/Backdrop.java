@@ -22,7 +22,7 @@ public class Backdrop implements Sprite
 	{
 		try
 		{
-			Image tempImg = new ImageIcon(path).getImage();
+			Image tempImg = new ImageIcon(getClass().getResource(path)).getImage();
 			
 			ImageObserver observer = new ImageObserver()
 			{

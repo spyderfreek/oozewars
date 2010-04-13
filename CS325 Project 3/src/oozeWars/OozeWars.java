@@ -53,16 +53,10 @@ public class OozeWars extends Game
 		
 		
 		
-		manager = new ParticleManager();
+		manager = new ParticleManager(this);
 		System.out.println(System.getProperty("user.dir"));
-		String imgPath = "C:/Users/Nick/Documents/GMU/CS 325/CS325 Project 3 Revised/images/cells_bg.jpg";
-		/*URL imgURL = ClassLoader.getSystemClassLoader().getResource(imgPath);
+		String imgPath = "cells_bg.jpg";
 
-		if(imgURL == null)
-		{
-			System.out.println("File not found");
-			System.exit(1);
-		}*/
 		backdrop = new Backdrop(imgPath);
 	}
 
@@ -72,6 +66,12 @@ public class OozeWars extends Game
 	@Override
 	protected void start() 
 	{
+		pace = null;
+		view.clear();
+		hBlobs.clear();
+		allParticles.clear();
+		manager = new ParticleManager(this);
+		
 		width = view.preferredWidth + 20;
 		height = view.preferredHeight + 20;
 		
@@ -121,19 +121,23 @@ public class OozeWars extends Game
 		queue.schedule(0, manager);
 	}
 
-	public int getWidth() {
+	public int getWidth() 
+	{
 		return width;
 	}
 
-	public void setWidth(int width) {
+	public void setWidth(int width) 
+	{
 		this.width = width;
 	}
 
-	public int getHeight() {
+	public int getHeight() 
+	{
 		return height;
 	}
 
-	public void setHeight(int height) {
+	public void setHeight(int height) 
+	{
 		this.height = height;
 	}
 
@@ -191,12 +195,30 @@ public class OozeWars extends Game
 					break;
 			}
 			JOptionPane.showMessageDialog(null, "Player " + playerLeft  + " wins!");
+
+			int answer = JOptionPane.showConfirmDialog(null, "Rematch?", "Game Over", 
+					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+			if(answer == JOptionPane.YES_OPTION)
+				numPlayers = 2;
+			else
+				System.exit(0);
+			
 			reset();
 			
 		}
 		else if(numPlayers == 0) //There was a draw
 		{
 			JOptionPane.showMessageDialog(null, "DRAW!");
+			
+			int answer = JOptionPane.showConfirmDialog(null, "Rematch?", "Game Over", 
+					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+			
+			if(answer == JOptionPane.YES_OPTION)
+				numPlayers = 2;
+			else
+				System.exit(0);
+			
+			reset();
 		}
 	}
 	
@@ -662,10 +684,12 @@ public class OozeWars extends Game
 	{
 		private BitSet touchedSet;
 		private final double RANGE = CELL_WIDTH * 0.75;
+		private OozeWars ow;
 		
-		public ParticleManager()
+		public ParticleManager(OozeWars ow)
 		{
 			touchedSet = new BitSet(allParticles.size() * 2);
+			this.ow = ow;
 		}
 
 		@Override
@@ -843,9 +867,7 @@ public class OozeWars extends Game
 				connected.clear();
 			
 			if( seed.isEnemy(blobID) )
-			{
 				return;
-			}
 			
 			LinkedList<Particle> queue = new LinkedList<Particle>();
 			ArrayList<Particle> neighbors;
