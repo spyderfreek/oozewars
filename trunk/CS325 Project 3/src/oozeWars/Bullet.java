@@ -33,7 +33,6 @@ public class Bullet extends Particle
 		damage = radius*2;
 	}
 	
-	//TODO:  Implement move() and explode()
 	@Override
 	public void go(Game game, long timestep, int priorityLevel)
 	{

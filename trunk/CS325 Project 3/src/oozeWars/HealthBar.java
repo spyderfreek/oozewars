@@ -43,7 +43,8 @@ public class HealthBar extends Entity
 	 * @see oozeWars.Entity#go(oozeWars.Game, long, int)
 	 */
 	@Override
-	public void go(Game game, long timestep, int priorityLevel) {
+	public void go(Game game, long timestep, int priorityLevel) 
+	{
 		currHealth += UPDATE * ( blob.getHealth() * factor - currHealth );
 		super.go(game, timestep, priorityLevel);
 	}
