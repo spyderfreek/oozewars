@@ -231,12 +231,13 @@ public class Blob extends Entity
 			if(pc.isFire() && isFireReady())
 			{
 				Bullet b = shoot();
+				g.queue.scheduleIn(coolDown, priorityLevel, new GunEnabler(this) );
+				
 				if( b == null)
 					return;
 				
 				g.queue.schedule(1, b );
 				g.view.addSprite(b, 1);
-				g.queue.scheduleIn(coolDown, priorityLevel, new GunEnabler(this) );
 			}
 		}
 	}

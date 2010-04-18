@@ -15,7 +15,7 @@ import com.jhlabs.image.ImageUtils;
 
 public class Particle extends Entity implements Comparable<Particle>
 {
-	protected double radius, inverseMass;
+	protected double radius, inverseMass, scaleFactor;
 	protected double friction;
 	protected ArrayList<Particle> neighbors;
 	Color color;
@@ -26,7 +26,7 @@ public class Particle extends Entity implements Comparable<Particle>
 	protected final float[] offsets = {0f,0f,0f,0f};
 	protected static int BLUR_WIDTH = 10;
 	protected int index;
-	private int halfWidth;
+	protected int halfWidth;
 
 	/**
 	 * Used to create a new Particle at a given location with a defined radius.
@@ -41,11 +41,12 @@ public class Particle extends Entity implements Comparable<Particle>
 	{
 		super(x, y);
 		neighbors = new ArrayList<Particle>();
-		this.radius = radius;
-		inverseMass = 1/(radius);
+		setRadius( radius );
+		
 		this.color = color;
 		index = -1;
 		image = createImage();
+		scaleFactor = 1.0 / halfWidth;
 		colored = new BufferedImage( halfWidth * 2, halfWidth * 2, BufferedImage.TYPE_INT_ARGB );
 		blobID = blobid;
 		colorFilt = new RescaleOp(offsets, scales, null);
@@ -81,9 +82,13 @@ public class Particle extends Entity implements Comparable<Particle>
 		scales[2] = color.getBlue() * factor;
 		colorFilt = new RescaleOp(scales, offsets, null);
 		colorFilt.filter(image.getRaster(), colored.getRaster());
+		
+		//double adjScale = Math.ceil( radius * scaleFactor );
+		double adjScale = halfWidth * scaleFactor;
 		AffineTransform at = AffineTransform.getScaleInstance(scale, scale);
 		//AffineTransform at = AffineTransform.getTranslateInstance((int)x - halfWidth, (int)y - halfWidth);
 		at.translate((int)x - halfWidth, (int)y - halfWidth);
+		at.scale(adjScale, adjScale);
 		graphics.drawRenderedImage( colored, at);
 		//graphics.setColor(this.color);
 		//graphics.fillOval((int)x - halfWidth, (int)y - halfWidth, 2 * halfWidth, 2 * halfWidth);
@@ -209,7 +214,7 @@ public class Particle extends Entity implements Comparable<Particle>
 		if( amount >= radius )
 			setDead(true);
 		else
-			radius -= amount;
+			setRadius( radius - amount );
 	}
 	
 	/**
@@ -276,6 +281,13 @@ public class Particle extends Entity implements Comparable<Particle>
 	public double getRadius()
 	{
 		return radius;
+	}
+	
+	public void setRadius( double newRadius )
+	{
+		radius = newRadius;
+		halfWidth = (int)newRadius + BLUR_WIDTH;
+		inverseMass = 1 / newRadius;
 	}
 	
 	public double getInverseMass() {
