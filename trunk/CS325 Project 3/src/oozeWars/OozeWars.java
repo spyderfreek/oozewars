@@ -723,6 +723,11 @@ public class OozeWars extends Game
 			wipeClean();
 			updateNeighbors( RANGE );
 			
+			OozeWars ow = (OozeWars)game;
+			double xMax = ow.getWidth();
+			double yMax = ow.getHeight();
+			keepInBounds(xMax, yMax);
+			
 			wipeClean();
 			getConnectivity();
 
@@ -837,6 +842,26 @@ public class OozeWars extends Game
 						p.applyStickConstraint(op, bForce, distance, dx, dy, range, comfy);	
 					}
 				}
+			}
+		}
+		
+		private void keepInBounds( double xMax, double yMax )
+		{
+			for( Particle p : allParticles )
+			{
+				double x = p.getX();
+				double y = p.getY();
+				double r = p.halfWidth;
+				
+				if(x < r)
+					p.x = r;
+				else if(x > xMax - r)
+					p.x = xMax - r;
+				
+				if(y < r)
+					p.y = r;
+				else if(y > yMax - r)
+					p.y = yMax - r;
 			}
 		}
 		

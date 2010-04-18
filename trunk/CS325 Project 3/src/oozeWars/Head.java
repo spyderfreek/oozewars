@@ -58,6 +58,25 @@ public class Head extends Particle
 	}
 	
 	/* (non-Javadoc)
+	 * @see oozeWars.Particle#damage(double)
+	 */
+	@Override
+	public void damage(double amount) 
+	{
+		super.damage(amount * 0.2);
+	}
+
+	/* (non-Javadoc)
+	 * @see oozeWars.Particle#setRadius(double)
+	 */
+	@Override
+	public void setRadius(double newRadius) 
+	{
+		radius = newRadius;
+		halfWidth = (int)newRadius + BLUR_WIDTH;
+	}
+
+	/* (non-Javadoc)
 	 * @see oozeWars.Particle#applyStickConstraint(oozeWars.Particle, double, double, double, double, double, double)
 	 */
 	@Override
