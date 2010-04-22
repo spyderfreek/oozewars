@@ -144,6 +144,22 @@ public class Game
 	/** The game's drawing and GUI event view. */
 	public View view;
 	
+	/** Sean Luke's class used for asynchronous drawing/update */
+	public class ThreadsafeFlag
+	{
+		boolean val = false;
+		public synchronized void turnOn() { val = true; }
+		public synchronized boolean testAndTurnOff()
+		{
+			boolean v = val;
+			val = false;
+			return v;
+		}
+	}
+	
+	public final ThreadsafeFlag stepFlag = new ThreadsafeFlag();
+	public final ThreadsafeFlag repaintFlag = new ThreadsafeFlag();
+	
 	// internal variables
 	java.util.Timer pace;
 	double frameRate;			// the target rate
@@ -192,6 +208,9 @@ public class Game
 		to call super.stop(); */
 	protected void stop()
 	{
+		stepFlag.testAndTurnOff();
+		repaintFlag.testAndTurnOff();
+		paused = true;
 		pace.cancel();
 		queue.clear();
 	}
@@ -206,29 +225,32 @@ public class Game
 
 		// need to do this access game instance from inner anonymous class
 		final Game thisGame = this;
+		paused = false;
 		
 		registerListeners(view);
+		
+		stepFlag.turnOn();
+		repaintFlag.turnOn();
 		
 		TimerTask painter = new TimerTask( ) 
 		{
 			public void run ( ) 
 			{
-				try 
+
+				SwingUtilities.invokeLater(new Runnable( ) 
 				{
-					SwingUtilities.invokeAndWait(new Runnable( ) 
+					public void run( ) 
 					{
-						public void run( ) 
+						if( !paused && stepFlag.testAndTurnOff() )
 						{
-							if(!paused)
-							{
-								queue.step( thisGame ); // advance my model
-								view.repaint( ); // draw the model
-							}
+							queue.step( thisGame ); // advance my model
+							view.repaint( ); // draw the model
+							stepFlag.turnOn();
+							repaintFlag.turnOn();
 						}
-					} );
-				}
-				catch (InterruptedException e) { } // do nothing
-				catch (InvocationTargetException e) { } // do nothing
+					}
+				} );
+
 			} 
 		};
         
