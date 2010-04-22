@@ -36,6 +36,9 @@ public class OozeView extends View
 	/** Paints the View by drawing all the sprites in order.  Painting is done antialiased. */
 	public void paintComponent(Graphics g)
 	{
+		if( ! game.repaintFlag.testAndTurnOff() )
+			return;
+		
 		Graphics2D graphics = (Graphics2D) g;
 		
 		fader.filter(smallFront, smallBack);
@@ -78,5 +81,6 @@ public class OozeView extends View
 		}
 		
 		graphics.dispose();
+		
 	}
 }

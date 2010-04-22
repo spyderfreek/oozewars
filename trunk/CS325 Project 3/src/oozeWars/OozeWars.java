@@ -180,7 +180,7 @@ public class OozeWars extends Game
 		Particle head = theList.remove(0);
 		removeParticle(head);
 		
-		//b = new Blob(theList, null);
+		paused = true;
 		
 		//hBlobs.put(b.getBlobID(), b);
 
@@ -208,7 +208,7 @@ public class OozeWars extends Game
 				if(quit)
 					System.exit(0);
 			}
-			
+
 			reset();
 			
 		}
@@ -713,12 +713,27 @@ public class OozeWars extends Game
 
 			
 			//TODO: figure out reasonable values for range, comfydist, etc
+			
+			// avoid ConcurrentModificationException
+			boolean isDead[] = new boolean[2];
+			
+			for( int i = 0; i < isDead.length; i++ )
+			{
+				isDead[i] = false;
+			}
+			
 			for(Blob b : getBlobs())
 			{
 				if( b.isDead() && b.getBlobID() != 0)
-					removePlayer( b.getBlobID() - 1 );
+					isDead[ b.getBlobID() - 1 ] = true;
 				b.go(game, timestep, priorityLevel);
 			}			
+			
+			for( int i = 0; i < isDead.length; i++ )
+			{
+				if( isDead[i] )
+					removePlayer(i);
+			}
 			
 			wipeClean();
 			updateNeighbors( RANGE );
