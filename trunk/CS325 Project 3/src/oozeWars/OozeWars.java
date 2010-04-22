@@ -3,6 +3,7 @@ package oozeWars;
 import java.awt.Color;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -66,8 +67,11 @@ public class OozeWars extends Game
 	@Override
 	protected void start() 
 	{
+		KeyListener[] kl = view.getKeyListeners();
+		if(kl.length == 1 && kl[0] != null)
+			view.removeKeyListener(kl[0]);
+		
 		pace = null;
-		view.clear();
 		hBlobs.clear();
 		allParticles.clear();
 		manager = new ParticleManager(this);
@@ -105,7 +109,6 @@ public class OozeWars extends Game
 		
 		hBlobs.put(0, new Blob(neutralParticles, this));
 		
-		//adds all the particles currently in game to the Sparse Grid
 		for(Blob b: getBlobs())
 		{
 			for(Particle p: b.getParticles())
@@ -159,8 +162,8 @@ public class OozeWars extends Game
 				return new PlayerControls(KeyEvent.VK_W, KeyEvent.VK_S, KeyEvent.VK_A,
 						KeyEvent.VK_D, KeyEvent.VK_SPACE);
 			case 1:
-				return new PlayerControls(KeyEvent.VK_NUMPAD8, KeyEvent.VK_NUMPAD5, 
-						KeyEvent.VK_NUMPAD4,KeyEvent.VK_NUMPAD6, KeyEvent.VK_NUMPAD0);
+				return new PlayerControls(KeyEvent.VK_I, KeyEvent.VK_K, 
+						KeyEvent.VK_J,KeyEvent.VK_L, KeyEvent.VK_SHIFT);
 			default:
 				throw new IllegalArgumentException("Invalid Player Count");
 		}

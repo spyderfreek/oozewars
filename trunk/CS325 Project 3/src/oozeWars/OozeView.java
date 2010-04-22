@@ -47,10 +47,10 @@ public class OozeView extends View
 		small.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		
 		
-		Iterator iterator = sprites[0].iterator();
+		Iterator<Sprite> iterator = sprites[0].iterator();
 		while(iterator.hasNext())
 		{
-			Sprite sprite = (Sprite)(iterator.next());
+			Sprite sprite = iterator.next();
 			sprite.draw(graphics, game);
 		}
 		
