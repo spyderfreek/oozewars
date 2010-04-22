@@ -33,15 +33,19 @@ public class Blob extends Entity
 	 * a specified number of particles, and with a particular color.  Also initializes
 	 * the Blob's health and ID.
 	 * @param x
-	 * :  The x location that the Head of the Blob will be placed
+	 * :  The x location that the Head of the Blob will be placed.
 	 * @param y
-	 * :  The y location that the Head of the Blob will be placed
+	 * :  The y location that the Head of the Blob will be placed.
 	 * @param orientation
-	 * :  The angle that the Head of the Blob will be facing (in Degrees)
+	 * :  The angle that the Head of the Blob will be facing (in Radians).
 	 * @param numParticles
-	 * :  The number of particles the Blob will contain
+	 * :  The number of particles the Blob will contain.
+	 * @param blobID
+	 * :  The ID that this Blob will have as well as all of its Particles.
+	 * @param game
+	 * :  The game that this Blob will be added to.
 	 * @param color
-	 * :  The color the Blob will be
+	 * :  The color the Blob will be.
 	 */
 	public Blob(double x, double y, double orientation, int numParticles, int blobID, OozeWars game, Color color) 
 	{
@@ -72,7 +76,8 @@ public class Blob extends Entity
 	 * This Blob will be flagged as neutral and will have an ID = 0;
 	 * @param particles 
 	 * : An initialization list of particles that this Blob will contain.
-	 * @param game TODO
+	 * @param game
+	 * :  The game that this Blob will be added to.
 	 */
 	public Blob( ArrayList<Particle> particles, OozeWars game )
 	{
@@ -105,6 +110,17 @@ public class Blob extends Entity
 		*/
 	}
 	
+	/**
+	 * Checks if a Blob is equal to another Object based on whether the Object is
+	 * a Blob.  If it so happens that the other Object is a Blob, the two Blobs are
+	 * equal if they have the same blobID.
+	 * 
+	 * @param theOther
+	 * :  The Object that this Blob will check equality for.
+	 * @return
+	 * <b>TRUE</b> if the two Blobs are equal.
+	 * <p><b>FALSE</b> if the two Blobs are not equal.</p>
+	 */
 	public boolean equals(Object theOther)
 	{
 		if (theOther == null || !(theOther instanceof Blob)) 
@@ -114,11 +130,27 @@ public class Blob extends Entity
 		return (blobID == other.getBlobID());
 	}
 	
+	/**
+	 * Uses a simple hashing method for getting an int to represent the current Blob.
+	 * @param obj
+	 * :  The Object for which the hash code will be returned.
+	 * @return
+	 * <b>blobID</b> if the object is a Blob.
+	 * <p><b>0</b> if the object is not a Blob.</p>
+	 */
 	public int hashCode(Object obj)
 	{
-		return (int)blobID;
+		if(obj instanceof Blob)
+			return ((Blob)obj).getBlobID();
+		
+		return 0;
 	}
 	
+	/**
+	 * A method to return the friction constant that is currently affecting this Blob.
+	 * @return
+	 * The friction constant currently affecting this Blob.
+	 */
 	public double getFriction()
 	{
 		return friction;
@@ -127,7 +159,7 @@ public class Blob extends Entity
 	/**
 	 * Returns the Blob's current ID number.
 	 * @return
-	 * The Blob's current ID number.
+	 * The int representing the Blob's current ID number.
 	 */
 	public int getBlobID() 
 	{
@@ -144,6 +176,11 @@ public class Blob extends Entity
 		this.blobID = blobID;
 	}
 
+	/**
+	 * A method to retrieve the Particle that is the Head of this Blob.
+	 * @return
+	 * The Particle that is the Head of this Blob.
+	 */
 	public Head getHead() 
 	{
 		return head;
@@ -152,6 +189,10 @@ public class Blob extends Entity
 	/**
 	 * A method used to draw the specified Blob.  Uses Particle's draw() method for each of
 	 * the Particles in the Blob.
+	 * @param graphics
+	 * :  The Java graphics that will be used to draw this Blob on screen.
+	 * @param game
+	 * :  The game that this Blob will be drawn for.
 	 */
 	@Override
 	public void draw(Graphics2D graphics, Game game) 
@@ -193,7 +234,15 @@ public class Blob extends Entity
 		//graphics.drawRenderedImage( s.filter(frontBuf, null), null);
 	}
 
-	
+	/**
+	 * Instructions for this Blob to carry out each timestep of the game.
+	 * @param game
+	 * :  The game this Blob will be taking action in.
+	 * @param timestep
+	 * :  The tick number that the Blob will be scheduled for.
+	 * @param priorityLevel
+	 * :  The importance the Blob carries for performing its actions.
+	 */
 	@Override
 	public void go(Game game, long timestep, int priorityLevel) 
 	{		
@@ -254,7 +303,13 @@ public class Blob extends Entity
 	{
 		setFireReady(false);
 		
-		Particle biggest = particles.get(particles.size() - 1);
+		Particle biggest = null;
+		for(int i = particles.size() - 1; i > -1; i--)
+		{
+				biggest = particles.get(i);
+				if( biggest != null && !biggest.isDead() )
+					break;
+		}
 		
 		if(biggest == head)
 			return null;
@@ -345,12 +400,23 @@ public class Blob extends Entity
 	{
 		this.coolDown = coolDown;
 	}
-
+	
+	/**
+	 * Tells whether the Blob's cooldown is over.
+	 * @return
+	 * <b>TRUE</b> if the Blob is ready to shoot.
+	 * <p><b>FALSE</b> if the Blob is not yet ready to shoot.
+	 */
 	public boolean isFireReady() 
 	{
 		return fireReady;
 	}
-
+	
+	/**
+	 * Sets the Blob's fireReady variable to the given boolean value.
+	 * @param fireReady
+	 * :  The value that this.fireReady will be set to.
+	 */
 	public void setFireReady(boolean fireReady) 
 	{
 		this.fireReady = fireReady;
@@ -394,12 +460,21 @@ public class Blob extends Entity
 		return comfyDistance;
 	}
 	
+	/**
+	 * Sets all the Particles in this Blob to the Blob's current color.
+	 */
 	public void setParticlesColor()
 	{
 		for(Particle p : particles)
 			p.color = color;
 	}
 	
+	/**
+	 * Removes the tail Particle in this Blob's Particles and replaces it with
+	 * the ith Particle.
+	 * @param i
+	 * The element that will now be the tail Particle.
+	 */
 	public void removeParticle( int i )
 	{
 		int size = particles.size();
@@ -419,14 +494,27 @@ public class Blob extends Entity
 			health += p.getRadius();
 	}
 	
+	/**
+	 * Receives an ArrayList of Particles and replaces its current particles
+	 * with the new ones in the ArrayList passed.
+	 * @param particles
+	 * The <code>ArrayList&#60Particle&#62</code> that this Blob's particles will
+	 * be set to.
+	 */
 	public void setParticles(ArrayList<Particle> particles)
 	{
 		this.particles = particles;
 	}
 	
+	/**
+	 * Returns the <code>ArrayList&#60Particle&#62</code> that this Blob currently
+	 * contains.
+	 * @return
+	 * The <code>ArrayList&#60Particle&#62</code> of Particles that this Blob currently
+	 * contains.
+	 */
 	public ArrayList<Particle> getParticles()
 	{
 		return particles;
 	}
-	
 }

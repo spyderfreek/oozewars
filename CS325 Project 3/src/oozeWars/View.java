@@ -35,7 +35,7 @@ public class View extends JPanel
 	Game game;					// backpointer to the game
 	int preferredWidth;			// preferred view width
 	int preferredHeight;		// preferred view height
-	LinkedHashSet[] sprites;	// An array of Sets of sprites, each array element corresponding to a sprite layer
+	LinkedHashSet<Sprite>[] sprites;	// An array of Sets of sprites, each array element corresponding to a sprite layer
 
 	/** Constructs a View with a given game, number of sprite layers, and preferred width and height.
 		Obviously the game must have already been constructed.  Sets the game's 'view' variable to this
@@ -100,10 +100,10 @@ public class View extends JPanel
 		graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		for(int i = 0; i < sprites.length; i++)
 		{
-			Iterator iterator = sprites[i].iterator();
+			Iterator<Sprite> iterator = sprites[i].iterator();
 			while(iterator.hasNext())
 			{
-				Sprite sprite = (Sprite)(iterator.next());
+				Sprite sprite = iterator.next();
 				sprite.draw(graphics, game);
 			}
 		}

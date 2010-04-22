@@ -213,6 +213,7 @@ public class Game
 		paused = true;
 		pace.cancel();
 		queue.clear();
+		view.clear();
 	}
 		
 	/** Called by reset() to start the game.  Override this to initialize or reinitialize things, but be sure
@@ -288,7 +289,7 @@ public class Game
 		call super.quit() and return the result; else simply return false.*/
 	public boolean quit()
 	{
-		int choice = JOptionPane.showConfirmDialog(null, "Are you sure you want to quit?", "Quit?", JOptionPane.YES_NO_OPTION);
+		int choice = JOptionPane.showConfirmDialog(null, "Would you like to quit?", "Quit?", JOptionPane.YES_NO_OPTION);
 
         // make sure closing wasn't an accident
         if(choice == JOptionPane.YES_OPTION)
