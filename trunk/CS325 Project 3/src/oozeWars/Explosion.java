@@ -7,7 +7,11 @@ import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
+import java.io.IOException;
 import java.util.ArrayList;
+
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 
 import com.jhlabs.image.ImageMath;
 
@@ -40,6 +44,8 @@ class Explosion extends Entity
 	float alpha;
 	
 	ArrayList<Particle> targets;
+	private static Sound hit;
+	private boolean played = false;
 	
 	// create a multi-pointed star
 	Shape createStar()
@@ -79,6 +85,14 @@ class Explosion extends Entity
 		time = 0;
 		targets = particles;
 		
+		try 
+		{
+			hit = new Sound(getClass().getResource("hit.wav"), true);
+		} 
+		catch (UnsupportedAudioFileException e) {e.printStackTrace();}
+		catch (LineUnavailableException e) {e.printStackTrace();}
+		catch (IOException e) {e.printStackTrace();}
+		
 		// initialize visual's scale and position
 		transform = new AffineTransform();
 		transform.translate( x, y );
@@ -88,6 +102,11 @@ class Explosion extends Entity
 	@Override
 	public void go(Game game, long timestep, int priorityLevel)
 	{
+		if(played == false)
+		{
+			played = true;
+			hit.play();
+		}
 		
 		//OozeWars g = (OozeWars)game;
 		super.go(game, timestep, priorityLevel);

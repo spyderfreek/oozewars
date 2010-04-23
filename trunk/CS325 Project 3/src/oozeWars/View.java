@@ -131,7 +131,10 @@ public class View extends JPanel
 			public void windowClosing(WindowEvent e)
 			{
 				if (game.quit())
+				{
 					frame.dispose();
+					System.exit(0);
+				}
 			}
 		});
 		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
