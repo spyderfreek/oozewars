@@ -52,9 +52,6 @@ public class OozeWars extends Game
 		for(int i = 0; i < numPlayers; i++)
 			controls[i] = setPlayerControls(i);
 		
-		
-		
-		manager = new ParticleManager(this);
 		System.out.println(System.getProperty("user.dir"));
 		String imgPath = "cells_bg.jpg";
 
@@ -66,20 +63,11 @@ public class OozeWars extends Game
 	 */
 	@Override
 	protected void start() 
-	{
-		KeyListener[] kl = view.getKeyListeners();
-		if(kl.length == 1 && kl[0] != null)
-			view.removeKeyListener(kl[0]);
-		
-		pace = null;
-		hBlobs.clear();
-		allParticles.clear();
-		manager = new ParticleManager(this);
-		for(PlayerControls pc : controls)
-			pc.resetBooleans();
-		
+	{	
 		width = view.preferredWidth + 20;
 		height = view.preferredHeight + 20;
+		
+		manager = new ParticleManager(this);
 		
 		int numParticles = 50;
 		int player = numPlayers;
@@ -124,6 +112,24 @@ public class OozeWars extends Game
 		
 		super.start();
 		queue.schedule(0, manager);
+	}
+	
+	@Override
+	protected void stop()
+	{
+		super.stop();
+		
+		KeyListener[] kl = view.getKeyListeners();
+		if(kl.length == 1 && kl[0] != null)
+			view.removeKeyListener( kl[0] );
+		
+		pace.purge();
+		pace = null;
+		hBlobs.clear();
+		allParticles.clear();
+		manager = null;
+		for(PlayerControls pc : controls)
+			pc.resetBooleans();
 	}
 
 	public int getWidth() 
@@ -407,7 +413,7 @@ public class OozeWars extends Game
 	{
 		String answer = JOptionPane.showInputDialog("How many players?");
 		int n = Integer.parseInt(answer);
-		OozeWars game = new OozeWars(30, n);
+		OozeWars game = new OozeWars(45, n);
 		OozeView view = new OozeView(game, 3, 800, 600, 0.25);
 		JFrame frame = view.createFrame("Ooze Wars");
 		view.setKeystrokeFocus(frame);
@@ -416,7 +422,7 @@ public class OozeWars extends Game
 	
 	/**
 	 * Sets up the key bindings necessary for the controls that the player will be using.
-	 * @author Nick Kitten
+	 * @author Nick Kitten & Sean Fedak
 	 */
 	protected static class PlayerControls
 	{

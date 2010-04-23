@@ -2,14 +2,19 @@ package oozeWars;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.io.IOException;
 import java.util.ArrayList;
+
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 
 public class Bullet extends Particle 
 {
 	private double damage;
 	private double orientation;
 	private final double range = 400;
-	// TODO get graphics here
+	private static Sound[] launch;
+	private boolean played = false;
 	
 	/**
 	 * Creates a new bullet at a given location with a specific radius and orientation.  Initializes the damage
@@ -31,11 +36,29 @@ public class Bullet extends Particle
 		friction = 1;
 		push( speed*Math.cos(orientation), speed*Math.sin(orientation) );
 		damage = radius*2;
+		
+		launch = new Sound[3];
+		for( int i = 0; i < 2; i++)
+		{
+			try 
+			{
+				launch[i] = new Sound(getClass().getResource("launch" + i + ".wav"), true);
+			} 
+			catch (UnsupportedAudioFileException e) {e.printStackTrace();} 
+			catch (LineUnavailableException e) {e.printStackTrace();}
+			catch (IOException e) {e.printStackTrace();}
+		}
 	}
 	
 	@Override
 	public void go(Game game, long timestep, int priorityLevel)
 	{
+		if( played == false )
+		{
+			played = true;
+			launch[game.random.nextInt(2)].play();
+		}
+			
 		
 		if( x < 0 || y < 0 || x > game.view.getWidth() || y > game.view.getHeight() )
 			setDead(true);

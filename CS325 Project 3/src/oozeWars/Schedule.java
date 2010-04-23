@@ -80,6 +80,8 @@ public class Schedule
 	{
 		for(PriorityQueue q: priorityQueues)
 			q.clear();
+		
+		ticks = EPOCH - 1;
 	}
 
 	/** Schedules an Agent to be fired at the very next timestep, with the given priority level. */
