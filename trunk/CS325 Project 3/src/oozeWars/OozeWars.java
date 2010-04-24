@@ -1011,13 +1011,18 @@ public class OozeWars extends Game
 	private static Midi[] initializeSongs()
 	{
 		Midi[] songs = new Midi[4];
+		int volume = 70;
 		
 		try 
 		{
 			songs[0] = new Midi(OozeWars.class.getResourceAsStream("rtft.mid"));
+			songs[0].setVolume(volume);
 			songs[1] = new Midi(OozeWars.class.getResourceAsStream("sonicsuf.mid"));
+			songs[1].setVolume(volume-20);
 			songs[2] = new Midi(OozeWars.class.getResourceAsStream("spheare.mid"));
+			songs[2].setVolume(volume-10);
 			songs[3] = new Midi(OozeWars.class.getResourceAsStream("absence.mid"));
+			songs[3].setVolume(volume-20);
 		} 
 		catch (InvalidMidiDataException e) {e.printStackTrace();}
 		catch (MidiUnavailableException e) {e.printStackTrace();}
