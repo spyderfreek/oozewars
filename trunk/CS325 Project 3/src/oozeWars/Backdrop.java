@@ -10,6 +10,9 @@ import java.awt.Toolkit;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
 
 import javax.swing.ImageIcon;
 
@@ -22,6 +25,12 @@ public class Backdrop implements Sprite
 	{
 		try
 		{
+			try {
+				System.out.println(new File("").getCanonicalPath());
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			Image tempImg = new ImageIcon(getClass().getResource(path)).getImage();
 			
 			ImageObserver observer = new ImageObserver()
