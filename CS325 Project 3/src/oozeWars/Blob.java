@@ -5,7 +5,11 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.*;
+
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.JOptionPane;
 
 import com.jhlabs.image.Colormap;
@@ -27,6 +31,26 @@ public class Blob extends Entity
 	private boolean fireReady = true;
 	private int blobID;
 	private HealthBar healthBar;
+	private int lastNumParticles;
+	private static Sound slurp = initializeSound();
+	
+	private static Sound initializeSound()
+	{
+		try {
+			return new Sound( Blob.class.getResourceAsStream("slurp.wav"), true );
+		} catch (UnsupportedAudioFileException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (LineUnavailableException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
 	
 	/**
 	 * Used to create a new Blob at a given spot, in a specified orientation, with
@@ -275,6 +299,9 @@ public class Blob extends Entity
 		
 		if(head != null)
 		{
+			if( particles.size() > lastNumParticles )
+				slurp.play();
+			
 			PlayerControls pc = g.getControls()[blobID-1];
 			
 			if(pc.isFire() && isFireReady())
@@ -332,6 +359,13 @@ public class Blob extends Entity
 		return health;
 	}
 	
+	/**
+	 * @param lastNumParticles the lastNumParticles to set
+	 */
+	public void setLastNumParticles(int lastNumParticles) {
+		this.lastNumParticles = lastNumParticles;
+	}
+
 	/**
 	 * Sets the minimum speed that the Blob can go.  As speed is an absolute value, 
 	 * any negative values will be set to positive values.  Lowest minimum speed = 0.  

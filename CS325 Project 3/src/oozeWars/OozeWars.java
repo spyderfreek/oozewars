@@ -803,6 +803,9 @@ public class OozeWars extends Game
 					continue;
 
 				constituents = b.getParticles();
+				
+				b.setLastNumParticles( constituents.size() );
+				
 				Head head = b.getHead();
 				getConnectivity( head, id, constituents, true );
 				
