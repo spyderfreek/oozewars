@@ -13,7 +13,8 @@ public class Bullet extends Particle
 	private double damage;
 	private double orientation;
 	private final double range = 400;
-	private static Sound[] launch;
+	private static Sound[] launch = initializeSound();
+	
 	private boolean played = false;
 	
 	/**
@@ -36,18 +37,6 @@ public class Bullet extends Particle
 		friction = 1;
 		push( speed*Math.cos(orientation), speed*Math.sin(orientation) );
 		damage = radius*2;
-		
-		launch = new Sound[3];
-		for( int i = 0; i < 2; i++)
-		{
-			try 
-			{
-				launch[i] = new Sound(getClass().getResource("launch" + i + ".wav"), true);
-			} 
-			catch (UnsupportedAudioFileException e) {e.printStackTrace();} 
-			catch (LineUnavailableException e) {e.printStackTrace();}
-			catch (IOException e) {e.printStackTrace();}
-		}
 	}
 	
 	@Override
@@ -122,6 +111,22 @@ public class Bullet extends Particle
 		super.draw(graphics, game, color, ((OozeView)game.view).SCALE);
 	}
 	
-	
+	private static Sound[] initializeSound()
+	{
+		Sound[] sounds = new Sound[3];
+		
+		for( int i = 0; i < 2; i++)
+		{
+			try 
+			{
+				sounds[i] = new Sound(Bullet.class.getResource("launch" + (i+1) + ".wav"), true);
+			} 
+			catch (UnsupportedAudioFileException e) {e.printStackTrace();} 
+			catch (LineUnavailableException e) {e.printStackTrace();}
+			catch (IOException e) {e.printStackTrace();}
+		}
+		
+		return sounds;
+	}
 
 }
