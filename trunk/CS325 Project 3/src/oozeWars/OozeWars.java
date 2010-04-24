@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -11,6 +12,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
+
+import javax.sound.midi.InvalidMidiDataException;
+import javax.sound.midi.MidiUnavailableException;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
@@ -28,6 +32,7 @@ public class OozeWars extends Game
 	private int MAX_X, MAX_Y;
 	public final double SCALE = 0.25;
 	private int width, height;
+	private static Midi[] songs = initializeSongs();
 	
 	/**
 	 * The constructor for the game OozeWars.  Calls the constructor for Game.java.  
@@ -112,12 +117,21 @@ public class OozeWars extends Game
 		
 		super.start();
 		queue.schedule(0, manager);
+		
+		try 
+		{
+			songs[random.nextInt(4)].play(true, true);
+		} 
+		catch (InvalidMidiDataException e) {e.printStackTrace();}
 	}
 	
 	@Override
 	protected void stop()
 	{
 		super.stop();
+		
+		for(Midi s: songs)
+			s.stop();
 		
 		KeyListener[] kl = view.getKeyListeners();
 		if(kl.length == 1 && kl[0] != null)
@@ -989,5 +1003,23 @@ public class OozeWars extends Game
 				getConnectivity( seed, 0, constituents, false);
 			}
 		}
+	}
+	
+	private static Midi[] initializeSongs()
+	{
+		Midi[] songs = new Midi[4];
+		
+		try 
+		{
+			songs[0] = new Midi(OozeWars.class.getResourceAsStream("rtft.mid"));
+			songs[1] = new Midi(OozeWars.class.getResourceAsStream("sonicsuf.mid"));
+			songs[2] = new Midi(OozeWars.class.getResourceAsStream("spheare.mid"));
+			songs[3] = new Midi(OozeWars.class.getResourceAsStream("absence.mid"));
+		} 
+		catch (InvalidMidiDataException e) {e.printStackTrace();}
+		catch (MidiUnavailableException e) {e.printStackTrace();}
+		catch (IOException e) {e.printStackTrace();}
+		
+		return songs;
 	}
 }

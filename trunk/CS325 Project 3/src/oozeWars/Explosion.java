@@ -44,7 +44,7 @@ class Explosion extends Entity
 	float alpha;
 	
 	ArrayList<Particle> targets;
-	private static Sound hit;
+	private static Sound hit = initializeSound();
 	private boolean played = false;
 	
 	// create a multi-pointed star
@@ -84,14 +84,6 @@ class Explosion extends Entity
 		minR2 = maxR2 = 0;
 		time = 0;
 		targets = particles;
-		
-		try 
-		{
-			hit = new Sound(getClass().getResource("hit.wav"), true);
-		} 
-		catch (UnsupportedAudioFileException e) {e.printStackTrace();}
-		catch (LineUnavailableException e) {e.printStackTrace();}
-		catch (IOException e) {e.printStackTrace();}
 		
 		// initialize visual's scale and position
 		transform = new AffineTransform();
@@ -227,5 +219,18 @@ class Explosion extends Entity
 		g.fill(transform.createTransformedShape(star));
 		g.setColor(new Color(0.8f, 0.8f, 0f, alpha));
 		g.fill(inner.createTransformedShape(star));
+	}
+	
+	private static Sound initializeSound()
+	{	
+		try 
+		{
+			return new Sound(Explosion.class.getResource("hit.wav"), true);
+		} 
+		catch (UnsupportedAudioFileException e) {e.printStackTrace();}
+		catch (LineUnavailableException e) {e.printStackTrace();}
+		catch (IOException e) {e.printStackTrace();}
+		
+		return null;
 	}
 }
