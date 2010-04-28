@@ -77,13 +77,6 @@ public class Bullet extends Particle
 				dx = x - p.getX();
 				dy = y - p.getY();
 				
-				/*
-				if( dx != dx)
-				{
-					System.out.println("Bullet.go() failed");
-					System.exit(1);
-				}*/
-				
 				if(dx * dx + dy * dy < range)
 				{
 					Explosion e = explode( targets );
@@ -99,7 +92,7 @@ public class Bullet extends Particle
 	public Explosion explode( ArrayList<Particle> targets )
 	{
 		setDead(true);
-		return new Explosion(x, y, radius * 6, 5, 6, damage, targets);
+		return new Explosion(x, y, radius * 6, blobID, 5, 6, damage, targets);
 	}
 
 	/* (non-Javadoc)

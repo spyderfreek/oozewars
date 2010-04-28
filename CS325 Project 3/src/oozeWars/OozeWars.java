@@ -50,7 +50,7 @@ public class OozeWars extends Game
 	private int width, height;
 	
 	//The array of songs that will be randomly chosen each time start() is called
-	private static Midi[] songs = initializeSongs();
+	private static final Midi[] songs = initializeSongs();
 	
 	/**
 	 * The constructor for the game OozeWars.  Calls the constructor for Game.java.  
@@ -236,7 +236,6 @@ public class OozeWars extends Game
 	 */
 	public void removePlayer(int player)
 	{
-		//controls[player] = null;
 		Blob b = hBlobs.remove(player+1);
 		ArrayList<Particle> theList = b.getParticles();
 		
@@ -244,10 +243,7 @@ public class OozeWars extends Game
 		removeParticle(head);
 		
 		paused = true;
-		
-		//hBlobs.put(b.getBlobID(), b);
 
-		// TODO: remove event listeners for dead player, check for win / loss conditions.
 		int playerLeft = 0;
 		Collection<Blob> blobsLeft = getBlobs();
 		
