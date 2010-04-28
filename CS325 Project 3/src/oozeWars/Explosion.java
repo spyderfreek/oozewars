@@ -149,7 +149,7 @@ class Explosion extends Entity
 			for(Blob b : ow.getBlobs())
 			{
 				if(blobID ==  b.getBlobID())
-					b.addDamageDealt( (int)(tempDamage + .5) );
+					b.addDamageDealt( (long)(tempDamage + .5) );
 			}
 			
 			vx *= speed;
