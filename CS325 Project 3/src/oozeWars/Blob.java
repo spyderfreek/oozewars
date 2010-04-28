@@ -20,34 +20,88 @@ import com.jhlabs.image.PremultiplyFilter;
 
 import oozeWars.OozeWars.PlayerControls;
 
+/**
+ * The wrapper class for a group of particles that have the same ID.
+ * 
+ * <p>A Blob is set up by giving an initial x and y coordinate that the center of the Blob's
+ * Head will be placed at and facing in the direction of the orientation passed.  The Blob
+ * will also contain a set number of particles, a unique ID (unless the Blob is neutral) which
+ * will be applied to any particles that are currently in it, and a color that all particles
+ * inside the Blob will be set to.  An instance of OozeWars will be passed to the Blob merely
+ * for the utilization of its random number generator.
+ * 
+ * <p>  Another way a Blob can be set up is to pass it an ArrayList&#60Particle&#62 and an
+ * instance of OozeWars.  This is particularly useful for creating neutral Blobs as the Blob's
+ * ID will be set to that of a neutral Blob.
+ * 
+ * <p> A Blob holds an ArrayList of Particles that it contains (including the Head Particle), the
+ * Color that its Particles will be set to, the minimum and maximum speed that each particle can go,
+ * the friction that will be applied to each Particle, an acceleration constant, a number representing
+ * the Blob's current health, the force constant that this Blob exerts, and other variables used to maintain
+ * the state of the Blob.
+ * @author Nick Kitten <br /> Sean Fedak
+ *
+ */
+
 public class Blob extends Entity 
 {
+	//The ArrayList of Particles that are part of this Blob
 	private ArrayList<Particle> particles;
-	private Head head;
-	private Color color;
-	private double minSpeed = .5, maxSpeed = 10, friction = .97, accel, health = 0, blobForce = .001;
-	private double comfyDistance = 20;
-	private int coolDown = 10;
-	private boolean fireReady = true;
-	private int blobID;
-	private HealthBar healthBar;
-	private int lastNumParticles;
-	private static Sound slurp = initializeSound();
 	
+	//The Particle that is the Head of this Blob, will be used to control the Blob.
+	private Head head;
+	
+	//The color that all the Particles in this Blob will take on.
+	private Color color;
+	
+	//minSpeed:  the minimum speed that each Particle in the Blob can have while moving
+	//maxSpeed:  the maximum speed that each Particle in the Blob can have while moving
+	//friction:  the amount the speed of each Particle in the Blob will be reduced when
+	//			 not accelerating.
+	//accel:	 the current acceleration of the Blob.
+	//health:	 the sum of all the Particles' radii that are currently in the Blob,
+	//			 includes the Head Particle.
+	//blobForce: the amount of force that each Particle in the Blob has on one another.
+	private double minSpeed = .5, maxSpeed = 10, friction = .97, accel, health = 0, blobForce = .001;
+	
+	//The distance at which each Particle in the Blob will come to rest from one another.
+	private double comfyDistance = 20;
+	
+	//The time remaining until the player can shoot again.
+	private int coolDown = 10;
+	
+	//Tells whether or not the Blob is ready to shoot again.
+	private boolean fireReady = true;
+	
+	//The ID unique to this Blob.  Each Particle, including the Head, will obtain this ID
+	//when they become a part of this Blob.
+	private int blobID;
+	
+	//The health bar for this Blob.  This will grow or shrink depending on the sum of the
+	//radii of each Particle that is currently in this Blob's ArrayList of Particles.
+	private HealthBar healthBar;
+	
+	//The number of Particles that the Blob had prior to this timestep.
+	private int lastNumParticles;
+	
+	//The sound that the Blob will make when sucking up a new Particle.
+	private static final Sound slurp = initializeSound();
+	
+	/*
+	 * Static method for retrieving the slurping sound that the Blob makes when 
+	 * it obtains a new particle.  We use this instead of making the sound when
+	 * the first Blob is created so we reduce the lag of loading the sound while
+	 * the game is being played.
+	 */
 	private static Sound initializeSound()
 	{
-		try {
+		try 
+		{
 			return new Sound( Blob.class.getResourceAsStream("slurp.wav"), true );
-		} catch (UnsupportedAudioFileException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (LineUnavailableException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		} 
+		catch (UnsupportedAudioFileException e) {e.printStackTrace();}
+		catch (LineUnavailableException e) {e.printStackTrace();}
+		catch (IOException e) {e.printStackTrace();}
 		
 		return null;
 	}
@@ -92,7 +146,6 @@ public class Blob extends Entity
 		}
 
 		init( game );
-		
 	}
 	
 	/**
@@ -112,9 +165,15 @@ public class Blob extends Entity
 		blobID = 0;
 		
 		init( game );
-		
 	}
 	
+	/**
+	 * Used to initialize information for this Blob. This includes things such as
+	 * the Blob's health, creating a health bar for it, and scheduling the health bar
+	 * to the queue.
+	 * @param game
+	 * :  The game in which the Blob will be initialized for.
+	 */
 	public void init( OozeWars game )
 	{
 		updateHealth();
@@ -142,8 +201,8 @@ public class Blob extends Entity
 	 * @param theOther
 	 * :  The Object that this Blob will check equality for.
 	 * @return
-	 * <b>TRUE</b> if the two Blobs are equal.
-	 * <p><b>FALSE</b> if the two Blobs are not equal.</p>
+	 * <b>TRUE</b> if the two Blobs are equal.<br />
+	 * <b>FALSE</b> if the two Blobs are not equal.
 	 */
 	public boolean equals(Object theOther)
 	{
@@ -159,8 +218,8 @@ public class Blob extends Entity
 	 * @param obj
 	 * :  The Object for which the hash code will be returned.
 	 * @return
-	 * <b>blobID</b> if the object is a Blob.
-	 * <p><b>0</b> if the object is not a Blob.</p>
+	 * <b>blobID</b> if the object is a Blob.<br />
+	 * <b>0</b> if the object is not a Blob.
 	 */
 	public int hashCode(Object obj)
 	{
@@ -320,11 +379,13 @@ public class Blob extends Entity
 	
 	
 	/**
-	 * Picks the largest particle in the Blob, removes it, places it in front of the head,
-	 * and shoots it in the direction the Head is facing.
+	 * Picks the particle in the Blob at the end of its ArrayList of Particles
+	 * , removes it, places it in front of the head,and shoots it in the direction
+	 * the Head is facing.
 	 * 
 	 * @return
-	 * The new Bullet with the attributes of the Particle that was chosen to be shot.
+	 * The new <b>Bullet</b> with the attributes of the Particle that was chosen to be shot.<br />
+	 * <b>NULL</b> if only the head remains
 	 */
 	public Bullet shoot()
 	{
@@ -360,9 +421,11 @@ public class Blob extends Entity
 	}
 	
 	/**
-	 * @param lastNumParticles the lastNumParticles to set
+	 * @param lastNumParticles 
+	 * :  The previous number of particles that this Blob contained.
 	 */
-	public void setLastNumParticles(int lastNumParticles) {
+	public void setLastNumParticles(int lastNumParticles) 
+	{
 		this.lastNumParticles = lastNumParticles;
 	}
 
@@ -425,11 +488,21 @@ public class Blob extends Entity
 		return maxSpeed;
 	}
 	
+	/**
+	 * Gets the time that the player has to wait in order to shoot again.
+	 * @return
+	 * The current value for coolDown.
+	 */
 	public int getCoolDown() 
 	{
 		return coolDown;
 	}
 
+	/**
+	 * Sets this.coolDown to the value of the parameter.
+	 * @param coolDown
+	 * The value that this.coolDown will be set to.
+	 */
 	public void setCoolDown(int coolDown) 
 	{
 		this.coolDown = coolDown;
@@ -438,8 +511,8 @@ public class Blob extends Entity
 	/**
 	 * Tells whether the Blob's cooldown is over.
 	 * @return
-	 * <b>TRUE</b> if the Blob is ready to shoot.
-	 * <p><b>FALSE</b> if the Blob is not yet ready to shoot.
+	 * <b>TRUE</b> if the Blob is ready to shoot.<br />
+	 * <b>FALSE</b> if the Blob is not yet ready to shoot.
 	 */
 	public boolean isFireReady() 
 	{
@@ -478,7 +551,7 @@ public class Blob extends Entity
 
 	/**
 	 * @param comfyDistance 
-	 * :  the comfyDistance to set
+	 * :  The value at which the current comfy distance will be set to.
 	 */
 	public void setComfyDistance(double comfyDistance) 
 	{
@@ -487,7 +560,7 @@ public class Blob extends Entity
 
 	/**
 	 * @return 
-	 * the comfyDistance
+	 * The distance the Particles in this Blob will try to reach.
 	 */
 	public double getComfyDistance() 
 	{
@@ -519,7 +592,7 @@ public class Blob extends Entity
 	}
 	
 	/**
-	 * Uses the collection of particles in this blob to find its new health.
+	 * Uses the collection of particles in this Blob to find its new health.
 	 */
 	public void updateHealth()
 	{

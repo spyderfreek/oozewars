@@ -16,8 +16,26 @@ import java.net.URISyntaxException;
 
 import javax.swing.ImageIcon;
 
+/**
+ * The Class that contains a background image for OozeView.
+ * 
+ * <p>To set this up, one merely has to input the name of the image including its extenstion.  
+ * For instance, if there is an image named thisImage and it is a jpeg image, then the correct
+ * format to input for the constructor is as follows:<br />
+ * <code>Backdrop thisBackdrop = new Backdrop("thisImage.jpg");</code>
+ * 
+ * <p><center><b><u>Important Note</b></u></center>
+ * Absolute path names are not supported as the Constructor uses getResource(path) as the
+ * method for retrieving the image.  This also means that the image must be in the same
+ * folder that contains the .class file of Backdrop.java.
+ * 
+ * @author Nick Kitten <br /> Sean Fedak
+ *
+ */
+
 public class Backdrop implements Sprite 
 {
+	//The image that will be used for this Backdrop.
 	private BufferedImage image;
 	private int width, height;
 	
@@ -25,12 +43,12 @@ public class Backdrop implements Sprite
 	{
 		try
 		{
-			try {
+			try 
+			{
 				System.out.println(new File("").getCanonicalPath());
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			} 
+			catch (IOException e) {e.printStackTrace();}
+			
 			Image tempImg = new ImageIcon(getClass().getResource(path)).getImage();
 			
 			ImageObserver observer = new ImageObserver()

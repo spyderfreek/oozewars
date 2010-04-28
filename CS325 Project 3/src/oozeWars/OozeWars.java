@@ -5,11 +5,9 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 
@@ -20,24 +18,44 @@ import javax.swing.JOptionPane;
 
 public class OozeWars extends Game 
 {
+	//The current number of players in the game
 	private int numPlayers;
+	
+	//The controls that each player-controlled character will use
 	private PlayerControls[] controls;
+	
+	//Used to store each Blob that is currently in game
 	private LinkedHashMap<Integer, Blob> hBlobs;
+	
+	//All the particles currently in the game
 	private ArrayList<Particle> allParticles;
-	private HashMap<Particle, Location> locations;
-	private HashMap<Location, ArrayList<Particle>> particles;
+	
+	//The Agent that will be scheduled and handles all particle behavior
 	private ParticleManager manager;
+	
+	//The background of the game
 	private Backdrop backdrop;
+	
+	//The size of a section of the playing field
 	private final double CELL_WIDTH = 75;
+	
+	//Not currently in use, intended to be the largest x and y coordinate that the players
+	//can go to.  After that, the players will not be able to move further
 	private int MAX_X, MAX_Y;
+	
+	//Used for rendering, scales the size of the window down
 	public final double SCALE = 0.25;
+	
+	//The width and height of the OozeView
 	private int width, height;
+	
+	//The array of songs that will be randomly chosen each time start() is called
 	private static Midi[] songs = initializeSongs();
 	
 	/**
 	 * The constructor for the game OozeWars.  Calls the constructor for Game.java.  
 	 * Initializes the number of players, sets up the controls for each player, initializes 
-	 * the number of blobs needed, and sets up the Sparse Grid.
+	 * the number of blobs needed, and sets up the background.
 	 * @param maximumFrameRate
 	 * :  The number of frames per second that the game will run at.
 	 * @param numPlayers
@@ -51,8 +69,6 @@ public class OozeWars extends Game
 		controls = new PlayerControls[numPlayers];
 		hBlobs = new LinkedHashMap<Integer, Blob>();
 		allParticles = new ArrayList<Particle>();
-		locations = new HashMap<Particle, Location>();
-		particles = new HashMap<Location, ArrayList<Particle>>();
 		
 		for(int i = 0; i < numPlayers; i++)
 			controls[i] = setPlayerControls(i);
@@ -125,6 +141,10 @@ public class OozeWars extends Game
 		catch (InvalidMidiDataException e) {e.printStackTrace();}
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * @see oozeWars.Game#stop()
+	 */
 	@Override
 	protected void stop()
 	{
@@ -146,21 +166,41 @@ public class OozeWars extends Game
 			pc.resetBooleans();
 	}
 
+	/**
+	 * A method to retrieve the width of the OozeView
+	 * @return
+	 * The current value for the width of the OozeView
+	 */
 	public int getWidth() 
 	{
 		return width;
 	}
 
+	/**
+	 * Sets the current width to the value passed
+	 * @param width
+	 * :  The value to which the current width will be set
+	 */
 	public void setWidth(int width) 
 	{
 		this.width = width;
 	}
 
+	/**
+	 * A method to retrieve the current height of the OozeView
+	 * @return
+	 * The current height of the OozeView
+	 */
 	public int getHeight() 
 	{
 		return height;
 	}
 
+	/**
+	 * Sets the current heigh of the OozeView to the value passed
+	 * @param height
+	 * :  The value that this.height will be set to
+	 */
 	public void setHeight(int height) 
 	{
 		this.height = height;
@@ -310,9 +350,9 @@ public class OozeWars extends Game
 	}
 	
 	/**
-	 * A method used to remove a Particle from the Sparse Grid.
+	 * A method used to remove a Particle from allParticles.
 	 * @param aParticle
-	 * :  The particle that will be removed from the Sparse Grid.
+	 * :  The particle that will be removed from allParticles.
 	 */
 	public void removeParticle(Particle aParticle)
 	{	
@@ -328,10 +368,9 @@ public class OozeWars extends Game
 	}
 	
 	/**
-	 * A method to add a Particle to the Sparse Grid.  Can be used to add the same particle to
-	 * a different Location on the Sparse Grid.
+	 * A method to add a Particle to allParticles
 	 * @param aParticle
-	 * :  The Particle that will be added to (or moved in) the Sparse Grid
+	 * :  The Particle that will be added to allParticles
 	 */
 	public void addParticle(Particle aParticle)
 	{
@@ -421,7 +460,6 @@ public class OozeWars extends Game
 
 	/**
 	 * The method that runs the game.
-	 * @param args
 	 */
 	public static void main(String[] args) 
 	{
@@ -436,7 +474,7 @@ public class OozeWars extends Game
 	
 	/**
 	 * Sets up the key bindings necessary for the controls that the player will be using.
-	 * @author Nick Kitten & Sean Fedak
+	 * @author Nick Kitten <br /> Sean Fedak
 	 */
 	protected static class PlayerControls
 	{
@@ -468,8 +506,8 @@ public class OozeWars extends Game
 		
 		/**
 		 * @return
-		 * TRUE if the up key is being pressed.
-		 * <p>FALSE otherwise.</p>
+		 * <b>TRUE</b> if the up key is being pressed.<br />
+		 * <b>FALSE</b> otherwise.
 		 */
 		public boolean isUp() 
 		{
@@ -488,8 +526,8 @@ public class OozeWars extends Game
 
 		/**
 		 * @return
-		 * TRUE if the down key is being pressed.
-		 * <p> FALSE otherwise.</p>
+		 * <b>TRUE</b> if the down key is being pressed.<br />
+		 * <b>FALSE</b> otherwise.
 		 */
 		public boolean isDown() 
 		{
@@ -508,8 +546,8 @@ public class OozeWars extends Game
 
 		/**
 		 * @return
-		 * TRUE if the left key is being pressed.
-		 * <p> FALSE otherwise.</p>
+		 * <b>TRUE</b> if the left key is being pressed.<br />
+		 * <b>FALSE</b> otherwise.
 		 */
 		public boolean isLeft() 
 		{
@@ -528,8 +566,8 @@ public class OozeWars extends Game
 
 		/**
 		 * @return
-		 * TRUE if the right key is being pressed.
-		 * <p> FALSE otherwise.</p>
+		 * <b>TRUE</b> if the right key is being pressed.<br />
+		 * <b>FALSE</b> otherwise.
 		 */
 		public boolean isRight() 
 		{
@@ -548,8 +586,8 @@ public class OozeWars extends Game
 
 		/**
 		 * @return
-		 * TRUE if the fire key is being pressed.
-		 * <p> FALSE otherwise.</p>
+		 * <b>TRUE</b> if the fire key is being pressed<br />
+		 * <b>FALSE</b> otherwise
 		 */
 		public boolean isFire() 
 		{
@@ -557,7 +595,7 @@ public class OozeWars extends Game
 		}
 
 		/**
-		 * Sets the value of this.fire to the value provided in the parameter.
+		 * Sets the value of this.fire to the value provided in the parameter
 		 * @param fire
 		 * :  The value that this.fire will be set to
 		 */
@@ -568,7 +606,7 @@ public class OozeWars extends Game
 
 		/**
 		 * @return
-		 * The integer value for the key representing up.
+		 * The integer value for the key representing up
 		 */
 		public int getUpKey() 
 		{
@@ -576,9 +614,9 @@ public class OozeWars extends Game
 		}
 
 		/**
-		 * Sets the up key to the new key represented by the parameter.
+		 * Sets the up key to the new key represented by the parameter
 		 * @param upKey
-		 * :  The integer representing the new key that will move the player up.
+		 * :  The integer representing the new key that will move the player up
 		 */
 		public void setUpKey(int upKey) 
 		{
@@ -587,7 +625,7 @@ public class OozeWars extends Game
 
 		/**
 		 * @return
-		 * The integer value for the key representing down.
+		 * The integer value for the key representing down
 		 */
 		public int getDownKey() 
 		{
@@ -595,9 +633,9 @@ public class OozeWars extends Game
 		}
 
 		/**
-		 * Sets the down key to the new key represented by the parameter.
+		 * Sets the down key to the new key represented by the parameter
 		 * @param downKey
-		 * :  The integer representing the new key that will move the player down.
+		 * :  The integer representing the new key that will move the player down
 		 */
 		public void setDownKey(int downKey) 
 		{
@@ -606,7 +644,7 @@ public class OozeWars extends Game
 
 		/**
 		 * @return
-		 * The integer value for the key representing left.
+		 * The integer value for the key representing left
 		 */
 		public int getLeftKey() 
 		{
@@ -614,9 +652,9 @@ public class OozeWars extends Game
 		}
 
 		/**
-		 * Sets the left key to the new key represented by the parameter.
+		 * Sets the left key to the new key represented by the parameter
 		 * @param leftKey
-		 * :  The integer representing the new key that will move the player left.
+		 * :  The integer representing the new key that will move the player left
 		 */
 		public void setLeftKey(int leftKey) 
 		{
@@ -625,7 +663,7 @@ public class OozeWars extends Game
 
 		/**
 		 * @return
-		 * The integer value for the key representing right.
+		 * The integer value for the key representing right
 		 */
 		public int getRightKey() 
 		{
@@ -633,9 +671,9 @@ public class OozeWars extends Game
 		}
 
 		/**
-		 * Sets the right key to the new key represented by the parameter.
+		 * Sets the right key to the new key represented by the parameter
 		 * @param rightKey
-		 * :  The integer representing the new key that will move the player right.
+		 * :  The integer representing the new key that will move the player right
 		 */
 		public void setRightKey(int rightKey) 
 		{
@@ -644,7 +682,7 @@ public class OozeWars extends Game
 
 		/**
 		 * @return
-		 * The integer value for the key representing fire.
+		 * The integer value for the key representing fire
 		 */
 		public int getFireKey() 
 		{
@@ -652,15 +690,18 @@ public class OozeWars extends Game
 		}
 
 		/**
-		 * Sets the fire key to the new key represented by the parameter.
+		 * Sets the fire key to the new key represented by the parameter
 		 * @param fireKey
-		 * :  The integer representing the new key that will make the player fire.
+		 * :  The integer representing the new key that will make the player fire
 		 */
 		public void setFireKey(int fireKey) 
 		{
 			this.fireKey = fireKey;
 		}
 		
+		/**
+		 * Resets up, left, down, right, and fire to false
+		 */
 		public void resetBooleans()
 		{
 			up = left = down = right = fire = false;
@@ -670,7 +711,7 @@ public class OozeWars extends Game
 	/**
 	 * Used for the HashMaps of the Sparse Grid.  Has a lookup index for an associated Particle
 	 * in <i>allParticles</i>.
-	 * @author Nick Kitten & Sean Fedak
+	 * @author Nick Kitten <br />Sean Fedak
 	 */
 	protected static class Location
 	{
