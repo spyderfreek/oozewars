@@ -127,6 +127,7 @@ public class Sound
 				}
 			totalLen += len;
 			l.add(b);
+			b = new byte[DEFAULT_BUFFER_SIZE];
 			}
 
 		// now our linked list has lots of buffer arrays, concatenate them.
@@ -163,19 +164,23 @@ public class Sound
 			{
 			public void run()
 				{
-				while(true)
+				SourceDataLine line = null;
+				try
 					{
-					SourceDataLine line = null;
-					try
+					if (buffer == null)
+						{
+						stream = getStream();
+						}
+					AudioFormat format = stream.getFormat( );
+					DataLine.Info info = new DataLine.Info(SourceDataLine.class, format);
+					line = (SourceDataLine)(AudioSystem.getLine(info));
+					line.open(format);
+					line.start( );
+
+					while(true)
 						{
 						if (buffer==null)  // gotta load from the file
 							{
-							stream = getStream();
-							AudioFormat format = stream.getFormat( );
-							DataLine.Info info = new DataLine.Info(SourceDataLine.class, format);
-							line = (SourceDataLine)(AudioSystem.getLine(info));
-							line.open(format);
-							line.start( );
 							byte[ ] buffer = new byte[DEFAULT_BUFFER_SIZE];
 							while(!pleaseDie)
 								{
@@ -183,39 +188,35 @@ public class Sound
 								if (len < 0) break;
 								line.write(buffer, 0, len);
 								}
+							stream.close();
+							stream = getStream();  // get the next go-round
 							}
 						else  // preloaded
 							{
-							AudioFormat format = stream.getFormat( );
-							DataLine.Info info = new DataLine.Info(SourceDataLine.class, format);
-							line = (SourceDataLine)(AudioSystem.getLine(info));
-							line.open(format);
-							line.start( );
-
 							for(int pos = 0; pos < buffer.length; pos+= DEFAULT_BUFFER_SIZE)
 								{
 								if (pleaseDie) break;
 								int desiredLen = DEFAULT_BUFFER_SIZE;
 								if (pos + DEFAULT_BUFFER_SIZE > buffer.length)
 									desiredLen = buffer.length - pos;
-								line.write(buffer, 0, desiredLen);
+								line.write(buffer, pos, desiredLen);
 								}
 							}
+						if (!loop) break;
+						if (pleaseDie) break;
 						}
-					catch (Exception e) { }
-
-					// clean up
-					try 
-						{
-						line.drain( );
-						line.close( ); 
-						if (buffer != null) stream.close();
-						} 
-					catch (Exception e) { }
-
-					if (!loop) break;  // all done
-					if (pleaseDie) break;  // all done
 					}
+				catch (Exception e) { e.printStackTrace(); }
+
+				// clean up
+				try 
+					{
+					line.drain( );
+					line.close( ); 
+					if (buffer != null) stream.close();
+					} 
+				catch (Exception e) {  }
+
 				// let the user play again if he wants to
 				synchronized(Sound.this) { playThread = null; }
 				}
