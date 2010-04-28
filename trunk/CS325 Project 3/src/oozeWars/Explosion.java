@@ -43,12 +43,15 @@ class Explosion extends Entity
 	// transparency of the image
 	float alpha;
 	
+	//The bullet's blobID that this explosion came from
+	private int blobID;
+	
 	ArrayList<Particle> targets;
 	private static Sound hit = initializeSound();
 	private boolean played = false;
 	
 	// create a multi-pointed star
-	Shape createStar()
+	private Shape createStar()
 	{
 		Polygon poly = new Polygon();
 		Point p0 = new Point(30,0);
@@ -72,7 +75,7 @@ class Explosion extends Entity
 		return poly;
 	}
 	
-	public Explosion( double x, double y, double rad, double acc, int dur, double damage, ArrayList<Particle> particles)
+	public Explosion( double x, double y, double rad, int blobID , double acc, int dur, double damage, ArrayList<Particle> particles)
 	{
 		super(x, y);
 		radius = rad;
@@ -84,6 +87,7 @@ class Explosion extends Entity
 		minR2 = maxR2 = 0;
 		time = 0;
 		targets = particles;
+		this.blobID = blobID;
 		
 		// initialize visual's scale and position
 		transform = new AffineTransform();
@@ -138,7 +142,15 @@ class Explosion extends Entity
 			
 			dist = Math.sqrt(dist2);
 			speed = falloff( dist, radius, accel);
-			p.damage(speed * damage);
+			
+			double tempDamage = speed * damage;
+			p.damage(tempDamage);
+			OozeWars ow = (OozeWars)game;
+			for(Blob b : ow.getBlobs())
+			{
+				if(blobID ==  b.getBlobID())
+					b.addDamageDealt( (int)(tempDamage + .5) );
+			}
 			
 			vx *= speed;
 			vy *= speed;

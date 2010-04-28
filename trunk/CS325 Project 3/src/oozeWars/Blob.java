@@ -48,6 +48,15 @@ public class Blob extends Entity
 	//The ArrayList of Particles that are part of this Blob
 	private ArrayList<Particle> particles;
 	
+	//The score the player currently has.  Based on the following factors:
+	//1) Amount of damage dealt
+	//2) Number of particles they have times the amount of health they have
+	//TODO:  implement other methods of calculating score
+	private int score;
+	
+	//The total amount of damage that this Blob has done to the other Blobs
+	private int damageDealt = 0;
+	
 	//The Particle that is the Head of this Blob, will be used to control the Blob.
 	private Head head;
 	
@@ -179,6 +188,7 @@ public class Blob extends Entity
 		updateHealth();
 		healthBar = new HealthBar(10, 10 + 15 * blobID, 100, 10, this, color);
 		game.queue.schedule(1, healthBar);
+		score = (int)( health * particles.size() );
 		/*
 		final int divisor = 2;
 		backBuf = new BufferedImage(game.getWidth()>>divisor, game.getHeight()>>divisor, BufferedImage.TYPE_INT_ARGB);
@@ -331,6 +341,7 @@ public class Blob extends Entity
 	{		
 		OozeWars g = (OozeWars)game;
 		updateHealth();
+		updateScore();
 		
 		//System.out.println("Blob go");
 		
@@ -418,6 +429,16 @@ public class Blob extends Entity
 	public double getHealth()
 	{
 		return health;
+	}
+	
+	/**
+	 * A method to retrieve the Blob's current score.
+	 * @return
+	 * The int representing the Blob's current score.
+	 */
+	public int getScore()
+	{
+		return score;
 	}
 	
 	/**
@@ -599,6 +620,26 @@ public class Blob extends Entity
 		health = (head != null) ? head.getRadius() : 0;
 		for(Particle p:  particles)
 			health += p.getRadius();
+	}
+	
+	/**
+	 * Uses values that this Blob is tracking to update its score
+	 */
+	public void updateScore()
+	{
+		//We're adding .5 to round to the nearest integer correctly
+		score = (int)( health * particles.size() + .5 );
+		score += (int)( damageDealt + .5 )<<1;
+	}
+	
+	/**
+	 * Adds the value passed to the total damage dealt
+	 * @param damage
+	 * :  The amount of damage that will be added to the total damage that this Blob dealt
+	 */
+	public void addDamageDealt(int damage)
+	{
+		damageDealt += damage;
 	}
 	
 	/**
