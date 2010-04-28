@@ -236,7 +236,15 @@ public class OozeWars extends Game
 	 */
 	public void removePlayer(int player)
 	{
+		long[] scores = new long[2];
 		Blob b = hBlobs.remove(player+1);
+		b.updateScore();
+		scores[player] = b.getScore();
+		
+		Blob ob = hBlobs.get(player);
+		ob.updateScore();
+		scores[player-1] = ob.getScore();
+		
 		ArrayList<Particle> theList = b.getParticles();
 		
 		Particle head = theList.remove(0);
@@ -256,6 +264,9 @@ public class OozeWars extends Game
 					break;
 			}
 			JOptionPane.showMessageDialog(null, "Player " + playerLeft  + " wins!");
+			
+			JOptionPane.showMessageDialog(null, "Player 1 scored:  " + scores[0] + "\n"
+										+ "Player 2 scored:  " + scores[1]);
 
 			int answer = JOptionPane.showConfirmDialog(null, "Rematch?", "Game Over", 
 					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
