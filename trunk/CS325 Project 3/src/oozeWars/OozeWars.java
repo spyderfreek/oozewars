@@ -10,7 +10,7 @@ import java.util.BitSet;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.Random;
+import java.util.prefs.*;
 
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiUnavailableException;
@@ -53,6 +53,15 @@ public class OozeWars extends Game
 	//The array of songs that will be randomly chosen each time start() is called
 	private static final Midi[] songs = initializeSongs();
 	
+	//Used to save preferences
+	private final String key = "edu/gmu/cs/MyGame";
+	
+	//Used for saving the high score
+	private Preferences prefs = Preferences.userRoot().node(key);
+	
+	//The long that is used when there has not been a player score that beats this score
+	private final long defaultHighScore = 5000;
+	
 	/**
 	 * The constructor for the game OozeWars.  Calls the constructor for Game.java.  
 	 * Initializes the number of players, sets up the controls for each player, initializes 
@@ -78,6 +87,13 @@ public class OozeWars extends Game
 		String imgPath = "cells_bg.jpg";
 
 		backdrop = new Backdrop(imgPath);
+		
+		if(prefs.getLong("High Score", defaultHighScore) == 5000)
+		{
+			prefs.putLong("High Score", defaultHighScore);
+			try{prefs.flush();}
+			catch(BackingStoreException e){};
+		}
 	}
 
 	/* (non-Javadoc)
@@ -270,8 +286,19 @@ public class OozeWars extends Game
 			}
 			JOptionPane.showMessageDialog(null, "Player " + playerLeft  + " wins!");
 			
+			for(long sc : scores)
+			{
+				if( sc > prefs.getLong("High Score", defaultHighScore) )
+				{
+					prefs.putLong("High Score", sc);
+					try {prefs.flush();} 
+					catch (BackingStoreException e) {}
+				}
+			}
+			
 			JOptionPane.showMessageDialog(null, "Player 1 scored:  " + scores[0] + "\n"
-										+ "Player 2 scored:  " + scores[1]);
+										+ "Player 2 scored:  " + scores[1] + "\n"
+										+ "High Score:  " + prefs.getLong("High Score", defaultHighScore));
 
 			int answer = JOptionPane.showConfirmDialog(null, "Rematch?", "Game Over", 
 					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
