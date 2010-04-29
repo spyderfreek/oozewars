@@ -10,6 +10,7 @@ import java.util.BitSet;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.Random;
 
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiUnavailableException;
@@ -243,7 +244,7 @@ public class OozeWars extends Game
 		
 		Blob ob = hBlobs.get(player);
 		ob.updateScore();
-		scores[player-1] = ob.getScore();
+		scores[player] = ob.getScore();
 		
 		ArrayList<Particle> theList = b.getParticles();
 		
@@ -469,7 +470,7 @@ public class OozeWars extends Game
 	 * The method that runs the game.
 	 */
 	public static void main(String[] args) 
-	{
+	{	
 		String answer = JOptionPane.showInputDialog("How many players?");
 		int n = Integer.parseInt(answer);
 		OozeWars game = new OozeWars(45, n);

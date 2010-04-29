@@ -90,6 +90,9 @@ public class Blob extends Entity
 	//radii of each Particle that is currently in this Blob's ArrayList of Particles.
 	private HealthBar healthBar;
 	
+	// The object which draws the current player's score on the screen
+	private Score scoreDisplay;
+	
 	//The number of Particles that the Blob had prior to this timestep.
 	private int lastNumParticles;
 	
@@ -155,6 +158,9 @@ public class Blob extends Entity
 		}
 
 		init( game );
+		
+		scoreDisplay = new Score(300 + 150 * blobID, 25, color, score);
+		game.view.addSprite(scoreDisplay, 2);
 	}
 	
 	/**
@@ -189,6 +195,7 @@ public class Blob extends Entity
 		healthBar = new HealthBar(10, 10 + 15 * blobID, 100, 10, this, color);
 		game.queue.schedule(1, healthBar);
 		score = (long)( health * particles.size() + .5 );
+		
 		/*
 		final int divisor = 2;
 		backBuf = new BufferedImage(game.getWidth()>>divisor, game.getHeight()>>divisor, BufferedImage.TYPE_INT_ARGB);
@@ -341,7 +348,7 @@ public class Blob extends Entity
 	{		
 		OozeWars g = (OozeWars)game;
 		updateHealth();
-		updateScore();
+		
 		
 		//System.out.println("Blob go");
 		
@@ -385,6 +392,9 @@ public class Blob extends Entity
 				g.queue.schedule(1, b );
 				g.view.addSprite(b, 1);
 			}
+			
+			updateScore();
+			scoreDisplay.setScore(score);
 		}
 	}
 	
