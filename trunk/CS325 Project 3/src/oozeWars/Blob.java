@@ -71,7 +71,7 @@ public class Blob extends Entity
 	//health:	 the sum of all the Particles' radii that are currently in the Blob,
 	//			 includes the Head Particle.
 	//blobForce: the amount of force that each Particle in the Blob has on one another.
-	private double minSpeed = .5, maxSpeed = 10, friction = .97, accel, health = 0, blobForce = .001;
+	private double minSpeed = .5, maxSpeed = 10, friction = .97, accel, health = 0, blobForce = .002;
 	//The maximum size a particle can grow to, and the amount incremented each time step
 	private double maxRadius = 8, growth = 5.0 / 45.0 / 20;
 	
