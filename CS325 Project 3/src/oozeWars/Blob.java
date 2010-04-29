@@ -72,12 +72,14 @@ public class Blob extends Entity
 	//			 includes the Head Particle.
 	//blobForce: the amount of force that each Particle in the Blob has on one another.
 	private double minSpeed = .5, maxSpeed = 10, friction = .97, accel, health = 0, blobForce = .001;
+	//The maximum size a particle can grow to, and the amount incremented each time step
+	private double maxRadius = 8, growth = 5.0 / 45.0 / 20;
 	
 	//The distance at which each Particle in the Blob will come to rest from one another.
 	private double comfyDistance = 20;
 	
 	//The time remaining until the player can shoot again.
-	private int coolDown = 10;
+	private int coolDown = 15;
 	
 	//Tells whether or not the Blob is ready to shoot again.
 	private boolean fireReady = true;
@@ -174,6 +176,7 @@ public class Blob extends Entity
 	public Blob( ArrayList<Particle> particles, OozeWars game )
 	{
 		super(0,0);
+		growth *= 0.5;
 		color = Color.lightGray;
 		this.particles = particles;
 		head = null;
@@ -370,7 +373,7 @@ public class Blob extends Entity
 					continue;
 				}
 				
-				p.go(game, timestep, priorityLevel, minSpeed, maxSpeed, friction);
+				p.go(game, timestep, priorityLevel, minSpeed, maxSpeed, friction, maxRadius, growth);
 			}
 		}
 		

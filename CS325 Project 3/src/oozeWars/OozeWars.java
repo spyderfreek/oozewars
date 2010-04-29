@@ -88,11 +88,12 @@ public class OozeWars extends Game
 	{	
 		width = view.preferredWidth + 20;
 		height = view.preferredHeight + 20;
-		
-		manager = new ParticleManager(this);
+
 		
 		int numParticles = 50;
 		int player = numPlayers;
+		
+		manager = new ParticleManager(this, numParticles * numPlayers * 2);	
 		
 		while( player-- > 0)
 		{
@@ -771,11 +772,14 @@ public class OozeWars extends Game
 	{
 		private BitSet touchedSet;
 		private final double RANGE = CELL_WIDTH * 0.75;
+		private final int MAX_PARTICLES;
 		private OozeWars ow;
 		
-		public ParticleManager(OozeWars ow)
+		public ParticleManager(OozeWars ow, int maxParticles)
 		{
-			touchedSet = new BitSet(allParticles.size() * 2);
+			MAX_PARTICLES = maxParticles;
+			touchedSet = new BitSet( MAX_PARTICLES );
+			
 			this.ow = ow;
 		}
 
@@ -804,8 +808,12 @@ public class OozeWars extends Game
 			for( int i = 0; i < isDead.length; i++ )
 			{
 				if( isDead[i] )
+				{
 					removePlayer(i);
+					return;
+				}
 			}
+			
 			
 			wipeClean();
 			updateNeighbors( RANGE );
@@ -818,9 +826,9 @@ public class OozeWars extends Game
 			wipeClean();
 			getConnectivity();
 
-			// 50% chance of  a new particle every 2 seconds
+			// 50% chance of  a new particle every 2 seconds : .9885
 			// use .9772 for every second
-			if( random.nextFloat() > .9885f )
+			if( allParticles.size() < MAX_PARTICLES && random.nextFloat() > .9772f )
 				addParticle( new Particle( random.nextFloat()* width, random.nextFloat()* height, random.nextFloat()*5+3, Color.LIGHT_GRAY, 0));
 				
 			findStragglers();
