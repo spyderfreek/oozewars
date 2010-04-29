@@ -38,7 +38,7 @@ public class OozeWars extends Game
 	private Backdrop backdrop;
 	
 	//The size of a section of the playing field
-	private final double CELL_WIDTH = 75;
+	private final double CELL_WIDTH = 100;
 	
 	//Not currently in use, intended to be the largest x and y coordinate that the players
 	//can go to.  After that, the players will not be able to move further
@@ -771,7 +771,7 @@ public class OozeWars extends Game
 	private class ParticleManager implements Agent
 	{
 		private BitSet touchedSet;
-		private final double RANGE = CELL_WIDTH * 0.75;
+		private final double RANGE = CELL_WIDTH * 0.5;
 		private final int MAX_PARTICLES;
 		private OozeWars ow;
 		
@@ -805,16 +805,6 @@ public class OozeWars extends Game
 				b.go(game, timestep, priorityLevel);
 			}			
 			
-			for( int i = 0; i < isDead.length; i++ )
-			{
-				if( isDead[i] )
-				{
-					removePlayer(i);
-					return;
-				}
-			}
-			
-			
 			wipeClean();
 			updateNeighbors( RANGE );
 			
@@ -846,6 +836,14 @@ public class OozeWars extends Game
 				addParticle(p);*/
 			
 			game.queue.schedule(priorityLevel, this);
+			
+			for( int i = 0; i < isDead.length; i++ )
+			{
+				if( isDead[i] )
+				{
+					removePlayer(i);
+				}
+			}
 		}
 		
 		private void getConnectivity()

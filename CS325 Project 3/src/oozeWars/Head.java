@@ -122,7 +122,7 @@ public class Head extends Particle
 			x += .2;
 		}
 		
-		super.go(game, timestep, priorityLevel, minSpeed, maxSpeed, friction, maxRadius, growth * 0.5);
+		super.go(game, timestep, priorityLevel, minSpeed, maxSpeed, friction, maxRadius * 1.25, growth * 0.5);
 	}
 	
 	
