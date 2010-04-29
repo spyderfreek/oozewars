@@ -242,7 +242,7 @@ public class Game
 				{
 					public void run( ) 
 					{
-						if( !paused && stepFlag.testAndTurnOff() )
+						if( !paused )
 						{
 							queue.step( thisGame ); // advance my model
 							view.repaint( ); // draw the model

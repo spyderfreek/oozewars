@@ -61,6 +61,8 @@ public class Schedule
 		discussed. */
     public void step(final Game game)
     {
+    	if(! game.stepFlag.testAndTurnOff())
+    		return;
 		// 1. Increment the ticks.
     	ticks++;
 		// 2. For each priority queue...
