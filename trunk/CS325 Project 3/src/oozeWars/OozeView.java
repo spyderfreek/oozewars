@@ -11,6 +11,7 @@ import java.util.Iterator;
 import com.jhlabs.image.AlphaThresholdFilter;
 import com.jhlabs.image.FadeFilter;
 
+@SuppressWarnings("serial")
 public class OozeView extends View 
 {
 	public final double SCALE;
