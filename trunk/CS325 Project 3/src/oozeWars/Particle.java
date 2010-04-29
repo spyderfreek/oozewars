@@ -122,10 +122,12 @@ public class Particle extends Entity implements Comparable<Particle>
 	}
 	
 	public void go(Game game, long timestep, int priorityLevel, 
-			double minSpeed, double maxSpeed, double frictn )
+			double minSpeed, double maxSpeed, double frictn, double maxRadius, double growth )
 	{
 		//applyFriction(minSpeed, maxSpeed, friction);
 		friction = frictn;
+		if( radius < maxRadius )
+			setRadius( Math.min(maxRadius, radius + growth) );
 		go(game, timestep, priorityLevel);
 	}
 	

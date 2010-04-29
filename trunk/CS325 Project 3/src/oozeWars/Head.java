@@ -100,7 +100,7 @@ public class Head extends Particle
 	 */
 	@Override
 	public void go(Game game, long timestep, int priorityLevel, 
-			double minSpeed, double maxSpeed, double friction )
+			double minSpeed, double maxSpeed, double friction, double maxRadius, double growth )
 	{
 		OozeWars ow = (OozeWars)game;
 		PlayerControls pc = ow.getControls()[blobID-1];
@@ -122,7 +122,7 @@ public class Head extends Particle
 			x += .2;
 		}
 		
-		super.go(game, timestep, priorityLevel, minSpeed, maxSpeed, friction);
+		super.go(game, timestep, priorityLevel, minSpeed, maxSpeed, friction, maxRadius, growth * 0.5);
 	}
 	
 	
