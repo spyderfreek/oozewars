@@ -239,13 +239,16 @@ public class OozeWars extends Game
 	public void removePlayer(int player)
 	{
 		long[] scores = new long[2];
-		Blob b = hBlobs.remove(player+1);
-		b.updateScore();
-		scores[player] = b.getScore();
+		for(Blob blob: getBlobs())
+		{
+			blob.updateScore();
+			if(blob.getBlobID() == 1)
+				scores[0] = blob.getScore();
+			else if(blob.getBlobID() == 2)
+				scores[1] = blob.getScore();
+		}
 		
-		Blob ob = hBlobs.get(player);
-		ob.updateScore();
-		scores[player] = ob.getScore();
+		Blob b = hBlobs.remove(player+1);
 		
 		ArrayList<Particle> theList = b.getParticles();
 		

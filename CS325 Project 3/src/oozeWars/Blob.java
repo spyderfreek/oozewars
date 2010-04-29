@@ -90,7 +90,7 @@ public class Blob extends Entity
 	
 	//The health bar for this Blob.  This will grow or shrink depending on the sum of the
 	//radii of each Particle that is currently in this Blob's ArrayList of Particles.
-	private HealthBar healthBar;
+	private HealthBar healthBar = null;
 	
 	// The object which draws the current player's score on the screen
 	private Score scoreDisplay;
@@ -161,7 +161,10 @@ public class Blob extends Entity
 
 		init( game );
 		
-		scoreDisplay = new Score(300 + 150 * blobID, 25, color, score);
+		if(blobID == 1)
+			scoreDisplay = new Score(10, 25, color, score);
+		else if(blobID == 2)
+			scoreDisplay = new Score(game.view.getWidth() - 350, 25, color, score);
 		game.view.addSprite(scoreDisplay, 2);
 	}
 	
@@ -182,7 +185,7 @@ public class Blob extends Entity
 		head = null;
 		blobID = 0;
 		
-		init( game );
+		//init( game );
 	}
 	
 	/**
@@ -195,7 +198,10 @@ public class Blob extends Entity
 	public void init( OozeWars game )
 	{
 		updateHealth();
-		healthBar = new HealthBar(10, 10 + 15 * blobID, 100, 10, this, color);
+		if(blobID == 1)
+			healthBar = new HealthBar(10, 30, 100, 10, this, color);
+		else if(blobID == 2)
+			healthBar = new HealthBar(game.view.getWidth() - 350, 30, 100, 10, this, color);
 		game.queue.schedule(1, healthBar);
 		score = (long)( health * particles.size() + .5 );
 		
@@ -319,7 +325,8 @@ public class Blob extends Entity
 		for( Particle p : particles )
 			p.draw(graphics, game, color, scale );
 		
-		healthBar.draw(graphics, game, scale);
+		if(healthBar != null)
+			healthBar.draw(graphics, game, scale);
 		
 		//g.dispose();
 

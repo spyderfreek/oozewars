@@ -33,11 +33,9 @@ public class Score implements Sprite
 			Font f = Font.createFont(Font.TRUETYPE_FONT, fontStream);
 			fontStream.close();
 			return f.deriveFont(FONT_SIZE);
-		} catch (FontFormatException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		} 
+		catch (FontFormatException e) {e.printStackTrace();}
+		catch (IOException e) {e.printStackTrace();}
 		
 		return null;
 	}
