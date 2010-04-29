@@ -23,12 +23,11 @@
 
 package oozeWars;
 import java.util.*;
-import java.lang.reflect.*;
 import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
 
-@SuppressWarnings({"unchecked"})		// Java's generics handling of arrays is absolutely abysmal.  I chose to ignore it entirely.
+@SuppressWarnings({"unchecked", "serial"})	// Java's generics handling of arrays is absolutely abysmal.  I chose to ignore it entirely.
 public class View extends JPanel
 {
 	// internal variables

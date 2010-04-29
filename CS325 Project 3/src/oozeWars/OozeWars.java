@@ -183,6 +183,16 @@ public class OozeWars extends Game
 		for(PlayerControls pc : controls)
 			pc.resetBooleans();
 	}
+	
+	private boolean deleteHighScore()
+	{
+		int choice = JOptionPane.showConfirmDialog(null, "Delete High Score?", "Delete?", 
+												   JOptionPane.YES_NO_OPTION);
+		
+		if(choice == JOptionPane.YES_OPTION)
+			return true;
+		return false;
+	}
 
 	/**
 	 * A method to retrieve the width of the OozeView
@@ -257,11 +267,22 @@ public class OozeWars extends Game
 		long[] scores = new long[2];
 		for(Blob blob: getBlobs())
 		{
+			if(blob.getBlobID() == 0)
+				continue;
+			
 			blob.updateScore();
+			long score = blob.getScore();
 			if(blob.getBlobID() == 1)
-				scores[0] = blob.getScore();
+				scores[0] = score;
 			else if(blob.getBlobID() == 2)
-				scores[1] = blob.getScore();
+				scores[1] = score;
+			
+			if( score > prefs.getLong("High Score", defaultHighScore) )
+			{
+				prefs.putLong("High Score", score);
+				try {prefs.flush();} 
+				catch (BackingStoreException e) {}
+			}
 		}
 		
 		Blob b = hBlobs.remove(player+1);
@@ -286,16 +307,6 @@ public class OozeWars extends Game
 			}
 			JOptionPane.showMessageDialog(null, "Player " + playerLeft  + " wins!");
 			
-			for(long sc : scores)
-			{
-				if( sc > prefs.getLong("High Score", defaultHighScore) )
-				{
-					prefs.putLong("High Score", sc);
-					try {prefs.flush();} 
-					catch (BackingStoreException e) {}
-				}
-			}
-			
 			JOptionPane.showMessageDialog(null, "Player 1 scored:  " + scores[0] + "\n"
 										+ "Player 2 scored:  " + scores[1] + "\n"
 										+ "High Score:  " + prefs.getLong("High Score", defaultHighScore));
@@ -308,7 +319,15 @@ public class OozeWars extends Game
 			{
 				boolean quit = quit();
 				if(quit)
+				{
+					boolean yes = deleteHighScore();
+					if(yes)
+					{
+						try{ Preferences.userRoot( ).node(key).removeNode( ); }
+						catch(BackingStoreException ex) { }
+					}
 					System.exit(0);
+				}
 			}
 
 			reset();
@@ -317,6 +336,10 @@ public class OozeWars extends Game
 		else if(numPlayers == 0) //There was a draw
 		{
 			JOptionPane.showMessageDialog(null, "DRAW!");
+			
+			JOptionPane.showMessageDialog(null, "Player 1 scored:  " + scores[0] + "\n"
+					+ "Player 2 scored:  " + scores[1] + "\n"
+					+ "High Score:  " + prefs.getLong("High Score", defaultHighScore));
 			
 			int answer = JOptionPane.showConfirmDialog(null, "Rematch?", "Game Over", 
 					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
@@ -327,7 +350,15 @@ public class OozeWars extends Game
 			{
 				boolean quit = quit();
 				if(quit)
+				{
+					boolean yes = deleteHighScore();
+					if(yes)
+					{
+						try{ Preferences.userRoot( ).node(key).removeNode( ); }
+						catch(BackingStoreException ex) { }
+					}
 					System.exit(0);
+				}
 			}
 			
 			reset();
@@ -816,10 +847,6 @@ public class OozeWars extends Game
 		@Override
 		public void go(Game game, long timestep, int priorityLevel) 
 		{
-
-			
-			//TODO: figure out reasonable values for range, comfydist, etc
-			
 			// avoid ConcurrentModificationException
 			boolean isDead[] = new boolean[2];
 			
@@ -1083,8 +1110,7 @@ public class OozeWars extends Game
 			{
 				if( touchedSet.get(i) )
 					continue;
-				//TODO: create default settings for neutral blobs (and find
-				// better way to manage them)
+
 				seed = allParticles.get(i);
 				seed.setBlobID(0);
 				
