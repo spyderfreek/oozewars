@@ -43,10 +43,12 @@ class Explosion extends Entity
 	// transparency of the image
 	float alpha;
 	
-	//The bullet's blobID that this explosion came from
-	private int blobID;
+	//Which blob the bullet hit (and will affect)
+	private Blob target;
+	//Which blob launched the attack
+	private Blob parent;
 	
-	ArrayList<Particle> targets;
+	ArrayList<Particle> targetParticles;
 	private static Sound hit = initializeSound();
 	private boolean played = false;
 	
@@ -75,7 +77,7 @@ class Explosion extends Entity
 		return poly;
 	}
 	
-	public Explosion( double x, double y, double rad, int blobID , double acc, int dur, double damage, ArrayList<Particle> particles)
+	public Explosion( double x, double y, double rad, double acc, int dur, double damage, Blob target, OozeWars game, int blobID)
 	{
 		super(x, y);
 		radius = rad;
@@ -86,8 +88,16 @@ class Explosion extends Entity
 		particlesPushed = false;
 		minR2 = maxR2 = 0;
 		time = 0;
-		targets = particles;
-		this.blobID = blobID;
+		this.target = target;
+		for( Blob b : game.getBlobs() )
+		{
+			if( blobID == b.getBlobID() )
+			{
+				parent = b;
+				break;
+			}
+		}
+		targetParticles = target.getParticles();
 		
 		// initialize visual's scale and position
 		transform = new AffineTransform();
@@ -130,13 +140,13 @@ class Explosion extends Entity
 		// distance from epicenter to particle
 		double dist, dist2;
 		
-		for( Particle p : targets )
+		for( Particle p : targetParticles )
 		{
 			vx = p.getX() - x;
 			vy = p.getY() - y;
 			dist2 = vx * vx + vy * vy;
 			
-			// ignore particles outisde the zone of influence
+			// ignore particles outside the zone of influence
 			if( dist2 > maxR2 || dist2 <= minR2 )
 				continue;
 			
@@ -144,21 +154,16 @@ class Explosion extends Entity
 			speed = falloff( dist, radius, accel);
 			
 			double tempDamage = speed * damage;
-
-			OozeWars ow = (OozeWars)game;
-			for(Blob b : ow.getBlobs())
-			{
-				if(blobID ==  b.getBlobID() && !b.isGod())
-				{
-					p.damage(tempDamage);
-					b.addDamageDealt( (long)(tempDamage + .5) );
-				}
-			}
-			
 			vx *= speed;
 			vy *= speed;
-			
-			p.push(vx, vy);  			
+			OozeWars ow = (OozeWars)game;
+
+			if( !target.isGod() )
+			{
+				p.damage(tempDamage);
+				parent.addDamageDealt( (long)(tempDamage + .5) );
+				p.push(vx, vy); 
+			}			
 		}
 		
 		

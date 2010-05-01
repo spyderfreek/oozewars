@@ -1,6 +1,7 @@
 package oozeWars;
 
 import java.awt.Color;
+import java.awt.Graphics2D;
 
 import oozeWars.OozeWars.PlayerControls;
 
@@ -8,8 +9,19 @@ import oozeWars.OozeWars.PlayerControls;
 public class Head extends Particle 
 {
 
-	// TODO get graphics here
 	private double orientation;
+	
+	static class Eyes implements Sprite
+	{
+		
+		@Override
+		public void draw(Graphics2D graphics, Game game) 
+		{
+			// TODO Auto-generated method stub
+			
+		}
+		
+	}
 	
 	/**
 	 * Creates a Head for a blob with a specified location, radius, and orientation.
@@ -63,7 +75,7 @@ public class Head extends Particle
 	@Override
 	public void damage(double amount) 
 	{
-		super.damage(amount * 0.15);
+		super.damage(amount * 0.2);
 	}
 
 	/* (non-Javadoc)
@@ -84,7 +96,7 @@ public class Head extends Particle
 			double distance, double dx, double dy, double pushDist,
 			double pullDist) 
 	{
-		super.applyStickConstraint(neighbor, k*10, distance, dx, dy, pushDist * 1.1, pullDist * .5);
+		super.applyStickConstraint(neighbor, k*8, distance, dx, dy, pushDist * 1.1, pullDist * .8);
 	}
 
 	/**
@@ -104,25 +116,26 @@ public class Head extends Particle
 	{
 		OozeWars ow = (OozeWars)game;
 		PlayerControls pc = ow.getControls()[blobID-1];
+		double accel = .6;
 		
 		if(pc.isDown())
 		{
-			y += .2;
+			y += accel;
 		}
 		if(pc.isUp())
 		{
-			y -= .2;
+			y -= accel;
 		}
 		if(pc.isLeft())
 		{
-			x -= .2;
+			x -= accel;
 		}
 		if(pc.isRight())
 		{
-			x += .2;
+			x += accel;
 		}
 		
-		super.go(game, timestep, priorityLevel, minSpeed, maxSpeed, friction, maxRadius * 1.25, growth * 0.5);
+		super.go(game, timestep, priorityLevel, minSpeed, maxSpeed, friction, maxRadius * 1.25, growth * 1.6);
 	}
 	
 	

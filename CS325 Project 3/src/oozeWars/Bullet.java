@@ -13,7 +13,7 @@ public class Bullet extends Particle
 	private double damage;
 	private double orientation;
 	private final double range = 400;
-	private static Sound[] launch = initializeSound();
+	private static Sound[] launchSound = initializeSound();
 	
 	private boolean played = false;
 	
@@ -36,7 +36,7 @@ public class Bullet extends Particle
 		this.orientation = orientation;
 		friction = 1;
 		push( speed*Math.cos(orientation), speed*Math.sin(orientation) );
-		damage = radius*2;
+		damage = radius;
 	}
 	
 	@Override
@@ -45,7 +45,7 @@ public class Bullet extends Particle
 		if( played == false )
 		{
 			played = true;
-			launch[game.random.nextInt(2)].play();
+			launchSound[game.random.nextInt(2)].play();
 		}
 			
 		
@@ -61,10 +61,11 @@ public class Bullet extends Particle
 		}
 		
 		super.go(game, timestep, priorityLevel);
+		OozeWars ow = (OozeWars)game;
 		
 		ArrayList<Particle> targets;
 		
-		for( Blob b : ( ( OozeWars )game ).getBlobs() )
+		for( Blob b : ow.getBlobs() )
 		{
 			if( b.getBlobID() == blobID )
 				continue;
@@ -79,7 +80,7 @@ public class Bullet extends Particle
 				
 				if(dx * dx + dy * dy < range)
 				{
-					Explosion e = explode( targets );
+					Explosion e = explode( b, ow );
 					game.queue.schedule(priorityLevel, e );
 					game.view.addSprite(e, 2);
 					return;
@@ -89,10 +90,10 @@ public class Bullet extends Particle
 		}	
 	}
 	
-	public Explosion explode( ArrayList<Particle> targets )
+	public Explosion explode( Blob target, OozeWars game )
 	{
 		setDead(true);
-		return new Explosion(x, y, radius * 6, blobID, 5, 6, damage, targets);
+		return new Explosion(x, y, radius * 6, 5, 6, damage, target, game, blobID );
 	}
 
 	/* (non-Javadoc)

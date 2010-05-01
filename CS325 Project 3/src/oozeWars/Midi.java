@@ -85,11 +85,11 @@ public class Midi
 	          }
 	     }
 	     
-	     sequencer = (Sequencer) MidiSystem.getMidiDevice(info[x]);  
-	     synthesizer = (Synthesizer) MidiSystem.getMidiDevice(info[y]);
-		//sequencer = MidiSystem.getSequencer(false);
+	     //sequencer = (Sequencer) MidiSystem.getMidiDevice(info[x]);  
+	     //synthesizer = (Synthesizer) MidiSystem.getMidiDevice(info[y]);
+		sequencer = MidiSystem.getSequencer(false);
 		sequencer.open();
-		//synthesizer = MidiSystem.getSynthesizer();
+		synthesizer = MidiSystem.getSynthesizer();
 		synthesizer.open();
 		sequencer.getTransmitter().setReceiver(synthesizer.getReceiver());
 		sequencer.setSequence(sequence);

@@ -1,28 +1,39 @@
 package oozeWars;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.font.FontRenderContext;
+import java.awt.font.GlyphVector;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
 
 public class PowerUp extends Particle 
 {
 	public static enum Type {GOD, NITRO, BOOST, GLUE, HEAL};
 	private Blob ownerBlob;
 	private boolean inBlob, collected;
-	private static int ticksOutsideBlob = 1350;
+	private static int ticksOutsideBlob = 15*30;
 	private int powerUpTicks;
 	private final Type type;
+	private PowerupLabel label;
+	private final Game game;
 
 	public PowerUp(double x, double y, double radius, Color color, Type type, int powerUpTicks, Game game) 
 	{
 		super(x, y, radius, color, 0);
 		inBlob = collected = false;
 		this.type = type;
+		this.game = game;
 		
 		this.powerUpTicks = powerUpTicks;
 		Agent powerRemoverAgent = new Agent()
-							{ public void go(Game game, long timestep, int priorityLevel)
+							{ 
+								boolean isScheduled = false;
+								
+								public void go(Game game, long timestep, int priorityLevel)
 								{
-									boolean isScheduled = false;
+									
 									if(!isScheduled)
 									{
 										isScheduled = true;
@@ -35,6 +46,26 @@ public class PowerUp extends Particle
 								}
 							};
 		game.queue.schedule(1, powerRemoverAgent);
+		game.view.addSprite(label = getLabel(), 2);
+	}
+	
+	public PowerupLabel getLabel( )
+	{
+		switch( type )
+		{
+		case GOD:
+			return new PowerupLabel((int)x, (int)y, Color.black, "I", this);
+		case NITRO:
+			return new PowerupLabel((int)x, (int)y, Color.black, "N", this);
+		case BOOST:
+			return new PowerupLabel((int)x, (int)y, Color.black, "P", this);
+		case GLUE:
+			return new PowerupLabel((int)x, (int)y, Color.black, "G", this);
+		case HEAL:
+			return new PowerupLabel((int)x, (int)y, Color.black, "H", this);
+		default:
+			throw new IllegalArgumentException("Invalid type");
+		}
 	}
 	
 	@Override
@@ -135,6 +166,7 @@ public class PowerUp extends Particle
 				pAgent = new Agent()
 						{	boolean isSet = false;
 							double oldComf = ownerBlob.getComfyDistance();
+							double oldForce = ownerBlob.getBlobForce();
 							
 							public void go(Game game, long timestep, int priorityLevel)
 							{
@@ -142,7 +174,8 @@ public class PowerUp extends Particle
 								{
 									isSet = true;
 									ownerBlob.setColor(color);
-									ownerBlob.setComfyDistance(oldComf*.7);
+									ownerBlob.setComfyDistance(oldComf*.5);
+									ownerBlob.setBlobForce(oldForce*2);
 									
 									game.queue.scheduleIn(powerUpTicks, 1, this);
 								}
@@ -150,6 +183,7 @@ public class PowerUp extends Particle
 								{
 									ownerBlob.backToBaseColor();
 									ownerBlob.setComfyDistance(oldComf);
+									ownerBlob.setBlobForce(oldForce);
 									setDead(true);
 								}
 							}
@@ -174,4 +208,15 @@ public class PowerUp extends Particle
 		
 		return pAgent;
 	}
+
+	/* (non-Javadoc)
+	 * @see oozeWars.Entity#setDead(boolean)
+	 */
+	@Override
+	public void setDead(boolean dead) 
+	{
+		super.setDead(dead);
+		game.view.removeSprite(label, 2);
+	}
+
 }
