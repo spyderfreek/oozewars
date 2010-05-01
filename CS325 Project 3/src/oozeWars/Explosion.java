@@ -144,12 +144,15 @@ class Explosion extends Entity
 			speed = falloff( dist, radius, accel);
 			
 			double tempDamage = speed * damage;
-			p.damage(tempDamage);
+
 			OozeWars ow = (OozeWars)game;
 			for(Blob b : ow.getBlobs())
 			{
-				if(blobID ==  b.getBlobID())
+				if(blobID ==  b.getBlobID() && !b.isGod())
+				{
+					p.damage(tempDamage);
 					b.addDamageDealt( (long)(tempDamage + .5) );
+				}
 			}
 			
 			vx *= speed;

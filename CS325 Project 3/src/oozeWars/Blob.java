@@ -61,7 +61,7 @@ public class Blob extends Entity
 	private Head head;
 	
 	//The color that all the Particles in this Blob will take on.
-	private Color color;
+	private Color color, baseColor;
 	
 	//minSpeed:  the minimum speed that each Particle in the Blob can have while moving
 	//maxSpeed:  the maximum speed that each Particle in the Blob can have while moving
@@ -100,6 +100,9 @@ public class Blob extends Entity
 	
 	//The sound that the Blob will make when sucking up a new Particle.
 	private static final Sound slurp = initializeSound();
+	
+	private boolean nitro, god;
+	
 	
 	/*
 	 * Static method for retrieving the slurping sound that the Blob makes when 
@@ -142,20 +145,19 @@ public class Blob extends Entity
 	public Blob(double x, double y, double orientation, int numParticles, int blobID, OozeWars game, Color color) 
 	{
 		super(x, y);
-		this.color = color;
+		this.color = baseColor = color;
 		this.blobID = blobID;
 		particles = new ArrayList<Particle>();
+		god = nitro = false;
 		
 		//TODO:  Figure out default size for head
 		head = new Head(x, y, 8, color, blobID, orientation);
-		head.setBlobID(this.blobID);
 		particles.add(head);
 		
 		while(numParticles-- > 0)
 		{
 			Particle aParticle = new Particle(x + game.random.nextDouble()*80 - 40, 
 					y +	game.random.nextDouble()*80-40, game.random.nextInt(5) + 3, color, blobID);
-			aParticle.setBlobID(blobID);
 			particles.add(aParticle);
 		}
 
@@ -180,12 +182,11 @@ public class Blob extends Entity
 	{
 		super(0,0);
 		growth *= 0.5;
-		color = Color.lightGray;
+		color = Color.LIGHT_GRAY;
 		this.particles = particles;
 		head = null;
 		blobID = 0;
-		
-		//init( game );
+		god = nitro = false;
 	}
 	
 	/**
@@ -608,13 +609,30 @@ public class Blob extends Entity
 		return comfyDistance;
 	}
 	
-	/**
-	 * Sets all the Particles in this Blob to the Blob's current color.
-	 */
-	public void setParticlesColor()
+	public void backToBaseColor()
 	{
-		for(Particle p : particles)
-			p.color = color;
+		color = baseColor;
+	}
+	
+	public void setColor(Color color)
+	{
+		this.color = color;
+	}
+	
+	public Color getColor()
+	{
+		return color;
+	}
+	
+	public void addParticles(int num, OozeWars game)
+	{
+		while(num-- > 0)
+		{
+			Particle aParticle = new Particle(head.getX() + game.random.nextDouble()*20 - 10, 
+					head.getY() + game.random.nextDouble()*20-10, game.random.nextInt(5) + 3, color, blobID);
+			particles.add(aParticle);
+			game.addParticle(aParticle);
+		}
 	}
 	
 	/**
@@ -684,5 +702,38 @@ public class Blob extends Entity
 	public ArrayList<Particle> getParticles()
 	{
 		return particles;
+	}
+
+	public void setNitro(boolean nitro) 
+	{
+		this.nitro = nitro;
+	}
+
+	public boolean isNitro() 
+	{
+		return nitro;
+	}
+
+	public void setGod(boolean god) 
+	{
+		this.god = god;
+	}
+
+	public boolean isGod() 
+	{
+		return god;
+	}
+	
+	public void fullHeal()
+	{
+		for(Particle p:  particles)
+		{
+			if(p instanceof Head)
+				p.setRadius(16);
+			else
+				p.setRadius(maxRadius);
+		}
+		
+		updateHealth();
 	}
 }
