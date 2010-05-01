@@ -63,7 +63,7 @@ public class Head extends Particle
 	@Override
 	public void damage(double amount) 
 	{
-		super.damage(amount * 0.2);
+		super.damage(amount * 0.15);
 	}
 
 	/* (non-Javadoc)

@@ -248,7 +248,7 @@ public class OozeWars extends Game
 		{
 			case 0:
 				return new PlayerControls(KeyEvent.VK_W, KeyEvent.VK_S, KeyEvent.VK_A,
-						KeyEvent.VK_D, KeyEvent.VK_SPACE);
+						KeyEvent.VK_D, KeyEvent.VK_CONTROL);
 			case 1:
 				return new PlayerControls(KeyEvent.VK_I, KeyEvent.VK_K, 
 						KeyEvent.VK_J,KeyEvent.VK_L, KeyEvent.VK_SHIFT);
@@ -834,7 +834,15 @@ public class OozeWars extends Game
 		private BitSet touchedSet;
 		private final double RANGE = CELL_WIDTH * 0.5;
 		private final int MAX_PARTICLES;
+		//TODO:  Delete this?
 		private OozeWars ow;
+		private final double neutralSpawnProbability = getProbability(1, .5);
+		private final double powerUpSpawnProbability = getProbability(30, .05);
+		
+		private double getProbability(double time, double p)
+		{
+			return Math.exp(Math.log(p)/(time*frameRate));
+		}
 		
 		public ParticleManager(OozeWars ow, int maxParticles)
 		{
@@ -875,8 +883,58 @@ public class OozeWars extends Game
 
 			// 50% chance of  a new particle every 2 seconds : .9885
 			// use .9772 for every second
-			if( allParticles.size() < MAX_PARTICLES && random.nextFloat() > .9772f )
+			if( allParticles.size() < MAX_PARTICLES && random.nextFloat() > neutralSpawnProbability )
 				addParticle( new Particle( random.nextFloat()* width, random.nextFloat()* height, random.nextFloat()*5+3, Color.LIGHT_GRAY, 0));
+			
+			PowerUp.Type type;
+			Color color;
+			int powerUpTicks;
+			
+			switch(random.nextInt(5))
+			{
+				case 0:
+				{
+					type = PowerUp.Type.GOD;
+					color = Color.yellow;
+					powerUpTicks = 450;
+					break;
+				}
+				case 1:
+				{
+					type = PowerUp.Type.NITRO;
+					color = Color.red;
+					powerUpTicks = 450;
+					break;
+				}
+				case 2:
+				{
+					type = PowerUp.Type.BOOST;
+					color = new Color(235, 99, 7);
+					powerUpTicks = 1;
+					break;
+				}
+				case 3:
+				{
+					type = PowerUp.Type.GLUE;
+					color = Color.cyan;
+					powerUpTicks = 450;
+					break;
+				}
+				case 4:
+				{
+					type = PowerUp.Type.HEAL;
+					color = Color.magenta;
+					powerUpTicks = 1;
+					break;
+				}
+				default:
+					throw new IllegalArgumentException("The RNG screwed up");
+					
+			}
+				
+			if( random.nextFloat() > powerUpSpawnProbability )
+				addParticle( new PowerUp( random.nextFloat()* width, random.nextFloat()* height,
+						random.nextFloat()*5+3, color, type, powerUpTicks, ow));
 				
 			findStragglers();
 
