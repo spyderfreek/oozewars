@@ -54,13 +54,13 @@ public class OozeWars extends Game
 	private static final Midi[] songs = initializeSongs();
 	
 	//Used to save preferences
-	private final String key = "edu/gmu/cs/MyGame";
+	private final String key = "edu/gmu/cs/OozeWars";
 	
 	//Used for saving the high score
 	private Preferences prefs = Preferences.userRoot().node(key);
 	
 	//The long that is used when there has not been a player score that beats this score
-	private final long defaultHighScore = 5000;
+	private final long defaultHighScore = 1000;
 	
 	/**
 	 * The constructor for the game OozeWars.  Calls the constructor for Game.java.  
@@ -87,6 +87,7 @@ public class OozeWars extends Game
 		String imgPath = "cells_bg.jpg";
 
 		backdrop = new Backdrop(imgPath);
+		//System.out.println("User root: " + Preferences.userRoot().absolutePath());
 		
 		if(prefs.getLong("High Score", defaultHighScore) == 5000)
 		{
@@ -132,7 +133,7 @@ public class OozeWars extends Game
 		ArrayList<Particle> neutralParticles = new ArrayList<Particle>();
 		
 		for( int i = 0; i < numParticles; i++ )
-			neutralParticles.add(new Particle(700 + random.nextInt(80) - 40, 100 + random.nextInt(80) - 40, 6, Color.WHITE, 0));
+			neutralParticles.add(new Particle(700 + random.nextInt(80) - 40, 100 + random.nextInt(80) - 40, 8, Color.WHITE, 0));
 		
 		hBlobs.put(0, new Blob(neutralParticles, this));
 		
@@ -534,8 +535,11 @@ public class OozeWars extends Game
 	public static void main(String[] args) 
 	{	
 		String answer = JOptionPane.showInputDialog("How many players?");
+		// cancel pressed or no input
+		if( answer == null )
+			System.exit(0);
 		int n = Integer.parseInt(answer);
-		OozeWars game = new OozeWars(45, n);
+		OozeWars game = new OozeWars(30, n);
 		OozeView view = new OozeView(game, 3, 800, 600, 0.25);
 		JFrame frame = view.createFrame("Ooze Wars");
 		view.setKeystrokeFocus(frame);
@@ -890,51 +894,56 @@ public class OozeWars extends Game
 			Color color;
 			int powerUpTicks;
 			
-			switch(random.nextInt(5))
-			{
-				case 0:
-				{
-					type = PowerUp.Type.GOD;
-					color = Color.yellow;
-					powerUpTicks = 450;
-					break;
-				}
-				case 1:
-				{
-					type = PowerUp.Type.NITRO;
-					color = Color.red;
-					powerUpTicks = 450;
-					break;
-				}
-				case 2:
-				{
-					type = PowerUp.Type.BOOST;
-					color = new Color(235, 99, 7);
-					powerUpTicks = 1;
-					break;
-				}
-				case 3:
-				{
-					type = PowerUp.Type.GLUE;
-					color = Color.cyan;
-					powerUpTicks = 450;
-					break;
-				}
-				case 4:
-				{
-					type = PowerUp.Type.HEAL;
-					color = Color.magenta;
-					powerUpTicks = 1;
-					break;
-				}
-				default:
-					throw new IllegalArgumentException("The RNG screwed up");
-					
-			}
+			
 				
 			if( random.nextFloat() > powerUpSpawnProbability )
+			{
+				switch(random.nextInt(5))
+				{
+					case 0:
+					{
+						type = PowerUp.Type.GOD;
+						color = Color.yellow;
+						powerUpTicks = (int) (10*frameRate);
+						break;
+					}
+					case 1:
+					{
+						type = PowerUp.Type.NITRO;
+						color = Color.red;
+						powerUpTicks = (int) (10*frameRate);
+						break;
+					}
+					case 2:
+					{
+						type = PowerUp.Type.BOOST;
+						color = new Color(235, 99, 7);
+						powerUpTicks = 1;
+						break;
+					}
+					case 3:
+					{
+						type = PowerUp.Type.GLUE;
+						color = Color.cyan;
+						powerUpTicks = (int) (10*frameRate);
+						break;
+					}
+					case 4:
+					{
+						type = PowerUp.Type.HEAL;
+						color = Color.magenta;
+						powerUpTicks = 1;
+						break;
+					}
+					default:
+						throw new IllegalArgumentException("The RNG screwed up");
+						
+				}
+				
 				addParticle( new PowerUp( random.nextFloat()* width, random.nextFloat()* height,
-						random.nextFloat()*5+3, color, type, powerUpTicks, ow));
+						8, color, type, powerUpTicks, ow));
+			}
+				
 				
 			findStragglers();
 
@@ -983,10 +992,11 @@ public class OozeWars extends Game
 				Particle p;
 				double headX = head.getX();
 				double headY = head.getY();
-				int numNeighbors = constituents.size();
+				int capacity = 100;
+				int numNeighbors = Math.min(capacity, constituents.size() );
 				
-				double comfyDist = b.getComfyDistance();
-				double factor = 1.0 / 100;
+				//double comfyDist = b.getComfyDistance();
+				double factor = 1.0 / capacity;
 				double dx, dy;
 				
 				for( int i  = 1; i < numNeighbors; i++ )
@@ -994,7 +1004,7 @@ public class OozeWars extends Game
 					p = constituents.get(i);
 					dx = headX - p.getX();
 					dy = headY - p.getY();
-					double k = .005 * (1 - i * factor);
+					double k = .03 * (1 - i * factor);
 					
 					//head.applyStickConstraint( p, .001 * (1 - i * factor), Math.sqrt(comfyDist * comfyDist + 1), dx, dy, 0, comfyDist);
 					p.push(k * dx, k * dy);
@@ -1050,7 +1060,7 @@ public class OozeWars extends Game
 						double obForce = oBlob.getBlobForce();
 						double oComfy = oBlob.getComfyDistance();
 						
-						p.applyStickConstraint(op, bForce, distance, dx, dy, range, comfy);	
+						p.applyStickConstraint(op, 0.5 * (bForce + obForce), distance, dx, dy, range, 0.5*( comfy + oComfy ));	
 					}
 				}
 			}

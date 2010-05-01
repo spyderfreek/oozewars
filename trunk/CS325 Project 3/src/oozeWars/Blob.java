@@ -71,15 +71,15 @@ public class Blob extends Entity
 	//health:	 the sum of all the Particles' radii that are currently in the Blob,
 	//			 includes the Head Particle.
 	//blobForce: the amount of force that each Particle in the Blob has on one another.
-	private double minSpeed = .5, maxSpeed = 10, friction = .97, accel, health = 0, blobForce = .002;
+	private double minSpeed = .5, maxSpeed = 10, friction = .97, accel, health = 0, blobForce = .008;
 	//The maximum size a particle can grow to, and the amount incremented each time step
-	private double maxRadius = 8, growth = 5.0 / 45.0 / 20;
+	private double maxRadius = 8, growth = 5.0 / 30.0 / 20;
 	
 	//The distance at which each Particle in the Blob will come to rest from one another.
 	private double comfyDistance = 20;
 	
 	//The time remaining until the player can shoot again.
-	private int coolDown = 15;
+	private int coolDown = 13;
 	
 	//Tells whether or not the Blob is ready to shoot again.
 	private boolean fireReady = true;
@@ -439,7 +439,8 @@ public class Blob extends Entity
 		
 		head.calcOrientation();
 		double bigRad = biggest.getRadius();
-		return new Bullet(head.getX(), head.getY(), bigRad, color, blobID, head.getOrientation(), 15);
+		if( nitro ) bigRad *= 1.25;
+		return new Bullet(head.getX(), head.getY(), bigRad, color, blobID, head.getOrientation(), 25);
 	}
 	
 	/**
@@ -666,8 +667,8 @@ public class Blob extends Entity
 	public void updateScore()
 	{
 		//We're adding .5 to round to the nearest integer correctly
-		score = (long)( health * particles.size() + .5 );
-		score += (long)( damageDealt + .5 )<<1;
+		score = (long)( health + .5 );
+		score += (long)( damageDealt + .5 );
 	}
 	
 	/**

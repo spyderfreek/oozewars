@@ -24,7 +24,7 @@ public class Particle extends Entity implements Comparable<Particle>
 	protected RescaleOp colorFilt;
 	protected float[] scales = {1f,1f,1f,1f};
 	protected final float[] offsets = {0f,0f,0f,0f};
-	protected static int BLUR_WIDTH = 10;
+	public static final int BLUR_WIDTH = 10;
 	protected int index;
 	protected int halfWidth;
 
@@ -84,14 +84,19 @@ public class Particle extends Entity implements Comparable<Particle>
 		colorFilt.filter(image.getRaster(), colored.getRaster());
 		
 		//double adjScale = Math.ceil( radius * scaleFactor );
-		double adjScale = halfWidth * scaleFactor;
-		AffineTransform at = AffineTransform.getScaleInstance(scale, scale);
-		//AffineTransform at = AffineTransform.getTranslateInstance((int)x - halfWidth, (int)y - halfWidth);
-		at.translate((int)x - halfWidth, (int)y - halfWidth);
-		at.scale(adjScale, adjScale);
-		graphics.drawRenderedImage( colored, at);
+		
+		graphics.drawRenderedImage( colored, getTransform( scale ));
 		//graphics.setColor(this.color);
 		//graphics.fillOval((int)x - halfWidth, (int)y - halfWidth, 2 * halfWidth, 2 * halfWidth);
+	}
+	
+	protected AffineTransform getTransform( double scale )
+	{
+		double adjScale = halfWidth * scaleFactor;
+		AffineTransform at = AffineTransform.getScaleInstance(scale, scale);
+		at.translate((int)x - halfWidth, (int)y - halfWidth);
+		at.scale(adjScale, adjScale);
+		return at;
 	}
 	
 	protected BufferedImage createImage()
