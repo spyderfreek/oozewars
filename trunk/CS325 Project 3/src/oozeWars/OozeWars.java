@@ -265,6 +265,7 @@ public class OozeWars extends Game
 	 */
 	public void removePlayer(int player)
 	{
+		boolean[] noPowerUps = new boolean[2];
 		long[] scores = new long[2];
 		for(Blob blob: getBlobs())
 		{
@@ -274,9 +275,29 @@ public class OozeWars extends Game
 			blob.updateScore();
 			long score = blob.getScore();
 			if(blob.getBlobID() == 1)
+			{
+				//Player gets a bonus for not using any PowerUps
+				if(blob.getPowerUpsCollected() == 0)
+				{
+					noPowerUps[0] = true;
+					score += 5000;
+				}
+				else
+					noPowerUps[0] = false;
 				scores[0] = score;
+			}
 			else if(blob.getBlobID() == 2)
+			{
+				//Player gets a bonus for not using any PowerUps
+				if(blob.getPowerUpsCollected() == 0)
+				{
+					noPowerUps[1] = true;
+					score += 5000;
+				}
+				else
+					noPowerUps[1] = false;
 				scores[1] = score;
+			}
 			
 			if( score > prefs.getLong("High Score", defaultHighScore) )
 			{
@@ -307,7 +328,8 @@ public class OozeWars extends Game
 					break;
 			}
 			JOptionPane.showMessageDialog(null, "Player " + playerLeft  + " wins!");
-			
+			//TODO:  Make it so a message prints when a player gets a bonus for no
+			//       PowerUps collected
 			JOptionPane.showMessageDialog(null, "Player 1 scored:  " + scores[0] + "\n"
 										+ "Player 2 scored:  " + scores[1] + "\n"
 										+ "High Score:  " + prefs.getLong("High Score", defaultHighScore));
