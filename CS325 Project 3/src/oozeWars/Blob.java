@@ -21,6 +21,7 @@ import com.jhlabs.image.PremultiplyFilter;
 import oozeWars.OozeWars.PlayerControls;
 
 /**
+ * <center><b>BLOB.JAVA</b></center>
  * The wrapper class for a group of particles that have the same ID.
  * 
  * <p>A Blob is set up by giving an initial x and y coordinate that the center of the Blob's

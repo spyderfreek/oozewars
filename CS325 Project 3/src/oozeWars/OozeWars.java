@@ -17,6 +17,20 @@ import javax.sound.midi.MidiUnavailableException;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
+/**
+ * <center><b>OOZEWARS.JAVA</b></center>
+ * This extends Game.java and is the custom Game class used to make the OozeWars game.
+ * 
+ * <p>This is set up by providing the constructor with a maximum frame rate that the game
+ *    will run at and the number of players that will be in this game.
+ *    
+ * <p>OozeWars.java does many things in the initialization and maintaining of the state of
+ *    the game.  Particularly, it initializes the setup of the JFrame that contains the game's
+ *    graphics.  It also 
+ * @author Nick Kitten<br />Sean Fedak
+ *
+ */
+
 public class OozeWars extends Game 
 {
 	//The current number of players in the game
