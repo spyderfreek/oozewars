@@ -89,6 +89,7 @@ public class PowerUp extends Particle
 					ownerBlob = b;
 			}
 			
+			ownerBlob.incrementPowerUpsCollected();
 			game.queue.schedule(0, createAgent(type));
 		}
 		super.go(game, timestep, priorityLevel, minSpeed, maxSpeed, frictn, maxRadius, growth);

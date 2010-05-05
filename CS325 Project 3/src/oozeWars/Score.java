@@ -9,7 +9,7 @@ import java.awt.Graphics2D;
 import java.io.File;
 
 /**
- * Keeps track of a player score and draws it
+ * Keeps track of a player's score and draws it
  * @author Nick
  *
  */

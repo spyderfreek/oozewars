@@ -57,6 +57,8 @@ public class Blob extends Entity
 	//The total amount of damage that this Blob has done to the other Blobs
 	private long damageDealt = 0;
 	
+	private int powerUpsCollected = 0;
+	
 	//The Particle that is the Head of this Blob, will be used to control the Blob.
 	private Head head;
 	
@@ -101,6 +103,7 @@ public class Blob extends Entity
 	//The sound that the Blob will make when sucking up a new Particle.
 	private static final Sound slurp = initializeSound();
 	
+	//Variables to know whether the blob currently has the nitro or god powerups
 	private boolean nitro, god;
 	
 	
@@ -610,21 +613,42 @@ public class Blob extends Entity
 		return comfyDistance;
 	}
 	
+	/**
+	 * Returns the blob back to the color that it started as
+	 */
 	public void backToBaseColor()
 	{
 		color = baseColor;
 	}
 	
+	/**
+	 * Sets the current color of the blob to the value passed
+	 * @param color
+	 * :  The color that the blob will be set to 
+	 */
 	public void setColor(Color color)
 	{
 		this.color = color;
 	}
 	
+	/**
+	 * Returns the color that the blob currently is
+	 * @return
+	 * The color that the blob currently is
+	 */
 	public Color getColor()
 	{
 		return color;
 	}
 	
+	/**
+	 * Adds a specified number of particles to the blob and the game's data structure
+	 * for particles
+	 * @param num
+	 * :  The number of particles that will be added
+	 * @param game
+	 * :  The game that the particles will be added to
+	 */
 	public void addParticles(int num, OozeWars game)
 	{
 		while(num-- > 0)
@@ -669,6 +693,7 @@ public class Blob extends Entity
 		//We're adding .5 to round to the nearest integer correctly
 		score = (long)( health + .5 );
 		score += (long)( damageDealt + .5 );
+		score += (long) (powerUpsCollected)*100;
 	}
 	
 	/**
@@ -705,26 +730,52 @@ public class Blob extends Entity
 		return particles;
 	}
 
+	/**
+	 * Sets this.nitro value to the value passed
+	 * @param nitro
+	 * :  The value which this.nitro will be set to
+	 */
 	public void setNitro(boolean nitro) 
 	{
 		this.nitro = nitro;
 	}
 
+	/**
+	 * Returns whether this blob has the nitro powerup active
+	 * @return
+	 * <b>TRUE</b> if the blob currently has a nitro powerup active<br />
+	 * <b>FALSE</b> if the blob does not have a nitro powerup active
+	 */
 	public boolean isNitro() 
 	{
 		return nitro;
 	}
 
+	/**
+	 * Sets the value of this.god to the value passed
+	 * @param god
+	 * :  The value that this.god will be set to
+	 */
 	public void setGod(boolean god) 
 	{
 		this.god = god;
 	}
 
+	/**
+	 * Returns the value that represents whether this blob currently has the god powerup active
+	 * @return
+	 * <b>TRUE</b> if the blob currently has a god powerup active<br />
+	 * <b>FALSE</b> if the blob does not currently have a god powerup active
+	 */
 	public boolean isGod() 
 	{
 		return god;
 	}
 	
+	/**
+	 * Fully heals the Blob by setting all the particles currently in it, including
+	 * the head, to their max radius and then updates its health
+	 */
 	public void fullHeal()
 	{
 		for(Particle p:  particles)
@@ -736,5 +787,23 @@ public class Blob extends Entity
 		}
 		
 		updateHealth();
+	}
+	
+	/**
+	 * Increments the variable that counts how many PowerUps have been collected
+	 */
+	public void incrementPowerUpsCollected()
+	{
+		powerUpsCollected++;
+	}
+	
+	/**
+	 * Returns the number of PowerUps that this blob has collected
+	 * @return
+	 * The number of PowerUps that this blob has collected
+	 */
+	public int getPowerUpsCollected()
+	{
+		return powerUpsCollected;
 	}
 }
