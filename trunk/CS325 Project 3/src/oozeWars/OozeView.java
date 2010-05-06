@@ -1,5 +1,7 @@
 package oozeWars;
 
+import java.awt.BorderLayout;
+import java.awt.Container;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -15,6 +17,7 @@ import com.jhlabs.image.FadeFilter;
 public class OozeView extends View 
 {
 	public final double SCALE;
+	private MenuScreen menu;
 	private BufferedImage smallFront, smallBack;
 	private AffineTransform transform;
 	private BufferedImageOp fader;
@@ -83,5 +86,17 @@ public class OozeView extends View
 		
 		graphics.dispose();
 		
+	}
+	
+	public void setMenu(MenuScreen menu)
+	{
+		this.menu = menu;
+	}
+	
+	public void swapToMainMenu()
+	{
+		Container container = getParent();
+		container.remove(this);
+		container.add(menu, BorderLayout.CENTER);
 	}
 }

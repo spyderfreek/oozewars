@@ -22,7 +22,7 @@ import javax.swing.JOptionPane;
  * This extends Game.java and is the custom Game class used to make the OozeWars game.
  * 
  * <p>This is set up by providing the constructor with a maximum frame rate that the game
- *    will run at and the number of players that will be in this game.
+ *    will run at and the number of players that will be in this game respectively.
  *    
  * <p>OozeWars.java does many things in the initialization and maintaining of the state of
  *    the game.  Particularly, it initializes the setup of the JFrame that contains the game's
@@ -109,6 +109,8 @@ public class OozeWars extends Game
 			try{prefs.flush();}
 			catch(BackingStoreException e){};
 		}
+		
+		
 	}
 
 	/* (non-Javadoc)
@@ -190,7 +192,6 @@ public class OozeWars extends Game
 		if(kl.length == 1 && kl[0] != null)
 			view.removeKeyListener( kl[0] );
 		
-		pace.purge();
 		pace = null;
 		hBlobs.clear();
 		allParticles.clear();
@@ -579,7 +580,8 @@ public class OozeWars extends Game
 		OozeView view = new OozeView(game, 3, 800, 600, 0.25);
 		JFrame frame = view.createFrame("Ooze Wars");
 		view.setKeystrokeFocus(frame);
-		game.reset();
+		MenuScreen menu = new MenuScreen(game, view);
+		view.swapToMainMenu();
 	}
 	
 	/**
