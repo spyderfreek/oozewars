@@ -5,6 +5,7 @@ import java.awt.Container;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.event.KeyListener;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
@@ -98,5 +99,6 @@ public class OozeView extends View
 		Container container = getParent();
 		container.remove(this);
 		container.add(menu, BorderLayout.CENTER);
+		menu.requestFocus();
 	}
 }
