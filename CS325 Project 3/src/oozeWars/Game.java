@@ -211,7 +211,8 @@ public class Game
 		stepFlag.testAndTurnOff();
 		repaintFlag.testAndTurnOff();
 		paused = true;
-		pace.cancel();
+		if(pace != null)
+			pace.cancel();
 		queue.clear();
 		view.clear();
 	}
