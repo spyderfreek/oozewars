@@ -571,12 +571,12 @@ public class OozeWars extends Game
 	 */
 	public static void main(String[] args) 
 	{	
-		String answer = JOptionPane.showInputDialog("How many players?");
+		//String answer = JOptionPane.showInputDialog("How many players?");
 		// cancel pressed or no input
-		if( answer == null )
-			System.exit(0);
-		int n = Integer.parseInt(answer);
-		OozeWars game = new OozeWars(30, n);
+		//if( answer == null )
+			//System.exit(0);
+		//int n = Integer.parseInt(answer);
+		OozeWars game = new OozeWars(30, 2);
 		OozeView view = new OozeView(game, 3, 800, 600, 0.25);
 		JFrame frame = view.createFrame("Ooze Wars");
 		view.setKeystrokeFocus(frame);

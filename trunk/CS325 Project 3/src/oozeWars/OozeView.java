@@ -98,7 +98,19 @@ public class OozeView extends View
 	{
 		Container container = getParent();
 		container.remove(this);
+		menu.switchToMain();
 		container.add(menu, BorderLayout.CENTER);
 		menu.requestFocus();
+		validate();
+	}
+	
+	public void swapToPauseMenu()
+	{
+		Container container = getParent();
+		container.remove(this);
+		menu.switchToPause();
+		container.add(menu, BorderLayout.CENTER);
+		menu.requestFocus();
+		validate();
 	}
 }
