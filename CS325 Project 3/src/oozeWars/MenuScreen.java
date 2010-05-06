@@ -8,7 +8,7 @@ import javax.swing.*;
 @SuppressWarnings("serial")
 public class MenuScreen extends JPanel implements ActionListener
 {
-	private final OozeView view;
+	private OozeView view;
 	private JPanel mainMenu, pauseMenu;
 	private JLabel title;
 	private OozeWars game;
@@ -48,6 +48,7 @@ public class MenuScreen extends JPanel implements ActionListener
 		Container container = getParent();
 		container.remove(this);
 		container.add(view, BorderLayout.CENTER);
+		view.requestFocus();
 	}
 	
 	private JButton initializeButton(String label)
