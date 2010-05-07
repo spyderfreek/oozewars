@@ -693,8 +693,8 @@ public class Blob extends Entity
 	{
 		//We're adding .5 to round to the nearest integer correctly
 		score = (long)( health + .5 );
-		score += (long)( damageDealt + .5 );
-		score += (long) (powerUpsCollected)*100;
+		score += (long)( damageDealt + .5 )<<2;
+		score += (long)(powerUpsCollected)*100;
 	}
 	
 	/**

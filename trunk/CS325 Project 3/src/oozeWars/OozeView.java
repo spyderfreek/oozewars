@@ -101,7 +101,8 @@ public class OozeView extends View
 		menu.switchToMain();
 		container.add(menu, BorderLayout.CENTER);
 		menu.requestFocus();
-		validate();
+		container.validate();
+		menu.updateUI();
 	}
 	
 	public void swapToPauseMenu()
@@ -111,6 +112,7 @@ public class OozeView extends View
 		menu.switchToPause();
 		container.add(menu, BorderLayout.CENTER);
 		menu.requestFocus();
-		validate();
+		container.validate();
+		menu.updateUI();
 	}
 }

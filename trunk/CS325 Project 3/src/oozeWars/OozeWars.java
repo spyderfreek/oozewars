@@ -200,14 +200,10 @@ public class OozeWars extends Game
 			pc.resetBooleans();
 	}
 	
-	private boolean deleteHighScore()
+	public void deleteHighScore()
 	{
-		int choice = JOptionPane.showConfirmDialog(null, "Delete High Score?", "Delete?", 
-												   JOptionPane.YES_NO_OPTION);
-		
-		if(choice == JOptionPane.YES_OPTION)
-			return true;
-		return false;
+		try{ Preferences.userRoot( ).node(key).removeNode( ); }
+		catch(BackingStoreException ex) { }
 	}
 
 	/**
@@ -314,11 +310,24 @@ public class OozeWars extends Game
 				scores[1] = score;
 			}
 			
-			if( score > prefs.getLong("High Score", defaultHighScore) )
+			try
 			{
-				prefs.putLong("High Score", score);
-				try {prefs.flush();} 
-				catch (BackingStoreException e) {}
+				if( score > prefs.getLong("High Score", defaultHighScore) )
+				{
+					prefs.putLong("High Score", score);
+					try {prefs.flush();} 
+					catch (BackingStoreException e) {}
+				}
+			}
+			catch(IllegalStateException e)
+			{
+				prefs = Preferences.userRoot().node(key);
+				if( score > prefs.getLong("High Score", defaultHighScore))
+				{
+					prefs.putLong("High Score", score);
+					try{prefs.flush();}
+					catch(BackingStoreException x){}
+				}
 			}
 		}
 		
@@ -349,26 +358,7 @@ public class OozeWars extends Game
 										+ "Player 2 scored:  " + scores[1] + "\n"
 										+ "High Score:  " + prefs.getLong("High Score", defaultHighScore));
 
-			int answer = JOptionPane.showConfirmDialog(null, "Rematch?", "Game Over", 
-					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-			if(answer == JOptionPane.YES_OPTION)
-				numPlayers = 2;
-			else
-			{
-				boolean quit = quit();
-				if(quit)
-				{
-					boolean yes = deleteHighScore();
-					if(yes)
-					{
-						try{ Preferences.userRoot( ).node(key).removeNode( ); }
-						catch(BackingStoreException ex) { }
-					}
-					System.exit(0);
-				}
-			}
-
-			reset();
+			((OozeView)view).swapToMainMenu();
 			
 		}
 		else if(numPlayers == 0) //There was a draw
@@ -379,27 +369,7 @@ public class OozeWars extends Game
 					+ "Player 2 scored:  " + scores[1] + "\n"
 					+ "High Score:  " + prefs.getLong("High Score", defaultHighScore));
 			
-			int answer = JOptionPane.showConfirmDialog(null, "Rematch?", "Game Over", 
-					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-			
-			if(answer == JOptionPane.YES_OPTION)
-				numPlayers = 2;
-			else
-			{
-				boolean quit = quit();
-				if(quit)
-				{
-					boolean yes = deleteHighScore();
-					if(yes)
-					{
-						try{ Preferences.userRoot( ).node(key).removeNode( ); }
-						catch(BackingStoreException ex) { }
-					}
-					System.exit(0);
-				}
-			}
-			
-			reset();
+			((OozeView)view).swapToMainMenu();
 		}
 	}
 	
@@ -410,6 +380,14 @@ public class OozeWars extends Game
 	public int getNumPlayers() 
 	{
 		return numPlayers;
+	}
+	
+	public void setNumPlayers(int i)
+	{
+		if(i > 2 || i < 1)
+			throw new IllegalArgumentException("Invalid number of players");
+		
+		numPlayers = i;
 	}
 
 	/**
@@ -492,7 +470,7 @@ public class OozeWars extends Game
 	 * :  The view that the Listeners will be added to.
 	 */
 	@Override
-	protected void registerListeners(View view) 
+	protected void registerListeners(final View view) 
 	{
 		view.addKeyListener( new KeyAdapter()
 		{
@@ -528,7 +506,10 @@ public class OozeWars extends Game
 				}
 				
 				if(e.getKeyCode() == KeyEvent.VK_P )
+				{
 					togglePaused();
+					((OozeView)view).swapToPauseMenu();
+				}
 			}
 			
 			public void keyReleased(KeyEvent e)
