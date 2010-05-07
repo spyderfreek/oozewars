@@ -118,7 +118,6 @@ public class View extends JPanel
 		final JFrame frame = new JFrame(title);
 		frame.getContentPane().setLayout(new BorderLayout());
 		frame.getContentPane().add(this);
-		frame.getContentPane().setBackground(Color.BLACK);
 		setKeystrokeFocus(frame);
 		frame.pack();
 		frame.setLocationRelativeTo(null);		// a magic trick to center the window on-screen
