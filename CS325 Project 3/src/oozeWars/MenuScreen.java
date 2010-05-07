@@ -22,16 +22,17 @@ public class MenuScreen extends JPanel implements ActionListener
 	private JButton quit;
 	private JButton resume;
 	private JButton[] returnToMenu;
+	private JButton deleteHS;
 
 	public MenuScreen(OozeWars game, OozeView view) 
 	{
-		super();
+		super(new BorderLayout());
 		
 		this.game = game;
 		this.view = view;
 		view.setMenu(this);
 		
-		returnToMenu = new JButton[3];
+		returnToMenu = new JButton[4];
 		for(int i = 0; i < returnToMenu.length; i++)
 		{
 			returnToMenu[i] = new JButton("Return to Menu");
@@ -46,7 +47,6 @@ public class MenuScreen extends JPanel implements ActionListener
 		JLabel mainLabel = new JLabel("Main Menu", JLabel.CENTER);
 		mainBox.add(mainLabel);
 		mainLabel.setAlignmentX(.5f);
-		
 		mainBox.add(Box.createVerticalStrut(20));
 		
 		twoPlayer = initializeButton("2 Players", mainBox);
@@ -62,13 +62,15 @@ public class MenuScreen extends JPanel implements ActionListener
 		
 		//************Initialize Pause Menu*****************
 		pauseBox = new Box(BoxLayout.Y_AXIS);
-		JLabel pauseLabel = new JLabel("Pause", JLabel.CENTER);
+		JLabel pauseLabel = new JLabel("PAUSED", JLabel.CENTER);
 		pauseBox.add(pauseLabel);
 		pauseLabel.setAlignmentX(.5f);
 		pauseBox.add(Box.createVerticalStrut(20));
 		
 		resume = initializeButton("Resume", pauseBox);
-		pauseBox.add(quit);
+		
+		pauseBox.add(returnToMenu[0]);
+		returnToMenu[0].setAlignmentX(.5f);
 		pauseMenu = new JPanel();
 		pauseMenu.add(pauseBox);
 		//**************************************************
@@ -76,20 +78,24 @@ public class MenuScreen extends JPanel implements ActionListener
 		//************Initialize HighScores Menu*************
 		//TODO:  Add more to this
 		scores = new JPanel();
-		scores.add(returnToMenu[0]);
+		deleteHS = new JButton("Delete High Score");
+		deleteHS.addActionListener(this);
+		deleteHS.setActionCommand("Delete High Score");
+		scores.add(deleteHS);
+		scores.add(returnToMenu[1]);
 		//scores.add(scoresBox);
 		//***************************************************
 		
 		//*************Initialize About Menu*****************
 		//TODO:  Add more to this
 		aboutGame = new JPanel();
-		aboutGame.add(returnToMenu[1]);
+		aboutGame.add(returnToMenu[2]);
 		//***************************************************
 		
 		//***********Initialize Instructions Menu************
 		//TODO:  Add more to this
 		howToPlay = new JPanel();
-		howToPlay.add(returnToMenu[2]);
+		howToPlay.add(returnToMenu[3]);
 		//***************************************************
 	}
 	
@@ -99,6 +105,7 @@ public class MenuScreen extends JPanel implements ActionListener
 		
 		if(action.equals("2 Players"))
 		{
+			game.setNumPlayers(2);
 			swapToGame();
 			game.reset();
 		}
@@ -110,6 +117,11 @@ public class MenuScreen extends JPanel implements ActionListener
 			switchToAbout();
 		else if(action.equals("Return to Menu"))
 			switchToMain();
+		else if(action.equals("Delete High Score"))
+		{
+			game.deleteHighScore();
+			//TODO:  Make a method to do this, need to remember to call updateUI();
+		}
 		else if(action.equals("Resume"))
 			resumeGame();
 		else if(action.equals("Quit"))
@@ -142,7 +154,7 @@ public class MenuScreen extends JPanel implements ActionListener
 	
 	public void switchToPause()
 	{
-		try{this.remove(pauseMenu);}
+		try{this.remove(mainMenu);}
 		catch(NullPointerException e){}
 		try{this.remove(scores);}
 		catch(NullPointerException e){}
@@ -210,6 +222,7 @@ public class MenuScreen extends JPanel implements ActionListener
 	
 	private void resumeGame()
 	{
-		
+		swapToGame();
+		game.togglePaused();
 	}
 }
