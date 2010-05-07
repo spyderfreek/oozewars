@@ -9,11 +9,10 @@ import javax.swing.*;
 public class MenuScreen extends JPanel implements ActionListener
 {
 	private OozeView view;
-	private JPanel mainMenu, pauseMenu;
+	private JPanel mainMenu, pauseMenu, scores, aboutGame, howToPlay;
 	private JLabel title;
 	private OozeWars game;
-	private Box mainBox;
-	private Box pauseBox;
+	private Box mainBox, pauseBox;
 	private JButton twoPlayer;
 	private JButton instructions;
 	private JButton highScores;
@@ -45,11 +44,31 @@ public class MenuScreen extends JPanel implements ActionListener
 		mainMenu.add(mainBox);
 		this.add(mainMenu, BorderLayout.CENTER);
 		
+		//************Initialize Pause Menu*****************
 		pauseBox = new Box(BoxLayout.Y_AXIS);
 		pauseBox.add(new JLabel("Pause", JLabel.CENTER));
 		
 		resume = initializeButton("Resume", pauseBox);
 		pauseBox.add(quit);
+		pauseMenu = new JPanel();
+		pauseMenu.add(pauseBox);
+		//**************************************************
+		
+		//************Initialize HighScores Menu*************
+		//TODO:  Add more to this
+		scores = new JPanel();
+		//scores.add(scoresBox);
+		//***************************************************
+		
+		//*************Initialize About Menu*****************
+		//TODO:  Add more to this
+		aboutGame = new JPanel();
+		//***************************************************
+		
+		//***********Initialize Instructions Menu************
+		//TODO:  Add more to this
+		howToPlay = new JPanel();
+		//***************************************************
 	}
 	
 	public void actionPerformed(ActionEvent e)
@@ -62,11 +81,11 @@ public class MenuScreen extends JPanel implements ActionListener
 			game.reset();
 		}
 		else if(action.equals("Instructions"))
-			openInstructions();
+			switchToInstructions();
 		else if(action.equals("High Scores"))
-			openHighScores();
+			switchToHighScores();
 		else if(action.equals("About"))
-			openAbout();
+			switchToAbout();
 		else if(action.equals("Resume"))
 			resumeGame();
 		else if(action.equals("Quit"))
@@ -101,7 +120,7 @@ public class MenuScreen extends JPanel implements ActionListener
 		{
 			this.remove(mainMenu);
 		}
-		catch (NullPointerException e){}
+		catch (Exception e){e.printStackTrace();}
 		this.add(pauseMenu, BorderLayout.CENTER);
 		validate();
 	}
@@ -112,24 +131,42 @@ public class MenuScreen extends JPanel implements ActionListener
 		{
 			this.remove(pauseMenu);
 		}
-		catch(NullPointerException e){}
+		catch(Exception e){e.printStackTrace();}
 		this.add(mainMenu, BorderLayout.CENTER);
 		validate();
 	}
 	
-	private void openInstructions()
+	private void switchToInstructions()
 	{
-		
+		try
+		{
+			this.remove(mainMenu);
+		}
+		catch(NullPointerException e){}
+		this.add(howToPlay, BorderLayout.CENTER);
+		validate();
 	}
 	
-	private void openHighScores()
+	private void switchToHighScores()
 	{
-		
+		try
+		{
+			this.remove(mainMenu);
+		}
+		catch(NullPointerException e){}
+		this.add(scores, BorderLayout.CENTER);
+		validate();
 	}
 	
-	private void openAbout()
+	private void switchToAbout()
 	{
-		
+		try
+		{
+			this.remove(mainMenu);
+		}
+		catch(NullPointerException e){}
+		this.add(aboutGame, BorderLayout.CENTER);
+		validate();
 	}
 	
 	private void resumeGame()
