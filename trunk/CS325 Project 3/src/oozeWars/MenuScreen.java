@@ -4,12 +4,15 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.*;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
 
 @SuppressWarnings("serial")
 public class MenuScreen extends JPanel implements ActionListener
 {
 	private OozeView view;
-	private Canvas background;
+	private JPanel background;
 	private JPanel foreground;
 	private JPanel mainMenu, pauseMenu, scores, aboutGame, howToPlay;
 	private JLabel title;
@@ -23,14 +26,31 @@ public class MenuScreen extends JPanel implements ActionListener
 	private JButton resume;
 	private JButton[] returnToMenu;
 	private JButton deleteHS;
+	private Font font = Label.initFont().deriveFont(30f);
 
-	public MenuScreen(OozeWars game, OozeView view) 
+	public MenuScreen(final OozeWars game, OozeView view) 
 	{
-		super(new BorderLayout());
+		super();
+		setLayout(new OverlayLayout(this));
 		
 		this.game = game;
 		this.view = view;
 		view.setMenu(this);
+		
+		background = new JPanel()
+		{
+			Backdrop image = new Backdrop("RadioactiveGoop.jpg");
+			
+			@Override
+			protected void paintComponent(Graphics g) {
+				
+				image.draw( (Graphics2D)g, game );
+			}
+			
+		};
+		
+		
+		foreground = new JPanel(new BorderLayout());
 		
 		returnToMenu = new JButton[4];
 		for(int i = 0; i < returnToMenu.length; i++)
@@ -38,16 +58,25 @@ public class MenuScreen extends JPanel implements ActionListener
 			returnToMenu[i] = new JButton("Return to Menu");
 			returnToMenu[i].setActionCommand("Return to Menu");
 			returnToMenu[i].addActionListener(this);
+			returnToMenu[i].setAlignmentX(0.5f);
+			returnToMenu[i].setFont(font.deriveFont(20));
 		}
 		
 		title = new JLabel("OozeWars", JLabel.CENTER);
-		this.add(title, BorderLayout.NORTH);
+		title.setFont(font.deriveFont(60f));
+		title.setForeground(Color.GREEN);
+		foreground.add(title, BorderLayout.NORTH);
+		//foreground.setOpaque(false);
+		
+		
 		
 		mainBox = new Box(BoxLayout.Y_AXIS);
 		JLabel mainLabel = new JLabel("Main Menu", JLabel.CENTER);
+		mainLabel.setFont(font);
 		mainBox.add(mainLabel);
 		mainLabel.setAlignmentX(.5f);
 		mainBox.add(Box.createVerticalStrut(20));
+		//mainBox.setOpaque(false);
 		
 		twoPlayer = initializeButton("2 Players", mainBox);
 		instructions = initializeButton("Instructions", mainBox);
@@ -58,7 +87,8 @@ public class MenuScreen extends JPanel implements ActionListener
 		//mainBox.add(Box.createGlue());
 		mainMenu = new JPanel();
 		mainMenu.add(mainBox);
-		this.add(mainMenu, BorderLayout.CENTER);
+		//mainMenu.setOpaque(false);
+		foreground.add(mainMenu, BorderLayout.CENTER);
 		
 		//************Initialize Pause Menu*****************
 		pauseBox = new Box(BoxLayout.Y_AXIS);
@@ -73,6 +103,7 @@ public class MenuScreen extends JPanel implements ActionListener
 		returnToMenu[0].setAlignmentX(.5f);
 		pauseMenu = new JPanel();
 		pauseMenu.add(pauseBox);
+		pauseMenu.setOpaque(false);
 		//**************************************************
 		
 		//************Initialize HighScores Menu*************
@@ -81,6 +112,7 @@ public class MenuScreen extends JPanel implements ActionListener
 		deleteHS = new JButton("Delete High Score");
 		deleteHS.addActionListener(this);
 		deleteHS.setActionCommand("Delete High Score");
+		deleteHS.setFont(font);
 		scores.add(deleteHS);
 		scores.add(returnToMenu[1]);
 		//scores.add(scoresBox);
@@ -89,7 +121,28 @@ public class MenuScreen extends JPanel implements ActionListener
 		//*************Initialize About Menu*****************
 		//TODO:  Add more to this
 		aboutGame = new JPanel();
+		BoxLayout layout = new BoxLayout(aboutGame, BoxLayout.Y_AXIS);
+		aboutGame.setLayout(layout);
 		aboutGame.add(returnToMenu[2]);
+		aboutGame.add( Box.createVerticalStrut(100) );
+		String info = "Game by Sean Fedak and Nick Kitten\n" + 
+			"(with additional code and help from Prof. Sean Luke), 2010";
+		JTextPane aboutText = new JTextPane();
+		SimpleAttributeSet atts = new SimpleAttributeSet();
+		StyleConstants.setAlignment(atts, StyleConstants.ALIGN_CENTER);
+		aboutText.setText(info);
+		StyledDocument doc = aboutText.getStyledDocument();
+		doc.setParagraphAttributes(0, 300, atts, false);
+		aboutText.setEnabled(false);
+		aboutText.setFont(font.deriveFont(34f));
+		aboutText.setForeground(Color.black);
+		aboutText.setDisabledTextColor(Color.black);
+		aboutText.setAlignmentX(.5f);
+		//aboutText.setHorizontalAlignment(JTextField.CENTER);
+
+		aboutText.setOpaque(false);
+		
+		aboutGame.add( aboutText );
 		//***************************************************
 		
 		//***********Initialize Instructions Menu************
@@ -97,6 +150,16 @@ public class MenuScreen extends JPanel implements ActionListener
 		howToPlay = new JPanel();
 		howToPlay.add(returnToMenu[3]);
 		//***************************************************
+		
+		
+		add( background );
+		add( foreground );
+		background.setVisible(true);
+		foreground.setVisible(true);
+		updateUI();
+		validate();
+		background.repaint();
+		foreground.repaint();
 	}
 	
 	public void actionPerformed(ActionEvent e)
@@ -137,6 +200,7 @@ public class MenuScreen extends JPanel implements ActionListener
 		JButton button = new JButton(label);
 		button.setActionCommand(label);
 		button.addActionListener(this);
+		button.setFont(font.deriveFont(30f));
 		box.add(button);
 		button.setAlignmentX(.5f);
 		box.add(Box.createVerticalStrut(20));
@@ -150,74 +214,80 @@ public class MenuScreen extends JPanel implements ActionListener
 		container.add(view, BorderLayout.CENTER);
 		view.requestFocus();
 		validate();
+		this.repaint();
 	}
 	
 	public void switchToPause()
 	{
-		try{this.remove(mainMenu);}
+		try{foreground.remove(mainMenu);}
 		catch(NullPointerException e){}
-		try{this.remove(scores);}
+		try{foreground.remove(scores);}
 		catch(NullPointerException e){}
-		try{this.remove(howToPlay);}
+		try{foreground.remove(howToPlay);}
 		catch(NullPointerException e){}
-		try{this.remove(aboutGame);}
+		try{foreground.remove(aboutGame);}
 		catch(NullPointerException e){}
 		
-		this.add(pauseMenu, BorderLayout.CENTER);
+		foreground.add(pauseMenu, BorderLayout.CENTER);
 		this.requestFocus();
 		this.updateUI();
+		this.repaint();
 	}
 	
 	public void switchToMain()
 	{
-		try{this.remove(pauseMenu);}
+		try{foreground.remove(pauseMenu);}
 		catch(NullPointerException e){}
-		try{this.remove(scores);}
+		try{foreground.remove(scores);}
 		catch(NullPointerException e){}
-		try{this.remove(howToPlay);}
+		try{foreground.remove(howToPlay);}
 		catch(NullPointerException e){}
-		try{this.remove(aboutGame);}
+		try{foreground.remove(aboutGame);}
 		catch(NullPointerException e){}
 		
-		this.add(mainMenu, BorderLayout.CENTER);
+		foreground.add(mainMenu, BorderLayout.CENTER);
 		this.requestFocus();
 		this.updateUI();
+		foreground.repaint();
 	}
 	
 	private void switchToInstructions()
 	{
 		try
 		{
-			this.remove(mainMenu);
+			foreground.remove(mainMenu);
 		}
 		catch(NullPointerException e){}
-		this.add(howToPlay, BorderLayout.CENTER);
+		foreground.add(howToPlay, BorderLayout.CENTER);
 		this.requestFocus();
 		this.updateUI();
+		this.repaint();
 	}
 	
 	private void switchToHighScores()
 	{
 		try
 		{
-			this.remove(mainMenu);
+			foreground.remove(mainMenu);
 		}
 		catch(NullPointerException e){}
-		this.add(scores, BorderLayout.CENTER);
+		foreground.add(scores, BorderLayout.CENTER);
 		this.requestFocus();
 		this.updateUI();
+		this.repaint();
 	}
 	
 	private void switchToAbout()
 	{
 		try
 		{
-			this.remove(mainMenu);
+			foreground.remove(mainMenu);
 		}
 		catch(NullPointerException e){}
-		this.add(aboutGame, BorderLayout.CENTER);
+		foreground.add(aboutGame, BorderLayout.CENTER);
 		this.requestFocus();
 		this.updateUI();
+		this.repaint();
 	}
 	
 	private void resumeGame()
