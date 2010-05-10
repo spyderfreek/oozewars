@@ -79,7 +79,7 @@ public class Blob extends Entity
 	private double maxRadius = 8, growth = 5.0 / 30.0 / 20;
 	
 	//The distance at which each Particle in the Blob will come to rest from one another.
-	private double comfyDistance = 20;
+	private double comfyDistance = 17;
 	
 	//The time remaining until the player can shoot again.
 	private int coolDown = 13;
@@ -655,7 +655,7 @@ public class Blob extends Entity
 		while(num-- > 0)
 		{
 			Particle aParticle = new Particle(head.getX() + game.random.nextDouble()*20 - 10, 
-					head.getY() + game.random.nextDouble()*20-10, game.random.nextInt(5) + 3, color, blobID);
+					head.getY() + game.random.nextDouble()*20-10, game.random.nextInt(5) + 3, Color.LIGHT_GRAY, blobID);
 			particles.add(aParticle);
 			game.addParticle(aParticle);
 		}

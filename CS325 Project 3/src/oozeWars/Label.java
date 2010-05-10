@@ -17,7 +17,7 @@ public class Label implements Sprite
 	protected Color color;
 	protected String text;
 
-	private static Font initFont() {
+	public static Font initFont() {
 		InputStream fontStream = Score.class.getResourceAsStream("Splats_Unsplatted.ttf");
 	
 		try 
