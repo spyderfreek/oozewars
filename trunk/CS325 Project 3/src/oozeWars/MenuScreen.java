@@ -42,8 +42,8 @@ public class MenuScreen extends JPanel implements ActionListener
 			Backdrop image = new Backdrop("RadioactiveGoop.jpg");
 			
 			@Override
-			protected void paintComponent(Graphics g) {
-				
+			protected void paintComponent(Graphics g) 
+			{
 				image.draw( (Graphics2D)g, game );
 			}
 			
@@ -119,12 +119,9 @@ public class MenuScreen extends JPanel implements ActionListener
 		//***************************************************
 		
 		//*************Initialize About Menu*****************
-		//TODO:  Add more to this
 		aboutGame = new JPanel();
 		BoxLayout layout = new BoxLayout(aboutGame, BoxLayout.Y_AXIS);
 		aboutGame.setLayout(layout);
-		aboutGame.add(returnToMenu[2]);
-		aboutGame.add( Box.createVerticalStrut(100) );
 		String info = "Game by Sean Fedak and Nick Kitten\n" + 
 			"(with additional code and help from Prof. Sean Luke), 2010";
 		JTextPane aboutText = new JTextPane();
@@ -142,24 +139,69 @@ public class MenuScreen extends JPanel implements ActionListener
 
 		aboutText.setOpaque(false);
 		
+		JLabel aboutLabel = new JLabel("About The Game");
+		aboutLabel.setFont(font);
+		aboutLabel.setAlignmentX(.5f);
+		aboutGame.add( aboutLabel );
+		aboutGame.add( Box.createVerticalStrut(100) );
 		aboutGame.add( aboutText );
+		aboutGame.add( returnToMenu[2] );
 		//***************************************************
 		
 		//***********Initialize Instructions Menu************
 		//TODO:  Add more to this
 		howToPlay = new JPanel();
-		howToPlay.add(returnToMenu[3]);
+		BoxLayout layout2 = new BoxLayout(howToPlay, BoxLayout.Y_AXIS);
+		howToPlay.setLayout(layout2);
+		String instruct = "You are two blobs fighting to the death!\n Try to kill your " +
+				"opponent by shooting their head.\n You can cut off your opponent's blob " +
+				"by running through the trailing part of their blob.\n Be careful, shooting uses your blob up!" +
+				"\n\n Player 1 Controls:\n" +
+				"Left:  a\n Right:  d\n Up:  w\n Down:  s\n Shoot:  Left- or Right-Shift\n\n" +
+				"Player 2 Controls:\n" +
+				"Left:  j\n Right:  l\n Up:  i\n Down:  k\n Shoot:  Left- or Right-Ctrl\n\n" +
+				"Upgrades:\n" +
+				"Yellow (I):  Invincible! Player is invincible for a set amount of time.\n" +
+				"Red (N):  Nitro!  Player's shots do double damage for a set amount of time.\n" +
+				"Orange (P):  Extra Particles!  Players receives 10 extra particles instantaneously.\n" +
+				"Cyan (G):  Glue!  Player's blob will be harder to remove particles from for a set amount of time.\n" +
+				"Magenta (H):  Heal!  All Particles currently in player's blob will be fully healed.";
+		
+		JTextPane instructText = new JTextPane();
+		SimpleAttributeSet attribs = new SimpleAttributeSet();
+		StyleConstants.setAlignment(attribs, StyleConstants.ALIGN_CENTER);
+		instructText.setText(instruct);
+		StyledDocument doc2 = instructText.getStyledDocument();
+		doc2.setParagraphAttributes(0, 1000, attribs, false);
+		instructText.setEnabled(false);
+		instructText.setFont(font.deriveFont(17f));
+		instructText.setForeground(Color.black);
+		instructText.setDisabledTextColor(Color.black);
+		instructText.setAlignmentX(.5f);
+		//instructText.setHorizontalAlignment(JTextField.CENTER);
+		instructText.setOpaque(false);
+		
+		JLabel instructLabel = new JLabel("Instructions");
+		instructLabel.setFont(font);
+		instructLabel.setAlignmentX(.5f);
+		howToPlay.add( instructLabel );
+		howToPlay.add( instructText );
+		howToPlay.add( returnToMenu[3] );
 		//***************************************************
 		
-		
+
 		add( background );
 		add( foreground );
 		background.setVisible(true);
 		foreground.setVisible(true);
-		updateUI();
+		this.setVisible(true);
 		validate();
+		background.updateUI();
 		background.repaint();
+		foreground.updateUI();
 		foreground.repaint();
+		updateUI();
+		this.repaint();
 	}
 	
 	public void actionPerformed(ActionEvent e)
@@ -214,7 +256,8 @@ public class MenuScreen extends JPanel implements ActionListener
 		container.add(view, BorderLayout.CENTER);
 		view.requestFocus();
 		validate();
-		this.repaint();
+		view.updateUI();
+		view.repaint();
 	}
 	
 	public void switchToPause()
@@ -230,6 +273,7 @@ public class MenuScreen extends JPanel implements ActionListener
 		
 		foreground.add(pauseMenu, BorderLayout.CENTER);
 		this.requestFocus();
+		this.validate();
 		this.updateUI();
 		this.repaint();
 	}
@@ -247,8 +291,9 @@ public class MenuScreen extends JPanel implements ActionListener
 		
 		foreground.add(mainMenu, BorderLayout.CENTER);
 		this.requestFocus();
+		this.validate();
 		this.updateUI();
-		foreground.repaint();
+		this.repaint();
 	}
 	
 	private void switchToInstructions()
@@ -273,6 +318,7 @@ public class MenuScreen extends JPanel implements ActionListener
 		catch(NullPointerException e){}
 		foreground.add(scores, BorderLayout.CENTER);
 		this.requestFocus();
+		this.validate();
 		this.updateUI();
 		this.repaint();
 	}
@@ -286,6 +332,7 @@ public class MenuScreen extends JPanel implements ActionListener
 		catch(NullPointerException e){}
 		foreground.add(aboutGame, BorderLayout.CENTER);
 		this.requestFocus();
+		this.validate();
 		this.updateUI();
 		this.repaint();
 	}

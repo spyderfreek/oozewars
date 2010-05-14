@@ -101,10 +101,9 @@ public class OozeView extends View
 		menu.switchToMain();
 		container.add(menu, BorderLayout.CENTER);
 		menu.requestFocus();
+		menu.setVisible(true);
 		container.validate();
 		menu.updateUI();
-		menu.setVisible(true);
-		container.setVisible(true);
 		menu.repaint();
 	}
 	
@@ -118,7 +117,6 @@ public class OozeView extends View
 		menu.setVisible(true);
 		container.validate();
 		menu.updateUI();
-		
 		menu.repaint();
 	}
 }
