@@ -148,7 +148,7 @@ public class MenuScreen extends JPanel implements ActionListener
 		aboutGame.add( returnToMenu[2] );
 		//***************************************************
 		
-		//***********Initialize Instructions Menu************
+		//***********Initialize Instructions Menu****************************************
 		//TODO:  Add more to this
 		howToPlay = new JPanel();
 		BoxLayout layout2 = new BoxLayout(howToPlay, BoxLayout.Y_AXIS);
@@ -160,11 +160,11 @@ public class MenuScreen extends JPanel implements ActionListener
 				"Left:  a\n Right:  d\n Up:  w\n Down:  s\n Shoot:  Left- or Right-Shift\n\n" +
 				"Player 2 Controls:\n" +
 				"Left:  j\n Right:  l\n Up:  i\n Down:  k\n Shoot:  Left- or Right-Ctrl\n\n" +
-				"Upgrades:\n" +
-				"Yellow (I):  Invincible! Player is invincible for a set amount of time.\n" +
-				"Red (N):  Nitro!  Player's shots do double damage for a set amount of time.\n" +
+				"Power Ups:\n" +
+				"Yellow (I):  Invincible! Player is invincible for 10 seconds.\n" +
+				"Red (N):  Nitro!  Player's shots do double damage for 10 seconds.\n" +
 				"Orange (P):  Extra Particles!  Players receives 10 extra particles instantaneously.\n" +
-				"Cyan (G):  Glue!  Player's blob will be harder to remove particles from for a set amount of time.\n" +
+				"Cyan (G):  Glue!  Player's blob will be harder to remove particles from for 10 seconds.\n" +
 				"Magenta (H):  Heal!  All Particles currently in player's blob will be fully healed.";
 		
 		JTextPane instructText = new JTextPane();
@@ -187,7 +187,7 @@ public class MenuScreen extends JPanel implements ActionListener
 		howToPlay.add( instructLabel );
 		howToPlay.add( instructText );
 		howToPlay.add( returnToMenu[3] );
-		//***************************************************
+		//******************************************************************************
 		
 
 		add( background );
