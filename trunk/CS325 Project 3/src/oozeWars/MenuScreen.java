@@ -3,6 +3,9 @@ package oozeWars;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.font.TextAttribute;
+import java.text.AttributedString;
+
 import javax.swing.*;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
@@ -60,6 +63,7 @@ public class MenuScreen extends JPanel implements ActionListener
 			returnToMenu[i].addActionListener(this);
 			returnToMenu[i].setAlignmentX(0.5f);
 			returnToMenu[i].setFont(font.deriveFont(20));
+			returnToMenu[i].setToolTipText("Return to the main menu.");
 		}
 		
 		title = new JLabel("OozeWars", JLabel.CENTER);
@@ -79,10 +83,15 @@ public class MenuScreen extends JPanel implements ActionListener
 		//mainBox.setOpaque(false);
 		
 		twoPlayer = initializeButton("2 Players", mainBox);
+		twoPlayer.setToolTipText("Start a two player game.");
 		instructions = initializeButton("Instructions", mainBox);
+		instructions.setToolTipText("How to play Ooze Wars.");
 		highScores = initializeButton("High Scores", mainBox);
+		highScores.setToolTipText("View the high scores.");
 		about = initializeButton("About", mainBox);
+		about.setToolTipText("Information about Ooze Wars");
 		quit = initializeButton("Quit", mainBox);
+		quit.setToolTipText("Quit Ooze Wars?");
 		
 		//mainBox.add(Box.createGlue());
 		mainMenu = new JPanel();
@@ -98,6 +107,7 @@ public class MenuScreen extends JPanel implements ActionListener
 		pauseBox.add(Box.createVerticalStrut(20));
 		
 		resume = initializeButton("Resume", pauseBox);
+		resume.setToolTipText("Continue playing?");
 		
 		pauseBox.add(returnToMenu[0]);
 		returnToMenu[0].setAlignmentX(.5f);
@@ -113,6 +123,7 @@ public class MenuScreen extends JPanel implements ActionListener
 		deleteHS.addActionListener(this);
 		deleteHS.setActionCommand("Delete High Score");
 		deleteHS.setFont(font);
+		deleteHS.setToolTipText("Delete the high scores.");
 		scores.add(deleteHS);
 		scores.add(returnToMenu[1]);
 		//scores.add(scoresBox);
