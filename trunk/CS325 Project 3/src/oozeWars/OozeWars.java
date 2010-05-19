@@ -168,12 +168,6 @@ public class OozeWars extends Game
 		
 		super.start();
 		queue.schedule(0, manager);
-		
-		try 
-		{
-			songs[random.nextInt(4)].play(true, true);
-		} 
-		catch (InvalidMidiDataException e) {e.printStackTrace();}
 	}
 	
 	/*
@@ -185,8 +179,7 @@ public class OozeWars extends Game
 	{
 		super.stop();
 		
-		for(Midi s: songs)
-			s.stop();
+		stopMusic();
 		
 		KeyListener[] kl = view.getKeyListeners();
 		if(kl.length == 1 && kl[0] != null)
@@ -198,6 +191,21 @@ public class OozeWars extends Game
 		manager = null;
 		for(PlayerControls pc : controls)
 			pc.resetBooleans();
+	}
+	
+	public void startMusic()
+	{
+		try 
+		{
+			songs[random.nextInt(4)].play(true, true);
+		} 
+		catch (InvalidMidiDataException e) {e.printStackTrace();}
+	}
+	
+	public void stopMusic()
+	{
+		for(Midi song : songs)
+			song.stop();
 	}
 	
 	public void deleteHighScore()
@@ -450,6 +458,7 @@ public class OozeWars extends Game
 			anotherParticle.setIndex( ind );
 			allParticles.set( ind, anotherParticle);
 		}
+		aParticle = null;
 		//view.removeSprite(aParticle, 1);
 	}
 	
@@ -857,7 +866,6 @@ public class OozeWars extends Game
 		private BitSet touchedSet;
 		private final double RANGE = CELL_WIDTH * 0.5;
 		private final int MAX_PARTICLES;
-		//TODO:  Delete this?
 		private OozeWars ow;
 		private final double neutralSpawnProbability = getProbability(1, .5);
 		private final double powerUpSpawnProbability = getProbability(30, .05);
@@ -896,7 +904,6 @@ public class OozeWars extends Game
 			wipeClean();
 			updateNeighbors( RANGE );
 			
-			OozeWars ow = (OozeWars)game;
 			double xMax = ow.getWidth();
 			double yMax = ow.getHeight();
 			keepInBounds(xMax, yMax);

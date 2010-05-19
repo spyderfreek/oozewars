@@ -269,6 +269,7 @@ public class MenuScreen extends JPanel implements ActionListener
 		validate();
 		view.updateUI();
 		view.repaint();
+		startMusic();
 	}
 	
 	public void switchToPause()
@@ -282,6 +283,7 @@ public class MenuScreen extends JPanel implements ActionListener
 		try{foreground.remove(aboutGame);}
 		catch(NullPointerException e){}
 		
+		stopMusic();
 		foreground.add(pauseMenu, BorderLayout.CENTER);
 		this.requestFocus();
 		this.validate();
@@ -300,6 +302,7 @@ public class MenuScreen extends JPanel implements ActionListener
 		try{foreground.remove(aboutGame);}
 		catch(NullPointerException e){}
 		
+		game.stop();
 		foreground.add(mainMenu, BorderLayout.CENTER);
 		this.requestFocus();
 		this.validate();
@@ -352,5 +355,15 @@ public class MenuScreen extends JPanel implements ActionListener
 	{
 		swapToGame();
 		game.togglePaused();
+	}
+	
+	private void startMusic()
+	{
+		game.startMusic();
+	}
+	
+	private void stopMusic()
+	{
+		game.stopMusic();
 	}
 }
