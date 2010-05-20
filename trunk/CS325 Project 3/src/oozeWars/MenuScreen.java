@@ -99,8 +99,6 @@ public class MenuScreen extends JPanel implements ActionListener
 		mainMenu.add(mainBox);
 		mainMenu.setOpaque(false);
 		
-		foreground.add(mainMenu, BorderLayout.CENTER);
-		
 		//************Initialize Pause Menu*****************
 		pauseBox = new Box(BoxLayout.Y_AXIS);
 		JLabel pauseLabel = new JLabel("PAUSED", JLabel.CENTER);
@@ -209,8 +207,9 @@ public class MenuScreen extends JPanel implements ActionListener
 		//******************************************************************************
 		
 
-		add( foreground, "foreground" );
-		add( background, "background" );
+		foreground.add(mainMenu, BorderLayout.CENTER);
+		add( foreground );
+		add( background );
 		background.setVisible(true);
 		foreground.setOpaque(false);
 		foreground.setVisible(true);
