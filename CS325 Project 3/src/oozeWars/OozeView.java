@@ -14,6 +14,14 @@ import java.util.Iterator;
 import com.jhlabs.image.AlphaThresholdFilter;
 import com.jhlabs.image.FadeFilter;
 
+/**
+ * <center><b>OOZEVIEW.JAVA</b></center>
+ * This extends <code>View.java</code> and is used to customize how things are drawn to the
+ * screen.  OozeView also holds a reference to the menu screens.
+ * 
+ * <p>
+ * @author Nick Kitten<br />Sean Fedak
+ */
 @SuppressWarnings("serial")
 public class OozeView extends View 
 {

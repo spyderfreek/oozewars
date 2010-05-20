@@ -26,7 +26,10 @@ import javax.swing.JOptionPane;
  *    
  * <p>OozeWars.java does many things in the initialization and maintaining of the state of
  *    the game.  Particularly, it initializes the setup of the JFrame that contains the game's
- *    graphics.  It also 
+ *    graphics.  It also sets up the players' controls, initializes blobs, initializes the
+ *    background image, initializes the songs and chooses one to play randomly, creates 
+ *    a file for the high scores, and creates the Agent that will be scheduled to deal with 
+ *    all the Particles in the game.
  * @author Nick Kitten<br />Sean Fedak
  *
  */
@@ -58,7 +61,7 @@ public class OozeWars extends Game
 	//can go to.  After that, the players will not be able to move further
 	private int MAX_X, MAX_Y;
 	
-	//Used for rendering, scales the size of the window down
+	/**Used for rendering, scales the size of the window down*/
 	public final double SCALE = 0.25;
 	
 	//The width and height of the OozeView
@@ -97,11 +100,10 @@ public class OozeWars extends Game
 		for(int i = 0; i < numPlayers; i++)
 			controls[i] = setPlayerControls(i);
 		
-		System.out.println(System.getProperty("user.dir"));
+		//System.out.println(System.getProperty("user.dir"));
 		String imgPath = "cells_bg.jpg";
 
 		backdrop = new Backdrop(imgPath);
-		//System.out.println("User root: " + Preferences.userRoot().absolutePath());
 		
 		if(prefs.getLong("High Score", defaultHighScore) == 5000)
 		{
@@ -109,8 +111,6 @@ public class OozeWars extends Game
 			try{prefs.flush();}
 			catch(BackingStoreException e){};
 		}
-		
-		
 	}
 
 	/* (non-Javadoc)
@@ -193,6 +193,9 @@ public class OozeWars extends Game
 			pc.resetBooleans();
 	}
 	
+	/**
+	 * Starts the game's music by picking a random song.
+	 */
 	public void startMusic()
 	{
 		try 
@@ -202,12 +205,18 @@ public class OozeWars extends Game
 		catch (InvalidMidiDataException e) {e.printStackTrace();}
 	}
 	
+	/**
+	 * Stops the game's music.  Will stop multiple songs if more than one is playing.
+	 */
 	public void stopMusic()
 	{
 		for(Midi song : songs)
 			song.stop();
 	}
 	
+	/**
+	 * Delete's the preference file created for the high score.
+	 */
 	public void deleteHighScore()
 	{
 		try{ Preferences.userRoot( ).node(key).removeNode( ); }
@@ -390,6 +399,11 @@ public class OozeWars extends Game
 		return numPlayers;
 	}
 	
+	/**
+	 * Sets the number of players in the game to the specified amount.
+	 * @param i
+	 * :  The number that the game's current number of players will be set to.
+	 */
 	public void setNumPlayers(int i)
 	{
 		if(i > 2 || i < 1)
@@ -399,8 +413,9 @@ public class OozeWars extends Game
 	}
 
 	/**
+	 * Returns the controls for all the players currently in-game.
 	 * @return 
-	 * The controls
+	 * The players' controls
 	 */
 	public PlayerControls[] getControls() 
 	{
@@ -417,13 +432,23 @@ public class OozeWars extends Game
 	}
 
 	/**
+	 * Sets the blobs in-game to the ArrayList of blobs passed
 	 * @param blobs 
-	 * :  The new list of blobs in the game.
+	 * :  The new list of blobs that will be in the game.
 	 */
-	public void setBlobs(ArrayList<Blob> blobs) 
+	public void setBlobs(LinkedHashMap<Integer, Blob> blobs) 
 	{
+		allParticles.clear();
+		for(Blob b : blobs.values())
+		{
+			for(Particle p : b.getParticles())
+				addParticle(p);
+		}
+		
+		hBlobs = blobs;
 	}
 	
+	/*
 	/**
 	 * Method to create a Location for the Particle in question.  This is for use in the
 	 * implementation of a Sparse Grid.
@@ -431,7 +456,7 @@ public class OozeWars extends Game
 	 * :  The Particle for which we wish to find the location.
 	 * @return
 	 * A Location of the Particle in question.
-	 */
+
 	public Location getLocation(Particle aParticle)
 	{
 		double divX = aParticle.getX()/CELL_WIDTH;
@@ -442,6 +467,7 @@ public class OozeWars extends Game
 		boolean isTop = divY - y < .5;
 		return new Location(x, y, allParticles.size(), isLeft, isTop);
 	}
+	*/
 	
 	/**
 	 * A method used to remove a Particle from allParticles.
@@ -517,7 +543,7 @@ public class OozeWars extends Game
 				if(e.getKeyCode() == KeyEvent.VK_P )
 				{
 					togglePaused();
-					((OozeView)view).swapToPauseMenu();
+					((OozeView)view ).swapToPauseMenu();
 				}
 			}
 			
@@ -561,11 +587,6 @@ public class OozeWars extends Game
 	 */
 	public static void main(String[] args) 
 	{	
-		//String answer = JOptionPane.showInputDialog("How many players?");
-		// cancel pressed or no input
-		//if( answer == null )
-			//System.exit(0);
-		//int n = Integer.parseInt(answer);
 		OozeWars game = new OozeWars(30, 2);
 		OozeView view = new OozeView(game, 3, 800, 600, 0.25);
 		JFrame frame = view.createFrame("Ooze Wars");
@@ -810,11 +831,12 @@ public class OozeWars extends Game
 		}
 	}
 	
+	/*
 	/**
 	 * Used for the HashMaps of the Sparse Grid.  Has a lookup index for an associated Particle
 	 * in <i>allParticles</i>.
 	 * @author Nick Kitten <br />Sean Fedak
-	 */
+	 
 	protected static class Location
 	{
 		public int x, y;
@@ -830,7 +852,7 @@ public class OozeWars extends Game
 		 * :  The y location associated with this Location.
 		 * @param index
 		 * :  The index in <i>allParticles</i> associated with the Particle in this Location.
-		 */
+		 
 		public Location(int x, int y, int index, boolean isLeft, boolean isTop)
 		{
 			this.x = x;
@@ -842,7 +864,7 @@ public class OozeWars extends Game
 
 		/* (non-Javadoc)
 		 * @see java.lang.Object#hashCode()
-		 */
+		 
 		@Override
 		public int hashCode() 
 		{
@@ -851,7 +873,7 @@ public class OozeWars extends Game
 
 		/* (non-Javadoc)
 		 * @see java.lang.Object#equals(java.lang.Object)
-		 */
+		 
 		@Override
 		public boolean equals(Object obj) 
 		{
@@ -860,21 +882,33 @@ public class OozeWars extends Game
 			return l.x == x && l.y == y;
 		}
 	}
+	*/
 	
+	/* The class that gets scheduled to maintain all Particle behavior */
 	private class ParticleManager implements Agent
 	{
+		//Used to determine which Particles have been touched
 		private BitSet touchedSet;
+		//The Particle's range of influence
 		private final double RANGE = CELL_WIDTH * 0.5;
+		//The maximum number of particles that can be in the game at a given time
 		private final int MAX_PARTICLES;
+		//The instance of the game that this particle manager is managing particles for
 		private OozeWars ow;
+		//The probability that a neutral particle will spawn
 		private final double neutralSpawnProbability = getProbability(1, .5);
+		//The probability that a powerUp particle will spawn
 		private final double powerUpSpawnProbability = getProbability(30, .05);
 		
+		/* Calculates a probability based on a timeframe as well as a base probability */
 		private double getProbability(double time, double p)
 		{
 			return Math.exp(Math.log(p)/(time*frameRate));
 		}
 		
+		/* The constructor for a ParticleManager
+		 * Accepts an instance of OozeWars and the maximum number of particles that can be
+		 * in-game at once */
 		public ParticleManager(OozeWars ow, int maxParticles)
 		{
 			MAX_PARTICLES = maxParticles;
@@ -883,6 +917,9 @@ public class OozeWars extends Game
 			this.ow = ow;
 		}
 
+		/* (non-Javadoc) 
+		 * @see oozeWars.Agent#go(Game game, long timestep, int priorityLevel) 
+		 */
 		@Override
 		public void go(Game game, long timestep, int priorityLevel) 
 		{
@@ -996,6 +1033,9 @@ public class OozeWars extends Game
 			}
 		}
 		
+		/*
+		 * Finds all the Particles that are currently a part of each Blob in the game.
+		 */
 		private void getConnectivity()
 		{
 			ArrayList<Particle> constituents;
@@ -1039,11 +1079,19 @@ public class OozeWars extends Game
 			}
 		}
 		
+		/*
+		 * (non-Javadoc)
+		 * @see java.util.BitSet#clear()
+		 */
 		private void wipeClean()
 		{
 			touchedSet.clear();
 		}
 		
+		/*
+		 * Makes it so each Particle in the game has no list of neighbors.
+		 * Used when re-evaluating which Particles are neighbors
+		 */
 		private void clearNeighbors()
 		{
 			for( Particle p : allParticles )
@@ -1092,6 +1140,9 @@ public class OozeWars extends Game
 			}
 		}
 		
+		/*
+		 * Used to keep the Particles from going off-screen
+		 */
 		private void keepInBounds( double xMax, double yMax )
 		{
 			for( Particle p : allParticles )
@@ -1112,6 +1163,9 @@ public class OozeWars extends Game
 			}
 		}
 		
+		/*
+		 * Not used
+		 */
 		private void applyConstraints( double pushDist )
 		{
 			for( Particle p : allParticles )
@@ -1213,6 +1267,9 @@ public class OozeWars extends Game
 		}
 	}
 	
+	/*
+	 * Loads all the Midi songs for this game into memory and makes them playable.
+	 */
 	private static Midi[] initializeSongs()
 	{
 		Midi[] songs = new Midi[4];

@@ -34,7 +34,6 @@ public class MenuScreen extends JPanel implements ActionListener
 	public MenuScreen(final OozeWars game, OozeView view) 
 	{
 		super();
-		setLayout(new OverlayLayout(this));
 		
 		this.game = game;
 		this.view = view;
@@ -95,13 +94,16 @@ public class MenuScreen extends JPanel implements ActionListener
 		
 		//mainBox.add(Box.createGlue());
 		mainMenu = new JPanel();
+		mainBox.setOpaque(false);
 		mainMenu.add(mainBox);
-		//mainMenu.setOpaque(false);
+		mainMenu.setOpaque(false);
+		
 		foreground.add(mainMenu, BorderLayout.CENTER);
 		
 		//************Initialize Pause Menu*****************
 		pauseBox = new Box(BoxLayout.Y_AXIS);
 		JLabel pauseLabel = new JLabel("PAUSED", JLabel.CENTER);
+		pauseLabel.setFont(font);
 		pauseBox.add(pauseLabel);
 		pauseLabel.setAlignmentX(.5f);
 		pauseBox.add(Box.createVerticalStrut(20));
@@ -112,6 +114,7 @@ public class MenuScreen extends JPanel implements ActionListener
 		pauseBox.add(returnToMenu[0]);
 		returnToMenu[0].setAlignmentX(.5f);
 		pauseMenu = new JPanel();
+		pauseBox.setOpaque(false);
 		pauseMenu.add(pauseBox);
 		pauseMenu.setOpaque(false);
 		//**************************************************
@@ -126,6 +129,7 @@ public class MenuScreen extends JPanel implements ActionListener
 		deleteHS.setToolTipText("Delete the high scores.");
 		scores.add(deleteHS);
 		scores.add(returnToMenu[1]);
+		scores.setOpaque(false);
 		//scores.add(scoresBox);
 		//***************************************************
 		
@@ -157,6 +161,7 @@ public class MenuScreen extends JPanel implements ActionListener
 		aboutGame.add( Box.createVerticalStrut(100) );
 		aboutGame.add( aboutText );
 		aboutGame.add( returnToMenu[2] );
+		aboutGame.setOpaque(false);
 		//***************************************************
 		
 		//***********Initialize Instructions Menu****************************************
@@ -195,15 +200,26 @@ public class MenuScreen extends JPanel implements ActionListener
 		JLabel instructLabel = new JLabel("Instructions");
 		instructLabel.setFont(font);
 		instructLabel.setAlignmentX(.5f);
+		instructLabel.setOpaque(false);
 		howToPlay.add( instructLabel );
 		howToPlay.add( instructText );
 		howToPlay.add( returnToMenu[3] );
+		howToPlay.setOpaque(false);
 		//******************************************************************************
 		
 
-		add( background );
-		add( foreground );
+		setLayout(new OverlayLayout(this)
+		{
+			public void paintComponent(Graphics g)
+			{
+				background.paint(g);
+				foreground.paint(g);
+			}
+		});
+		add( foreground, "foreground" );
+		add( background, "background" );
 		background.setVisible(true);
+		foreground.setOpaque(false);
 		foreground.setVisible(true);
 		this.setVisible(true);
 		validate();
