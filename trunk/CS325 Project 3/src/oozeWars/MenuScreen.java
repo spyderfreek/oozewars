@@ -34,6 +34,7 @@ public class MenuScreen extends JPanel implements ActionListener
 	public MenuScreen(final OozeWars game, OozeView view) 
 	{
 		super();
+		setLayout(new OverlayLayout(this));
 		
 		this.game = game;
 		this.view = view;
@@ -208,14 +209,6 @@ public class MenuScreen extends JPanel implements ActionListener
 		//******************************************************************************
 		
 
-		setLayout(new OverlayLayout(this)
-		{
-			public void paintComponent(Graphics g)
-			{
-				background.paint(g);
-				foreground.paint(g);
-			}
-		});
 		add( foreground, "foreground" );
 		add( background, "background" );
 		background.setVisible(true);
