@@ -52,7 +52,6 @@ public class MenuScreen extends JPanel implements ActionListener
 			
 		};
 		
-		
 		foreground = new JPanel(new BorderLayout());
 		
 		returnToMenu = new JButton[4];
@@ -70,17 +69,14 @@ public class MenuScreen extends JPanel implements ActionListener
 		title.setFont(font.deriveFont(60f));
 		title.setForeground(Color.GREEN);
 		foreground.add(title, BorderLayout.NORTH);
-		//foreground.setOpaque(false);
-		
-		
 		
 		mainBox = new Box(BoxLayout.Y_AXIS);
 		JLabel mainLabel = new JLabel("Main Menu", JLabel.CENTER);
 		mainLabel.setFont(font);
+		mainLabel.setForeground(Color.red);
 		mainBox.add(mainLabel);
 		mainLabel.setAlignmentX(.5f);
 		mainBox.add(Box.createVerticalStrut(20));
-		//mainBox.setOpaque(false);
 		
 		twoPlayer = initializeButton("2 Players", mainBox);
 		twoPlayer.setToolTipText("Start a two player game.");
@@ -103,6 +99,7 @@ public class MenuScreen extends JPanel implements ActionListener
 		pauseBox = new Box(BoxLayout.Y_AXIS);
 		JLabel pauseLabel = new JLabel("PAUSED", JLabel.CENTER);
 		pauseLabel.setFont(font);
+		pauseLabel.setForeground(Color.red);
 		pauseBox.add(pauseLabel);
 		pauseLabel.setAlignmentX(.5f);
 		pauseBox.add(Box.createVerticalStrut(20));
@@ -146,8 +143,8 @@ public class MenuScreen extends JPanel implements ActionListener
 		doc.setParagraphAttributes(0, 300, atts, false);
 		aboutText.setEnabled(false);
 		aboutText.setFont(font.deriveFont(34f));
-		aboutText.setForeground(Color.black);
-		aboutText.setDisabledTextColor(Color.black);
+		aboutText.setForeground(Color.red);
+		aboutText.setDisabledTextColor(Color.red);
 		aboutText.setAlignmentX(.5f);
 		//aboutText.setHorizontalAlignment(JTextField.CENTER);
 
@@ -155,6 +152,7 @@ public class MenuScreen extends JPanel implements ActionListener
 		
 		JLabel aboutLabel = new JLabel("About The Game");
 		aboutLabel.setFont(font);
+		aboutLabel.setForeground(Color.red);
 		aboutLabel.setAlignmentX(.5f);
 		aboutGame.add( aboutLabel );
 		aboutGame.add( Box.createVerticalStrut(100) );
@@ -190,14 +188,15 @@ public class MenuScreen extends JPanel implements ActionListener
 		doc2.setParagraphAttributes(0, 1000, attribs, false);
 		instructText.setEnabled(false);
 		instructText.setFont(font.deriveFont(17f));
-		instructText.setForeground(Color.black);
-		instructText.setDisabledTextColor(Color.black);
+		instructText.setForeground(Color.red);
+		instructText.setDisabledTextColor(Color.red);
 		instructText.setAlignmentX(.5f);
 		//instructText.setHorizontalAlignment(JTextField.CENTER);
 		instructText.setOpaque(false);
 		
 		JLabel instructLabel = new JLabel("Instructions");
 		instructLabel.setFont(font);
+		instructLabel.setForeground(Color.red);
 		instructLabel.setAlignmentX(.5f);
 		instructLabel.setOpaque(false);
 		howToPlay.add( instructLabel );
