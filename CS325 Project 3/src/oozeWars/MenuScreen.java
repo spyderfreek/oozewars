@@ -48,6 +48,7 @@ public class MenuScreen extends JPanel implements ActionListener
 			protected void paintComponent(Graphics g) 
 			{
 				image.draw( (Graphics2D)g, game );
+				g.dispose();
 			}
 			
 		};
@@ -170,9 +171,9 @@ public class MenuScreen extends JPanel implements ActionListener
 				"opponent by shooting their head.\n You can cut off your opponent's blob " +
 				"by running through the trailing part of their blob.\n Be careful, shooting uses your blob up!" +
 				"\n\n Player 1 Controls:\n" +
-				"Left:  a\n Right:  d\n Up:  w\n Down:  s\n Shoot:  Left- or Right-Shift\n\n" +
+				"Left:  a\n Right:  d\n Up:  w\n Down:  s\n Shoot:  Left- or Right-Ctrl\n\n" +
 				"Player 2 Controls:\n" +
-				"Left:  j\n Right:  l\n Up:  i\n Down:  k\n Shoot:  Left- or Right-Ctrl\n\n" +
+				"Left:  j\n Right:  l\n Up:  i\n Down:  k\n Shoot:  Left- or Right-Shift\n\n" +
 				"Power Ups:\n" +
 				"Yellow (I):  Invincible! Player is invincible for 10 seconds.\n" +
 				"Red (N):  Nitro!  Player's shots do double damage for 10 seconds.\n" +
@@ -207,18 +208,20 @@ public class MenuScreen extends JPanel implements ActionListener
 		
 
 		foreground.add(mainMenu, BorderLayout.CENTER);
+		mainMenu.setVisible(true);
 		add( foreground );
 		add( background );
-		background.setVisible(true);
 		foreground.setOpaque(false);
 		foreground.setVisible(true);
+		background.setVisible(true);
 		this.setVisible(true);
-		validate();
 		background.updateUI();
 		background.repaint();
 		foreground.updateUI();
 		foreground.repaint();
-		updateUI();
+		this.requestFocus();
+		this.validate();
+		this.updateUI();
 		this.repaint();
 	}
 	
@@ -281,17 +284,22 @@ public class MenuScreen extends JPanel implements ActionListener
 	
 	public void switchToPause()
 	{
-		try{foreground.remove(mainMenu);}
+		try{foreground.remove(mainMenu);
+			mainMenu.setVisible(false);}
 		catch(NullPointerException e){}
-		try{foreground.remove(scores);}
+		try{foreground.remove(scores);
+		    scores.setVisible(false);}
 		catch(NullPointerException e){}
-		try{foreground.remove(howToPlay);}
+		try{foreground.remove(howToPlay);
+		    howToPlay.setVisible(false);}
 		catch(NullPointerException e){}
-		try{foreground.remove(aboutGame);}
+		try{foreground.remove(aboutGame);
+		    aboutGame.setVisible(false);}
 		catch(NullPointerException e){}
 		
 		stopMusic();
 		foreground.add(pauseMenu, BorderLayout.CENTER);
+		pauseMenu.setVisible(true);
 		this.requestFocus();
 		this.validate();
 		this.updateUI();
@@ -300,17 +308,23 @@ public class MenuScreen extends JPanel implements ActionListener
 	
 	public void switchToMain()
 	{
-		try{foreground.remove(pauseMenu);}
+		try{foreground.remove(pauseMenu);
+		    pauseMenu.setVisible(false);}
 		catch(NullPointerException e){}
-		try{foreground.remove(scores);}
+		try{foreground.remove(scores);
+		    scores.setVisible(false);}
 		catch(NullPointerException e){}
-		try{foreground.remove(howToPlay);}
+		try{foreground.remove(howToPlay);
+		    howToPlay.setVisible(false);}
 		catch(NullPointerException e){}
-		try{foreground.remove(aboutGame);}
+		try{foreground.remove(aboutGame);
+		    aboutGame.setVisible(false);}
 		catch(NullPointerException e){}
 		
 		game.stop();
 		foreground.add(mainMenu, BorderLayout.CENTER);
+		mainMenu.setVisible(true);
+		background.setVisible(true);
 		this.requestFocus();
 		this.validate();
 		this.updateUI();
@@ -322,9 +336,11 @@ public class MenuScreen extends JPanel implements ActionListener
 		try
 		{
 			foreground.remove(mainMenu);
+			mainMenu.setVisible(false);
 		}
 		catch(NullPointerException e){}
 		foreground.add(howToPlay, BorderLayout.CENTER);
+		howToPlay.setVisible(true);
 		this.requestFocus();
 		this.updateUI();
 		this.repaint();
@@ -335,9 +351,11 @@ public class MenuScreen extends JPanel implements ActionListener
 		try
 		{
 			foreground.remove(mainMenu);
+			mainMenu.setVisible(false);
 		}
 		catch(NullPointerException e){}
 		foreground.add(scores, BorderLayout.CENTER);
+		scores.setVisible(true);
 		this.requestFocus();
 		this.validate();
 		this.updateUI();
@@ -352,6 +370,7 @@ public class MenuScreen extends JPanel implements ActionListener
 		}
 		catch(NullPointerException e){}
 		foreground.add(aboutGame, BorderLayout.CENTER);
+		aboutGame.setVisible(true);
 		this.requestFocus();
 		this.validate();
 		this.updateUI();

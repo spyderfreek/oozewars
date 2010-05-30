@@ -364,9 +364,6 @@ public class Blob extends Entity
 		OozeWars g = (OozeWars)game;
 		updateHealth();
 		
-		
-		//System.out.println("Blob go");
-		
 		// ignore head for AI-less blobs
 		if( ( head != null ) && ( head.isDead() || particles.isEmpty() ) )
 			setDead(true);
