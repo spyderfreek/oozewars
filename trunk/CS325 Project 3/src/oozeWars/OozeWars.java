@@ -62,7 +62,7 @@ public class OozeWars extends Game
 	private int MAX_X, MAX_Y;
 	
 	/**Used for rendering, scales the size of the window down*/
-	public final double SCALE = 0.25;
+	public final double SCALE = 1.0;
 	
 	//The width and height of the OozeView
 	private int width, height;
@@ -149,7 +149,7 @@ public class OozeWars extends Game
 		ArrayList<Particle> neutralParticles = new ArrayList<Particle>();
 		
 		for( int i = 0; i < numParticles; i++ )
-			neutralParticles.add(new Particle(700 + random.nextInt(80) - 40, 100 + random.nextInt(80) - 40, 8, Color.WHITE, 0));
+			neutralParticles.add(new Particle(700 + random.nextInt(80) - 40, 100 + random.nextInt(80) - 40, 8*SCALE, Color.WHITE, 0));
 		
 		hBlobs.put(0, new Blob(neutralParticles, this));
 		
@@ -588,7 +588,7 @@ public class OozeWars extends Game
 	public static void main(String[] args) 
 	{	
 		OozeWars game = new OozeWars(30, 2);
-		OozeView view = new OozeView(game, 3, 800, 600, 0.25);
+		OozeView view = new OozeView(game, 3, 800, 600, 0.5);
 		JFrame frame = view.createFrame("Ooze Wars");
 		view.setKeystrokeFocus(frame);
 		MenuScreen menu = new MenuScreen(game, view);

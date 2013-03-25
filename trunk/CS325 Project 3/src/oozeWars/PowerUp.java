@@ -28,23 +28,23 @@ public class PowerUp extends Particle
 		
 		this.powerUpTicks = powerUpTicks;
 		Agent powerRemoverAgent = new Agent()
-							{ 
-								boolean isScheduled = false;
-								
-								public void go(Game game, long timestep, int priorityLevel)
-								{
-									
-									if(!isScheduled)
-									{
-										isScheduled = true;
-										game.queue.scheduleIn(ticksOutsideBlob, 1, this);
-									}
-									else if(!inBlob)
-									{
-										setDead(true);
-									}
-								}
-							};
+                    { 
+                        boolean isScheduled = false;
+
+                        public void go(Game game, long timestep, int priorityLevel)
+                        {
+
+                                if(!isScheduled)
+                                {
+                                        isScheduled = true;
+                                        game.queue.scheduleIn(ticksOutsideBlob, 1, this);
+                                }
+                                else if(!inBlob)
+                                {
+                                        setDead(true);
+                                }
+                        }
+                    };
 		game.queue.schedule(1, powerRemoverAgent);
 		game.view.addSprite(label = getLabel(), 2);
 	}
