@@ -16,8 +16,8 @@ public class AlphaThresholdFilter extends PointFilter
 		int r = (rgb >> 16) & 0xff;
 		int g = (rgb >> 8) & 0xff;
 		int b = rgb & 0xff;
-		int brightness = (r + g + b) / 3;
-		a = brightness < cutOff ? 0 : 0xff;
+		int brightness = a;
+		a = brightness < cutOff ? 0 : a;
 		
 		return (rgb & 0xffffff) | (a << 24);
 	}

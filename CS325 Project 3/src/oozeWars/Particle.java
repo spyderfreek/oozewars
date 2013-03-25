@@ -24,7 +24,7 @@ public class Particle extends Entity implements Comparable<Particle>
 	protected RescaleOp colorFilt;
 	protected float[] scales = {1f,1f,1f,1f};
 	protected final float[] offsets = {0f,0f,0f,0f};
-	public static final int BLUR_WIDTH = 10;
+	public static final int BLUR_WIDTH = 15;
 	protected int index;
 	protected int halfWidth;
 
@@ -107,12 +107,36 @@ public class Particle extends Entity implements Comparable<Particle>
 		BufferedImage img = new BufferedImage( size, size, BufferedImage.TYPE_INT_ARGB );
 		Graphics2D g = img.createGraphics();
 
-		BoxBlurFilter blur = new BoxBlurFilter(BLUR_WIDTH/3f, BLUR_WIDTH/3f, 3);
-		g.setColor(Color.white);
-		g.fillOval(BLUR_WIDTH, BLUR_WIDTH, (int)radius * 2, (int)radius * 2);
-		g.dispose();
 		
-		return blur.filter(img, null);
+		g.setColor(Color.white);
+                // replacing blur with calculated alpha
+                BoxBlurFilter blur = new BoxBlurFilter(BLUR_WIDTH/3f, BLUR_WIDTH/3f, 3);
+		//g.fillOval(BLUR_WIDTH, BLUR_WIDTH, (int)radius * 2, (int)radius * 2);
+                g.fillOval(0, 0, size, size);
+		g.dispose();
+                
+                int[] pixels = new int[size*size];
+                blur.getRGB( img, 0, 0, size, size, pixels );
+                float invWidth = 1.f / (float)(halfWidth);
+                for( int y = 0; y < size; ++y)
+                    for( int x = 0; x < size; ++x){
+                        float dx = invWidth*(halfWidth - x);
+                        float dy = invWidth*(halfWidth - y);
+                        int alpha;
+                        float r2 = dx*dx + dy*dy;
+                        if(r2 > 1.f) {
+                            alpha = 0;
+                        }
+                        else {
+                            float q = (1.f - (dx*dx + dy*dy));
+                            alpha = (int)(q*q*255.f);
+                        }
+                        int px = pixels[y*size+x];
+                        pixels[y*size+x] = px & 0xffffff | (alpha << 24);
+                    }
+		
+                blur.setRGB( img, 0, 0, size, size, pixels );
+		return img;
 	}
 
 	@Override

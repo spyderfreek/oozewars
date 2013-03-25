@@ -13,16 +13,11 @@ public class FadeFilter extends PointFilter {
 	}
 
 	@Override
-	public int filterRGB(int x, int y, int rgb) {
-		int a = (rgb >> 24) & 0xff;
-		int r = (rgb >> 16) & 0xff;
-		int g = (rgb >> 8) & 0xff;
-		int b = rgb & 0xff;
+	public int filterRGB(int x, int y, int rgba) {
+		int a = (rgba >> 24) & 0xff;
+		int rgb = rgba & 0xffffff;
 		a *= fadeAmount;
-		r *= fadeAmount;
-		g *= fadeAmount;
-		b *= fadeAmount;
-		return (a << 24 ) | ( r << 16 ) | ( g << 8 ) | b;
+		return (a << 24 ) | rgb;
 	}
 
 	/**
