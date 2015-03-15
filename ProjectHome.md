@@ -1,0 +1,1 @@
+A gladiator pit of sentient blobs, battling to the death.
